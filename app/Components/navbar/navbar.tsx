@@ -47,7 +47,7 @@ function CommonLinks(){
 }
 export default function Navbar() {
   return (
-    <nav className="flex items-center justify-between mx-[181px] my-[40px] h-[123px]">
+    <nav className="flex items-center justify-between my-[40px] h-[123px]">
       <div className="text-2xl font-inter font-300 text-beige ">SGA</div>
       <CommonLinks />
     </nav>
