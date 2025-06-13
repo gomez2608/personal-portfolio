@@ -7,7 +7,7 @@ export default function Profile() {
     return(
         <section className="flex flex-col justify-items-start mt-[133px]">
             <p className="font-inter text-beige font-light text-base">Hello, I&apos;m</p>
-            <h1 className="font-[Aleo] font-500 text-8xl bg-gradient-to-r from-green via-blue to-solid-beige bg-clip-text text-transparent my-[18px]">Sebastian Gomez</h1>
+            <h1 className="font-[Aleo] font-500 lg:text-8xl md:text-7xl text-6xl bg-gradient-to-r from-green via-blue to-solid-beige bg-clip-text text-transparent my-[18px]">Sebastian Gomez</h1>
             <p className="font-inter text-beige text-justify font-light text-base">I&apos;m a software and AI engineer currently finishing a MSc in Biomedical Engineering with a research focus on ML applications, based in Bogotá, Colombia but with a lot of experience in working with multicultural and remote teams. My personal and professional interests include developing agentic AI workflows, NLP solutions, and ML models using LangChain, PyTorch and TensorFlow. With proven background developing impactful technical solutions at YC-backed startups, I&apos;m eager to bring my abilities to new venture-backed and innovative companies.</p>
             <div className="flex flex-row items-center justify-between mt-[40px]">
                 <div className='flex flex-row max-lg:flex-col justify-between items-center gap-[10px] w-1/4'>

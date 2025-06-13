@@ -14,7 +14,7 @@ import { Menu } from "lucide-react";
 const components: { title:string; href: string; description:string }[] = [
     {
         title: "Projects",
-        href: "#",
+        href: "#projects",
         description: "Explore my projects and contributions."
     },
     {
@@ -24,7 +24,7 @@ const components: { title:string; href: string; description:string }[] = [
     },
     {
         title: "Contact",
-        href: "#",
+        href: "#footer",
         description: "Get in touch with me."
     }
 ];
