@@ -40,8 +40,9 @@ function InformationLinks(){
     }
     return(
         <div className="flex items-center justify-between gap-1 w-1/2">
-        {components.map((component) => (
+        {components.map((component, index) => (
                     <Button 
+                    key={index}
                     className={"font-inter text-text-white font-light text-lg bg-transparent w-1/3 " + (activeComponent === component.id ? "bg-accent" : "")}
                     id={component.id}
                     onClick={() => handleComponentClick(component.id)}

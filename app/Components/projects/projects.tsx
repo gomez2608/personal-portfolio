@@ -1,16 +1,9 @@
 "use client";
 
-import { Button } from "@/components/ui/button"
 import {
   Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card"
-import { GitBranch, GithubIcon, Link } from "lucide-react";
+import { GithubIcon, Link } from "lucide-react";
 import Image from "next/image";
 
 type ProjectCardProps = {
