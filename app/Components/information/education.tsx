@@ -30,7 +30,7 @@ type EducationProps = {
 function EducationComponent({ data }: { data: EducationProps }) {
     return (
         <div className="flex flex-col gap-5">
-            <div className="flex flex-row justify-between">
+            <div className="flex flex-col lg:flex-row justify-between">
                 <p className="font-medium font-inter text-beige text-2xl">{data.name}</p>
                 <p className="font-medium font-inter text-white text-base">{data.date}</p>
             </div>
