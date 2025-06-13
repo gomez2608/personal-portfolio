@@ -11,27 +11,6 @@ import {
 import Link from "next/link";
 import { Menu } from "lucide-react";
 
-function ListItem({
-  title,
-  children,
-  href,
-  ...props
-}: React.ComponentPropsWithoutRef<"li"> & { href: string }) {
-  return (
-    <li {...props}>
-      <NavigationMenuLink asChild>
-        <Link href={href}>
-          <div className="text-sm leading-none font-medium">{title}</div>
-          <p className="text-muted-foreground line-clamp-2 text-sm leading-snug">
-            {children}
-          </p>
-        </Link>
-      </NavigationMenuLink>
-    </li>
-  )
-}
-
-
 const components: { title:string; href: string; description:string }[] = [
     {
         title: "Projects",
@@ -55,8 +34,8 @@ function CommonLinks(){
         <>
             <NavigationMenu className="flex items-center justify-between max-md:hidden max-md:w-0">
                 <NavigationMenuList className="flex items-center justify-between w-[256px]">
-                    {components.map((component) => (
-                        <NavigationMenuItem key={component.title}>
+                    {components.map((component, index) => (
+                        <NavigationMenuItem key={index}>
                             <NavigationMenuLink>
                                 <Link href={component.href} className="font-inter text-beige font-light text-lg">{component.title}</Link>
                             </NavigationMenuLink>
@@ -71,8 +50,8 @@ function CommonLinks(){
                             <Menu className="text-beige"/>
                         </NavigationMenuTrigger>
                         <NavigationMenuContent className=" bg-background border border-1 border-beige rounded-lg">
-                            {components.map((component) => (
-                                <NavigationMenuLink className="text-beige hover:text-beige">
+                            {components.map((component, index) => (
+                                <NavigationMenuLink key={index} className="text-beige hover:text-beige">
                                 {component.title}
                                 </NavigationMenuLink>
                             ))}
