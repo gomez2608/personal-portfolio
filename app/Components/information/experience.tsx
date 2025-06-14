@@ -65,10 +65,10 @@ function ExperienceComponent({ data }: { data: ExperienceProps }) {
                 <p className="font-medium font-inter text-white text-base">{data.date}</p>
             </div>
             <p className="text-solid-beige text-sm font-light"><strong>{data.company}</strong> | {data.location}</p>
-            <p className="font-light text-base text-foreground w-5/6">{data.jobDescription}</p>
+            <p className="font-light text-base text-foreground w-5/6 max-md:w-full">{data.jobDescription}</p>
             <ol>
             {data.bp && data.bp.length > 0 && (
-                <ul className="list-disc pl-5 font-light text-base text-foreground w-5/6">
+                <ul className="list-disc pl-5 font-light text-base text-foreground w-5/6 max-md:w-full">
                     {data.bp.map((point, index) => (
                         <li key={index} className="font-light">{point}</li>
                     ))}

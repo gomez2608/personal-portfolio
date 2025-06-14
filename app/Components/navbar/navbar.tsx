@@ -19,7 +19,7 @@ const components: { title:string; href: string; description:string }[] = [
     },
     {
         title: "Resume",
-        href: "#",
+        href: "https://drive.google.com/file/d/1PRs_D92h4zgkvEQ9PMY_icdt-CLJ80_h/view",
         description: "View my professional experience and skills."
     },
     {
@@ -37,7 +37,11 @@ function CommonLinks(){
                     {components.map((component, index) => (
                         <NavigationMenuItem key={index}>
                             <NavigationMenuLink>
-                                <Link href={component.href} className="font-inter text-beige font-light text-lg">{component.title}</Link>
+                                
+                                <Link href={component.href} target={component.href.startsWith("http") ? ("_blank"):("")} className="font-inter text-beige font-light text-lg">
+                                    {component.title}
+                                </Link>
+                                
                             </NavigationMenuLink>
                         </NavigationMenuItem>
                         ))}    
@@ -51,7 +55,7 @@ function CommonLinks(){
                         </NavigationMenuTrigger>
                         <NavigationMenuContent className=" bg-background border border-1 border-beige rounded-lg">
                             {components.map((component, index) => (
-                                <NavigationMenuLink key={index} className="text-beige hover:text-beige">
+                                <NavigationMenuLink href={component.href} key={index} className="text-beige hover:text-beige">
                                 {component.title}
                                 </NavigationMenuLink>
                             ))}

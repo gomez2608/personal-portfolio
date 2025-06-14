@@ -26,7 +26,7 @@ function ProjectCard({ id, title, description, technologies, githublink, liveDem
                 height={550}
                 />
             </div>
-            <div className="flex flex-row justify-between items-center pt-4">
+            <div className="flex flex-col lg:flex-row justify-between items-center pt-4 max-lg:gap-4">
                 <p className="font-inter text-2xl font-light text-beige">
                     {title}
                 </p>
