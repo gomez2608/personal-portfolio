@@ -3,7 +3,7 @@
 import {
   Card,
 } from "@/components/ui/card"
-import { GithubIcon, Link } from "lucide-react";
+{/*import { GithubIcon, Link } from "lucide-react";*/}
 import Image from "next/image";
 
 type ProjectCardProps = {
@@ -11,11 +11,9 @@ type ProjectCardProps = {
     title: string;
     description: string;
     technologies: string;
-    githublink: string;
-    liveDemoLink: string;
 }
 
-function ProjectCard({ id, title, description, technologies, githublink, liveDemoLink }: ProjectCardProps) {
+function ProjectCard({ id, title, description, technologies}: ProjectCardProps) {
     return (
         <Card className="w-full bg-background text-solid-beige border-0">
             <div className="flex justify-center items-center w-full">
@@ -42,30 +40,27 @@ function ProjectCard({ id, title, description, technologies, githublink, liveDem
     );
 }
 
-const cards: { id:string; title:string; description:string; technologies:string; githublink:string; liveDemoLink:string  }[] = [
+const cards: { id:string; title:string; description:string; technologies:string }[] = [
     {
         id: "1",
         title: "Multimodal Collection and Analysis of Colombian Sign Language",
         description: "This research proposes the use of multimodal data combined with artificial intelligence algorithms to identify key formational parameters of Colombian Sign Language (LSC) and differentiate communicative characteristics between deaf people and interpreters.",
         technologies: "Python, Tensorflow, Hugging Face, ViVit",
-        githublink: "",
-        liveDemoLink: ""
+
     },
     {
         id: "2",
         title: "Development of a Machine Learning Algorithm to Support the Diagnosis of Urological Diseases at Fundación Santa Fe de Bogotá",
         description: "This project, in collaboration with Fundación Santa Fe de Bogotá, uses artificial intelligence to improve accuracy and consistency in the diagnosis of urological diseases.",
         technologies: "Python, Scikit-learn, Pandas, NumPy",
-        githublink: "",
-        liveDemoLink: ""
+
     },
     {
         id: "3",
         title: "Personal Portfolio",
         description: "This portfolio showcases my professional journey, including my projects, skills, and experiences in the field of biomedical engineering and artificial intelligence.",
         technologies: "Next.js, React, Tailwind CSS, TypeScript",
-        githublink: "",
-        liveDemoLink: ""
+
     },
 ]
  
@@ -83,8 +78,6 @@ export default function Projects() {
                         title={card.title}
                         description={card.description}
                         technologies={card.technologies}
-                        githublink={card.githublink}
-                        liveDemoLink={card.liveDemoLink}
                     />
                 ))}
 
