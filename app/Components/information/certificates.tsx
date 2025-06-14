@@ -1,4 +1,5 @@
 import { Link } from "lucide-react";
+import { MoveRight } from "lucide-react";
 
 type CertificationProps = {
     name:string,
@@ -7,49 +8,48 @@ type CertificationProps = {
     hyperlink:string
 }
 
-
 const certifications: { name:string; date?:string; university?:string; hyperlink:string;}[] = [
     {
         name: "Rapid Application Development with Large Language Models (LLMs)",
         date: "May 2025",
         university: "Nvidia",
-        hyperlink: ""
+        hyperlink: "https://learn.nvidia.com/certificates?id=4SmAhElMQZySoTzOylVCxA"
     },
     {
         name: "Efficient Large Language Model (LLM) Customization",
         date: "May 2025",
         university: "Nvidia",
-        hyperlink: ""
+        hyperlink: "https://learn.nvidia.com/certificates?id=HwomMCFfS7ejXugjIm5YWQ"
     },
     {
         name: "Building LLM Applications with Prompt Engineering",
         date: "April 2025",
         university: "Nvidia",
-        hyperlink: ""
+        hyperlink: "https://learn.nvidia.com/certificates?id=g-2IIRd1RO6ZWcYuaAXLtA"
     },
     {
         name: "Generative AI with Diffusion Models",
         date: "October 2024",
         university: "Nvidia",
-        hyperlink: ""
+        hyperlink: "https://learn.nvidia.com/certificates?id=TauXuWfURMOBYNutOVkopw"
     },
     {
         name: "Building Transformer-Based Natural Language Processing (NLP) Applications",
         date: "November 2023",
         university: "Nvidia",
-        hyperlink: ""
+        hyperlink: "https://learn.nvidia.com/certificates?id=2d9549faf7ea40ceb45bd0b0e09ef24c"
     },
     {
         name: "Django For Everybody Specialization",
         date: "April 2023",
         university: "University of Michigan",
-        hyperlink: ""
+        hyperlink: "https://www.coursera.org/account/accomplishments/specialization/certificate/SP4FDTPSFER3"
     },
     {
         name: "Deep Learning With Pytorch: Generative Adversarial Networks (GANs)",
         date: "May 2025",
         university: "Coursera",
-        hyperlink: ""
+        hyperlink: "https://www.coursera.org/account/accomplishments/certificate/JLBFEBA3Z44S"
     },
 ];
 
@@ -80,6 +80,14 @@ export default function Certificates() {
                     data={certification}
                 />
             ))}
+
+        <div 
+        className="flex flex-row rounded-lg items-center justify-start gap-4"
+         onClick={() => window.open("https://www.linkedin.com/in/sebastiangahumada/details/certifications/", '_blank')}
+        >
+            <p className="font-inter text-300 text-2xl text-solid-beige">See all my certifications</p>
+            <MoveRight className="text-solid-beige"/>
+        </div>
 
         </div>
     );

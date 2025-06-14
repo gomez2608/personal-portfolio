@@ -15,7 +15,7 @@ const aleo = Aleo({
 });
 
 export const metadata: Metadata = {
-  title: "My personal website",
+  title: "Sebastian Gomez | ML Engineer",
   description: "Welcome to my personal website!",
 };
 
