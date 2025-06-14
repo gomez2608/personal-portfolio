@@ -55,7 +55,7 @@ const certifications: { name:string; date?:string; university?:string; hyperlink
 
 function CertificationComponent({ data }: { data: CertificationProps }) {
     return (
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-5">
             <div className="flex flex-row max-lg:flex-col justify-between">
                 <p className="font-inter font-medium font-beige text-xl">{data.name}</p>
                 <p className="text-base font-light text-white">{data.date}</p>

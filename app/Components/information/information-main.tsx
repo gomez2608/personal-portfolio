@@ -7,14 +7,6 @@ import Education from "./education";
 import Certificates from "./certificates";
 import * as React from "react";
 
-export default function InformationMain() {
-    return(
-        <div className="flex flex-col justify-center mt-40 ">
-            < InformationLinks />
-
-        </div>
-    );
-}
 
 const components: { id: string; title: string; description: string; information?: React.JSX.Element }[] = [
     {
@@ -61,6 +53,16 @@ function InformationLinks(){
         </div>
         {activeComponent}
         </>
+    );
+}
+
+
+export default function InformationMain() {
+    return(
+        <div className="flex flex-col justify-center max-lg:mt-20 mt-40 ">
+            < InformationLinks />
+
+        </div>
     );
 }
 

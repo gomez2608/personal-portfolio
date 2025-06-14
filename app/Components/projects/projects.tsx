@@ -64,7 +64,7 @@ const cards: { id:string; title:string; description:string; technologies:string;
 
 export default function Projects() {
     return (
-        <section id="projects" className="flex flex-col justify-center mt-25 border-t border-b border-solid border-foreground pt-10 pb-30">
+        <section id="projects" className="flex flex-col justify-center mt-25 border-t border-b border-solid border-foreground pt-10 pb-10">
             <h2 className="text-2xl font-normal text-solid-beige">Featured Projects</h2>
             <div className="grid grid-cols-2 my-10 gap-15">
                 
