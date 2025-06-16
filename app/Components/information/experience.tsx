@@ -75,7 +75,7 @@ function ExperienceComponent({ data }: { data: ExperienceProps }) {
                 </ul>
             )}
             </ol>
-            <div className="flex flex-row px-8">
+            <div className="flex flex-row sm:px-8 px-2">
                 <div className="w-1/2 border-r border-solid border-foreground px-2 content-center">
                     <p className="font-light text-base text-foreground text-center"><strong className="font-bold">Languages and Tools:</strong> {data.tools}</p>
                 </div>
