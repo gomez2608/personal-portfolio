@@ -13,31 +13,31 @@ const certifications: { name:string; date?:string; university?:string; hyperlink
         name: "Rapid Application Development with Large Language Models (LLMs)",
         date: "May 2025",
         university: "Nvidia",
-        hyperlink: "https://learn.nvidia.com/certificates?id=4SmAhElMQZySoTzOylVCxA"
+        hyperlink: "https://learn.nvidia.com/certificates?id=D-o2oirlQz25AXCr9g9mcw"
     },
     {
         name: "Efficient Large Language Model (LLM) Customization",
         date: "May 2025",
         university: "Nvidia",
-        hyperlink: "https://learn.nvidia.com/certificates?id=HwomMCFfS7ejXugjIm5YWQ"
+        hyperlink: "https://learn.nvidia.com/certificates?id=nfV2qnetSD6sKrmFeM2GUA"
     },
     {
         name: "Building LLM Applications with Prompt Engineering",
         date: "April 2025",
         university: "Nvidia",
-        hyperlink: "https://learn.nvidia.com/certificates?id=g-2IIRd1RO6ZWcYuaAXLtA"
+        hyperlink: "https://learn.nvidia.com/certificates?id=Pd9DuVAGTJKU6lImYx9R3w"
     },
     {
         name: "Generative AI with Diffusion Models",
         date: "October 2024",
         university: "Nvidia",
-        hyperlink: "https://learn.nvidia.com/certificates?id=TauXuWfURMOBYNutOVkopw"
+        hyperlink: "https://learn.nvidia.com/certificates?id=d7xra-f0RfybbNSlcaaAsQ"
     },
     {
         name: "Building Transformer-Based Natural Language Processing (NLP) Applications",
         date: "November 2023",
         university: "Nvidia",
-        hyperlink: "https://learn.nvidia.com/certificates?id=2d9549faf7ea40ceb45bd0b0e09ef24c"
+        hyperlink: "https://learn.nvidia.com/certificates?id=unwxzmZ7SB-LIWr2qnYZFA"
     },
     {
         name: "Django For Everybody Specialization",
