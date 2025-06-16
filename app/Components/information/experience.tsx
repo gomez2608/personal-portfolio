@@ -76,16 +76,16 @@ function ExperienceComponent({ data }: { data: ExperienceProps }) {
             )}
             </ol>
             <div className="flex flex-row sm:px-8 px-2">
-                <div className="w-1/2 border-r border-solid border-foreground px-2 content-center">
+                <div className={"px-2 content-center"+ (data.contact === "" ? " w-full" : " w-1/2")}>
                     <p className="font-light text-base text-foreground text-center"><strong className="font-bold">Languages and Tools:</strong> {data.tools}</p>
                 </div>
-                <div className="w-1/2 px-6 content-center">
-                    {data.contact && data.contact.trim() !== "" && (
-                        <p className="font-light text-base text-foreground text-center">
-                            <strong className="font-bold">Contact details:</strong> {data.contact}
-                        </p>
-                    )}
-                </div>
+                    {data.contact === "" ? null : (
+                        <div className="w-1/2 px-6 content-center border-l border-solid border-foreground">
+                            <p className="font-light text-base text-foreground text-center">
+                                <strong className="font-bold">Contact:</strong> {data.contact}
+                            </p>
+                        </div>
+                    )}                 
             </div>
 
         </div>
