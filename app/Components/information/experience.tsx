@@ -1,6 +1,22 @@
 
 const experiences: { jobTitle:string; date?:string; location?:string; company?:string; jobDescription:string; bp?: string[]; tools:string; contact:string }[] = [
     {
+        jobTitle: "Machine learning intern (Gen AI)",
+        date: "July 2025 - Present",
+        location: "San Francisco, California - Remote",
+        company: "Provectus",
+        jobDescription: "ML Internship at provectus, focusing on Generative AI. I am currently working on a project that involves building AI features leveraging agentic workflows for intelligent data parsing and processing.",
+        bp: [
+            "Optimizing and benchmarking state-of-the-art Large Language Models (LLMs).",
+            "Evaluating and enhancing ML pipelines, encompassing data preprocessing, model training, and rigorous performance analysis.",
+            "Fine-tuning expert models to use in agentic AI workflows.",
+            "Leveraging cloud-based ML services (AWS/GCP) to deploy GenAI solutions into production environments.",
+            "Staying on top of the rapidly evolving GenAI landscape through continuous research."
+        ],
+        tools: "Python, AWS, AWS Bedrock, AWS Sagemaker, MLFLow, LiteLLM, Instructor",
+        contact: ""
+    },
+    {
         jobTitle: "Growth and Software Development Engineer",
         date: "July 2023 - May 2025",
         location: "San Francisco, California - Remote",

@@ -10,6 +10,12 @@ type CertificationProps = {
 
 const certifications: { name:string; date?:string; university?:string; hyperlink:string;}[] = [
     {
+        name: "AWS Cloud Practitioner Essentials",
+        date: "Jul 2025",
+        university: "Amazon Web Services (AWS)",
+        hyperlink: ""
+    },
+    {
         name: "Rapid Application Development with Large Language Models (LLMs)",
         date: "May 2025",
         university: "Nvidia",

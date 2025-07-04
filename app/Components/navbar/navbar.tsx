@@ -19,7 +19,7 @@ const components: { title:string; href: string; description:string }[] = [
     },
     {
         title: "Resume",
-        href: "https://drive.google.com/file/d/1PRs_D92h4zgkvEQ9PMY_icdt-CLJ80_h/view",
+        href: "https://drive.google.com/file/d/1y4DwXXMEtS53ffSWAPtWlLoviDsindbi/view?usp=sharing",
         description: "View my professional experience and skills."
     },
     {
