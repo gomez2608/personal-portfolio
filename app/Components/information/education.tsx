@@ -2,11 +2,11 @@
 const educations: { name:string; date?:string; location?:string; university?:string; coursework:string; GPA:string; }[] = [
     {
         name: "MSc in Biomedical Engineering",
-        date: "August 2023 - Present",
+        date: "August 2023 - December 2025",
         location: "Bogotá, Colombia",
         university: "Universidad de los Andes",
         coursework: "Machine Learning for Engineering, Reinforcement Learning, Advanced Physiology.",
-        GPA: "4.78/5.00"
+        GPA: "4.74/5.00"
     },
     {
         name: "BSc in Biomedical Engineering",

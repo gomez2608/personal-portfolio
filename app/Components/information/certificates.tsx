@@ -10,6 +10,12 @@ type CertificationProps = {
 
 const certifications: { name:string; date?:string; university?:string; hyperlink:string;}[] = [
     {
+        name: "AWS Certified Machine Learning Engineer - Associate",
+        date: "Jan 2026",
+        university: "Amazon Web Services (AWS)",
+        hyperlink: "https://cp.certmetrics.com/amazon/en/public/verify/credential"
+    },
+    {
         name: "AWS Cloud Practitioner Essentials",
         date: "Jul 2025",
         university: "Amazon Web Services (AWS)",
