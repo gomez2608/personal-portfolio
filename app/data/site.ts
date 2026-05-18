@@ -14,5 +14,8 @@ export const site = {
     github: "https://github.com/gomez2608",
     githubRepo: "https://github.com/gomez2608/personal-portfolio",
   },
+  // To switch to a local PDF: replace this URL with "/resume.pdf" and drop the file in public/resume.pdf.
+  // The current Drive link is preferable if you want to update the resume without a redeploy
+  // (just upload a new version to the same Drive file).
   resumeUrl: "https://drive.google.com/file/d/1y4DwXXMEtS53ffSWAPtWlLoviDsindbi/view?usp=sharing",
 } as const;

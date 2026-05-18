@@ -1,36 +1,80 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Personal Portfolio — Sebastian Gomez
 
-## Getting Started
+ML Engineer portfolio at [sebastiangomez.me](https://www.sebastiangomez.me).
 
-First, run the development server:
+## Stack
+
+- **Next.js 15** (App Router) + **React 19**
+- **TypeScript** strict
+- **Tailwind v4** (CSS-based config in `app/globals.css`)
+- **shadcn/ui** (new-york style) for primitives
+- **Framer Motion** for subtle scroll reveals
+- **Vercel Analytics**
+- Deployed on **Vercel**
+
+## Local development
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev      # http://localhost:3000 (Turbopack)
+npm run build    # production build
+npm run lint     # ESLint (next/core-web-vitals + next/typescript)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Structure
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+app/
+├── components/         # Page section components
+│   ├── footer/
+│   ├── information/    # Experience / Education / Certificates
+│   ├── navbar/         # Sticky nav with scroll-spy + hide-on-scroll
+│   ├── profile/        # Hero section
+│   ├── projects/       # Project case-study cards
+│   ├── shared/         # Section, AnimatedSection, SectionHeading, Tag
+│   └── skills/         # Categorized stack grid
+├── data/               # Single source of truth for content
+│   ├── site.ts         # Name, role, tagline, bio, socials, resume URL
+│   ├── skills.ts
+│   ├── experience.ts
+│   ├── education.ts
+│   ├── certifications.ts
+│   └── projects.ts
+├── layout.tsx          # Fonts, metadata, JSON-LD, analytics
+├── page.tsx            # Section composition
+├── globals.css         # Tailwind theme + radial gradient + reduced-motion
+├── opengraph-image.tsx # OG image (edge runtime, next/og)
+├── robots.ts
+└── sitemap.ts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+src/
+├── components/ui/      # shadcn primitives
+└── lib/utils.ts        # cn() helper
+```
 
-## Learn More
+## Content updates
 
-To learn more about Next.js, take a look at the following resources:
+Almost all content lives in `app/data/*.ts`. To update:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Bio / tagline / socials**: edit `app/data/site.ts`
+- **Skills / tools**: edit `app/data/skills.ts`
+- **Experience**: edit `app/data/experience.ts`
+- **Education**: edit `app/data/education.ts`
+- **Certifications**: edit `app/data/certifications.ts`
+- **Projects**: edit `app/data/projects.ts` (also drop the image into `public/`)
+- **Resume**: the URL is in `app/data/site.ts` → `resumeUrl`. Defaults to a Google Drive link so updates don't require a redeploy. To switch to a local file, change `resumeUrl` to `"/resume.pdf"` and place the PDF in `public/`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Design
 
-## Deploy on Vercel
+- Dark-only palette: background `#0b0b0c`, foreground `#fafafa`, brand accent `#68b0ab` (teal)
+- Typography: **Inter** for body/headings, **Geist Mono** for accents (dates, tool chips, eyebrow labels)
+- Motion: scroll-triggered fade + translate via Framer Motion; respects `prefers-reduced-motion`
+- Layout: `max-w-3xl` centered column
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Deploy
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This repo is connected to Vercel and auto-deploys on push to `master`.
+
+## License
+
+MIT

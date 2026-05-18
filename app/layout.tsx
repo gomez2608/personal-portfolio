@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
   weight: ["400", "500"],
 });
 
-const siteUrl = "https://sebastiangomez.dev";
+const siteUrl = "https://www.sebastiangomez.me";
 const siteTitle = `${site.name} | ${site.role}`;
 const siteDescription =
   "Personal portfolio of Sebastian Gomez Ahumada — ML Engineer with a MSc in Biomedical Engineering, based in Bogotá, Colombia. Building production GenAI on AWS with LangChain, PyTorch, and TensorFlow.";

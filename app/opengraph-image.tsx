@@ -69,7 +69,7 @@ export default async function OpengraphImage() {
             color: "#71717a",
           }}
         >
-          <div>sebastiangomez.dev</div>
+          <div>sebastiangomez.me</div>
           <div style={{ display: "flex", gap: 24 }}>
             <span>linkedin / sebastiangahumada</span>
             <span>github / gomez2608</span>

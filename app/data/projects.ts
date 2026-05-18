@@ -21,7 +21,7 @@ export const projects: Project[] = [
     approach:
       "Collected and processed multimodal data; trained transformer-based video models (ViViT) on Hugging Face to classify signing parameters.",
     stack: ["Python", "TensorFlow", "Hugging Face", "ViViT"],
-    image: "/project1.png",
+    image: "/project1.jpg",
   },
   {
     id: "2",
