@@ -11,6 +11,7 @@ import {
 } from "@/app/components/shared/animated-section";
 import { SectionHeading } from "@/app/components/shared/section-heading";
 import { Tag } from "@/app/components/shared/tag";
+import { TiltCard } from "@/app/components/shared/tilt-card";
 import { Card } from "@/components/ui/card";
 
 function ProjectCard({
@@ -21,7 +22,7 @@ function ProjectCard({
   priority: boolean;
 }) {
   return (
-    <Card className="bg-background border-border p-0 overflow-hidden group transition-all duration-200 hover:border-brand/40 hover:-translate-y-1">
+    <Card className="bg-background border-border p-0 overflow-hidden group transition-colors duration-200 hover:border-brand/40 h-full">
       <div className="relative w-full aspect-[4/3] overflow-hidden">
         <Image
           src={project.image}
@@ -101,7 +102,9 @@ export default function Projects() {
       >
         {projects.map((p, i) => (
           <motion.div key={p.id} variants={staggerItem}>
-            <ProjectCard project={p} priority={i === 0} />
+            <TiltCard intensity={5} className="h-full">
+              <ProjectCard project={p} priority={i === 0} />
+            </TiltCard>
           </motion.div>
         ))}
       </motion.div>
