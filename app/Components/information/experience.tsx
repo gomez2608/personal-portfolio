@@ -1,5 +1,6 @@
+import type { Experience } from "./types";
 
-const experiences: { jobTitle:string; date?:string; location?:string; company?:string; jobDescription:string; bp?: string[]; tools:string; contact:string }[] = [
+const experiences: Experience[] = [
     {
         jobTitle: "Machine Learning Engineer",
         date: "October 2025 - Present",
@@ -60,7 +61,7 @@ const experiences: { jobTitle:string; date?:string; location?:string; company?:s
             "Managed approximately 70 students per semester. Responsible for laboratory resource creation and studentwork assessment.",
             "Grade given by students: 4.90/5.00"
         ],
-        tools: "NodeJS, Django, LangChain, LangGraph, LlamaIndex.",
+        tools: "Python, NumPy, Pandas, Scikit-learn, PyTorch, TensorFlow",
         contact: "Luis Felipe Giraldo Trujillo, lf.giraldo404@uniandes.edu.co"
     },
     {
@@ -73,32 +74,20 @@ const experiences: { jobTitle:string; date?:string; location?:string; company?:s
             "Implemented an automatic reports and graphics generator for statistical information about thyroid ill patients.",
             "Represented workflows for patient exams (pathology and blood) in hospitals into easy-to-understand block diagrams."
         ],
-        tools: "NodeJS, Django, LangChain, LangGraph, LlamaIndex.",
+        tools: "Python, Pandas, Power BI, SQL, Data Visualization",
         contact: ""
     },
 ];
 
-type ExperienceProps = {
-    jobTitle: string,
-    date?: string,
-    location?: string,
-    company?: string,
-    jobDescription: string,
-    bp?: string[],
-    tools: string,
-    contact: string
-}
-
-function ExperienceComponent({ data }: { data: ExperienceProps }) {
+function ExperienceComponent({ data }: { data: Experience }) {
     return (
         <div className="flex flex-col gap-5">
             <div className="flex flex-col lg:flex-row justify-between">
-                <p className="font-medium font-inter text-beige text-2xl">{data.jobTitle}</p>
+                <h3 className="font-medium font-inter text-beige text-2xl">{data.jobTitle}</h3>
                 <p className="font-medium font-inter text-white text-base">{data.date}</p>
             </div>
             <p className="text-solid-beige text-sm font-light"><strong>{data.company}</strong> | {data.location}</p>
             <p className="font-light text-base text-foreground w-5/6 max-md:w-full">{data.jobDescription}</p>
-            <ol>
             {data.bp && data.bp.length > 0 && (
                 <ul className="list-disc pl-5 font-light text-base text-foreground w-5/6 max-md:w-full">
                     {data.bp.map((point, index) => (
@@ -106,7 +95,6 @@ function ExperienceComponent({ data }: { data: ExperienceProps }) {
                     ))}
                 </ul>
             )}
-            </ol>
             <div className="flex flex-row sm:px-8 px-2">
                 <div className={"px-2 content-center"+ (data.contact === "" ? " w-full" : " w-1/2")}>
                     <p className="font-light text-base text-foreground text-center"><strong className="font-bold">Languages and Tools:</strong> {data.tools}</p>
@@ -117,7 +105,7 @@ function ExperienceComponent({ data }: { data: ExperienceProps }) {
                                 <strong className="font-bold">Contact:</strong> {data.contact}
                             </p>
                         </div>
-                    )}                 
+                    )}
             </div>
 
         </div>
@@ -128,7 +116,7 @@ export default function Experience() {
     return (
         <div className="flex flex-col mt-10 gap-10">
             {experiences.map((experience, index) => (
-                <ExperienceComponent 
+                <ExperienceComponent
                     key={index}
                     data={experience}
                 />
@@ -137,4 +125,3 @@ export default function Experience() {
         </div>
     );
 }
-

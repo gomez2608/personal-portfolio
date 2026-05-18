@@ -1,9 +1,6 @@
-"use client";
-
 import {
   Card,
 } from "@/components/ui/card"
-{/*import { GithubIcon, Link } from "lucide-react";*/}
 import Image from "next/image";
 
 type ProjectCardProps = {
@@ -11,17 +8,20 @@ type ProjectCardProps = {
     title: string;
     description: string;
     technologies: string;
+    priority?: boolean;
 }
 
-function ProjectCard({ id, title, description, technologies}: ProjectCardProps) {
+function ProjectCard({ id, title, description, technologies, priority = false }: ProjectCardProps) {
     return (
         <Card className="w-full bg-background text-solid-beige border-0">
             <div className="flex justify-center items-center w-full">
-                <Image 
-                src={"/project"+id+".png"} 
-                alt={"Project image "+id} 
-                width={700} 
+                <Image
+                src={`/project${id}.png`}
+                alt={`Screenshot of ${title}`}
+                width={700}
                 height={550}
+                priority={priority}
+                sizes="(min-width: 768px) 50vw, 100vw"
                 className="rounded-lg"
                 />
             </div>
@@ -29,10 +29,6 @@ function ProjectCard({ id, title, description, technologies}: ProjectCardProps) 
                 <p className="font-inter text-2xl font-light text-beige w-5/6 max-lg:w-full">
                     {title}
                 </p>
-                {/*<div className="flex flex-row gap-6">
-                    <GithubIcon onClick={() => window.open(githublink, '_blank')} className="text-beige w-[24px]" />
-                    <Link onClick={() => window.open(liveDemoLink, '_blank')} className="text-beige w-[24px]" />
-                </div>*/}
             </div>
             <p className="font-inter font-light text-base text-white w-7/8">{description}</p>
             <p className="font-inter font-light text-sm text-solid-beige">{technologies}</p>
@@ -63,26 +59,27 @@ const cards: { id:string; title:string; description:string; technologies:string 
 
     },
 ]
- 
+
 
 export default function Projects() {
     return (
         <section id="projects" className="flex flex-col justify-center mt-25 border-t border-b border-solid border-foreground pt-10 pb-10">
             <h2 className="text-2xl font-normal text-solid-beige">Featured Projects</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 my-10 gap-15">
-                
-                {cards.map((card) => (
-                    <ProjectCard 
+
+                {cards.map((card, index) => (
+                    <ProjectCard
                         key={card.id}
                         id={card.id}
                         title={card.title}
                         description={card.description}
                         technologies={card.technologies}
+                        priority={index === 0}
                     />
                 ))}
 
             </div>
-            
+
         </section>
     );
 }

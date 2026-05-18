@@ -1,14 +1,7 @@
-import { Link } from "lucide-react";
-import { MoveRight } from "lucide-react";
+import { Link as LinkIcon, MoveRight } from "lucide-react";
+import type { Certification } from "./types";
 
-type CertificationProps = {
-    name:string,
-    date?:string,
-    university?:string,
-    hyperlink:string
-}
-
-const certifications: { name:string; date?:string; university?:string; hyperlink:string;}[] = [
+const certifications: Certification[] = [
     {
         name: "AWS Certified Machine Learning Engineer - Associate",
         date: "Jan 2026",
@@ -65,18 +58,26 @@ const certifications: { name:string; date?:string; university?:string; hyperlink
     },
 ];
 
-function CertificationComponent({ data }: { data: CertificationProps }) {
+function CertificationComponent({ data }: { data: Certification }) {
     return (
         <div className="flex flex-col gap-5">
             <div className="flex flex-row max-lg:flex-col justify-between">
-                <p className="font-inter font-medium font-beige text-xl">{data.name}</p>
+                <h3 className="font-inter font-medium text-beige text-xl">{data.name}</h3>
                 <p className="text-base font-light text-white">{data.date}</p>
             </div>
             <div className="flex flex-row justify-between">
                 <p className="font-bold text-solid-beige text-sm">{data.university}</p>
-                <Link 
-                    className="text-white text-sm hover:underline"
-                    onClick={() => window.open(data.hyperlink, '_blank')}/>
+                {data.hyperlink && (
+                    <a
+                        href={data.hyperlink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`Verify credential: ${data.name}`}
+                        className="text-white text-sm hover:underline inline-flex items-center"
+                    >
+                        <LinkIcon className="size-4" />
+                    </a>
+                )}
             </div>
 
         </div>
@@ -87,19 +88,21 @@ export default function Certificates() {
     return(
         <div className="flex flex-col mt-10 gap-10">
             {certifications.map((certification, index) => (
-                <CertificationComponent 
+                <CertificationComponent
                     key={index}
                     data={certification}
                 />
             ))}
 
-        <div 
-        className="flex flex-row rounded-lg items-center justify-start gap-4"
-         onClick={() => window.open("https://www.linkedin.com/in/sebastiangahumada/details/certifications/", '_blank')}
+        <a
+            href="https://www.linkedin.com/in/sebastiangahumada/details/certifications/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex flex-row rounded-lg items-center justify-start gap-4"
         >
-            <p className="font-inter text-300 text-2xl text-solid-beige">See all my certifications</p>
+            <p className="font-inter font-light text-2xl text-solid-beige">See all my certifications</p>
             <MoveRight className="text-solid-beige"/>
-        </div>
+        </a>
 
         </div>
     );

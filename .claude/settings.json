@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(npm run lint:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npx next lint:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx shadcn:*)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=\"$CLAUDE_FILE_PATHS\"; case \"$FILE\" in *.ts|*.tsx) cd \"$CLAUDE_PROJECT_DIR\" && npx --no-install next lint --file \"$FILE\" 2>&1 | tail -40 || true ;; esac"
+          },
+          {
+            "type": "command",
+            "command": "FILE=\"$CLAUDE_FILE_PATHS\"; case \"$FILE\" in *.ts|*.tsx) cd \"$CLAUDE_PROJECT_DIR\" && npx --no-install tsc --noEmit 2>&1 | head -30 || true ;; esac"
+          }
+        ]
+      }
+    ]
+  }
+}
