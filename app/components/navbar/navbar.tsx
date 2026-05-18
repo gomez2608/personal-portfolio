@@ -53,7 +53,7 @@ export default function Navbar() {
         scrolled && "backdrop-blur-md bg-background/70 border-b border-border"
       )}
     >
-      <div className="max-w-3xl mx-auto flex items-center justify-between h-16 px-6 md:px-8">
+      <div className="max-w-5xl mx-auto flex items-center justify-between h-16 px-6 md:px-8">
         <Link
           href="#about"
           className="font-mono text-base tracking-wider text-foreground hover:text-brand transition-colors"
