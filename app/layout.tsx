@@ -1,23 +1,26 @@
 import type { Metadata } from "next";
-import { Inter, Aleo } from "next/font/google";
+import Script from "next/script";
+import { Inter, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
+import { site } from "@/app/data/site";
 import "./globals.css";
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "700"],
+  weight: ["400", "500", "600", "700", "800"],
 });
 
-const aleo = Aleo({
-  variable: "--font-aleo",
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "700"],
+  weight: ["400", "500"],
 });
 
 const siteUrl = "https://sebastiangomez.dev";
-const siteTitle = "Sebastian Gomez | ML Engineer";
+const siteTitle = `${site.name} | ${site.role}`;
 const siteDescription =
-  "Personal portfolio of Sebastian Gomez Ahumada, an ML Engineer with a MSc in Biomedical Engineering based in Bogotá, Colombia. Focused on agentic AI workflows, NLP, and production-ready ML solutions with LangChain, PyTorch, TensorFlow, and AWS.";
+  "Personal portfolio of Sebastian Gomez Ahumada — ML Engineer with a MSc in Biomedical Engineering, based in Bogotá, Colombia. Building production GenAI on AWS with LangChain, PyTorch, and TensorFlow.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -39,6 +42,8 @@ export const metadata: Metadata = {
     "TensorFlow",
     "NLP",
     "AWS",
+    "AWS Bedrock",
+    "AWS SageMaker",
     "Next.js",
     "React",
     "Bogotá",
@@ -49,7 +54,7 @@ export const metadata: Metadata = {
   creator: "Sebastian Gomez Ahumada",
   openGraph: {
     type: "website",
-    siteName: "Sebastian Gomez",
+    siteName: site.name,
     title: siteTitle,
     description: siteDescription,
     url: siteUrl,
@@ -66,6 +71,29 @@ export const metadata: Metadata = {
   },
 };
 
+const personJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: site.name,
+  jobTitle: site.role,
+  url: siteUrl,
+  email: `mailto:${site.email}`,
+  worksFor: { "@type": "Organization", name: "Provectus" },
+  alumniOf: { "@type": "CollegeOrUniversity", name: "Universidad de los Andes" },
+  address: { "@type": "PostalAddress", addressLocality: "Bogotá", addressCountry: "CO" },
+  knowsAbout: [
+    "Machine Learning",
+    "Generative AI",
+    "Agentic AI",
+    "LangChain",
+    "PyTorch",
+    "TensorFlow",
+    "AWS Bedrock",
+    "AWS SageMaker",
+  ],
+  sameAs: [site.socials.linkedin, site.socials.github],
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -74,9 +102,16 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <body
-        className={`${inter.variable} ${aleo.variable} antialiased`}
+        className={`${inter.variable} ${geistMono.variable} antialiased font-sans`}
       >
         {children}
+        <Analytics />
+        <Script
+          id="person-jsonld"
+          type="application/ld+json"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+        />
       </body>
     </html>
   );

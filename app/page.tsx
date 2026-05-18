@@ -1,17 +1,25 @@
-import Navbar from "./Components/navbar/navbar";
-import Profile from "./Components/profile/profile";
-import InformationMain from "./Components/information/information-main";
-import Projects from "./Components/projects/projects";
-import Footer from "./Components/footer/footer";
+import Navbar from "./components/navbar/navbar";
+import Profile from "./components/profile/profile";
+import Skills from "./components/skills/skills";
+import Experience from "./components/information/experience";
+import Projects from "./components/projects/projects";
+import Education from "./components/information/education";
+import Certificates from "./components/information/certificates";
+import Footer from "./components/footer/footer";
 
 export default function Home() {
   return (
-    <main className="mx-[25px] sm:mx-[50px] md:mx-[100px] lg:mx-[181px] items-center justify-center">
+    <>
       <Navbar />
-      <Profile />
-      <InformationMain />
-      <Projects />
-      <Footer />
-    </main>
+      <main className="max-w-3xl mx-auto px-6 md:px-8">
+        <Profile />
+        <Skills />
+        <Experience />
+        <Projects />
+        <Education />
+        <Certificates />
+        <Footer />
+      </main>
+    </>
   );
 }
