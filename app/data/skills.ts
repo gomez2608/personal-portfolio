@@ -4,10 +4,53 @@ export type SkillGroup = {
 };
 
 export const skills: SkillGroup[] = [
-  { group: "Languages",    items: ["Python", "TypeScript", "SQL"] },
-  { group: "ML / DL",      items: ["PyTorch", "TensorFlow", "Hugging Face", "scikit-learn"] },
-  { group: "GenAI",        items: ["LangChain", "LangGraph", "LlamaIndex", "Instructor", "LiteLLM", "MLflow"] },
-  { group: "Cloud / MLOps",items: ["AWS Bedrock", "AWS SageMaker", "Lambda", "Docker", "S3"] },
-  { group: "Data",         items: ["NumPy", "Pandas", "Pydantic"] },
-  { group: "Web",          items: ["React", "Next.js", "Tailwind"] },
+  {
+    group: "Programming",
+    items: ["Python", "TypeScript", "JavaScript", "R", "SQL", "Bash"],
+  },
+  {
+    group: "ML & AI",
+    items: [
+      "PyTorch",
+      "TensorFlow",
+      "scikit-learn",
+      "LLM fine-tuning & evaluation",
+      "RAG",
+      "LangGraph",
+      "LlamaIndex",
+      "DSPy",
+      "Computer Vision",
+      "NLP",
+      "Signal & medical-image processing",
+    ],
+  },
+  {
+    group: "MLOps & Cloud",
+    items: [
+      "AWS Lambda",
+      "Step Functions",
+      "SAM",
+      "Bedrock",
+      "SageMaker",
+      "Textract",
+      "S3",
+      "DynamoDB",
+      "IAM",
+      "MLflow",
+      "Docker",
+      "GitLab CI",
+    ],
+  },
+  {
+    group: "Data & Backend",
+    items: ["PostgreSQL", "pgvector", "Alembic", "Django", "Pandas", "NumPy", "Pydantic"],
+  },
+  {
+    group: "Frontend",
+    items: ["React", "TypeScript", "React Query", "Zustand", "Vitest"],
+  },
+  {
+    group: "Languages",
+    items: ["English (Advanced)", "Spanish (Native)"],
+  },
 ];

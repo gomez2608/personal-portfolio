@@ -3,10 +3,10 @@ export const site = {
   initials: "SGA",
   role: "ML Engineer",
   location: "Bogotá, Colombia",
-  tagline: "Building production GenAI on AWS.",
+  tagline: "Shipping production LLM, RAG, and agentic systems on AWS.",
   bioParagraphs: [
-    "Biomedical engineer turned ML engineer. Currently at Provectus building agentic AI workflows and fine-tuning LLMs on AWS Bedrock and SageMaker. MSc in Biomedical Engineering at Universidad de los Andes.",
-    "Background spans YC-backed startups (JustPaid) and academic research. Stack centers on LangChain, PyTorch, and AWS. Open to ML roles at venture-backed companies.",
+    "Machine Learning Engineer with hands-on experience shipping production LLM, RAG, and agentic systems on AWS for document-intensive enterprise pipelines. MSc in Biomedical Engineering with research on multimodal data collection, computer vision, and deep learning.",
+    "Comfortable working end-to-end across ML backend, serverless infrastructure (AWS Lambda, Step Functions, SAM), and full-stack delivery. Focused on turning frontier AI methods — LLM evaluation, retrieval, and human-in-the-loop workflows — into reliable, observable, cost-aware production systems.",
   ],
   email: "sebastiangomezahumada@gmail.com",
   socials: {
@@ -17,5 +17,5 @@ export const site = {
   // To switch to a local PDF: replace this URL with "/resume.pdf" and drop the file in public/resume.pdf.
   // The current Drive link is preferable if you want to update the resume without a redeploy
   // (just upload a new version to the same Drive file).
-  resumeUrl: "https://drive.google.com/file/d/1y4DwXXMEtS53ffSWAPtWlLoviDsindbi/view?usp=sharing",
+  resumeUrl: "https://drive.google.com/file/d/1sa3znVpfnh6B6RhEkn6MJzLnO1rcfGlH/view?usp=sharing",
 } as const;

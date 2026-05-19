@@ -3,6 +3,7 @@ import Profile from "./components/profile/profile";
 import Skills from "./components/skills/skills";
 import Experience from "./components/information/experience";
 import Projects from "./components/projects/projects";
+import Publications from "./components/publications/publications";
 import Education from "./components/information/education";
 import Certificates from "./components/information/certificates";
 import Footer from "./components/footer/footer";
@@ -18,6 +19,7 @@ export default function Home() {
         <Skills />
         <Experience />
         <Projects />
+        <Publications />
         <Education />
         <Certificates />
         <Footer />

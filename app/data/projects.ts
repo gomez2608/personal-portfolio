@@ -14,13 +14,13 @@ export type Project = {
 export const projects: Project[] = [
   {
     id: "1",
-    title: "Multimodal Colombian Sign Language",
+    title: "MSc Thesis: Colombian Sign Language Analysis",
     category: "Research · Multimodal ML",
     problem:
-      "Identify the formational parameters of Colombian Sign Language (LSC) and differentiate the communicative characteristics between deaf signers and interpreters.",
+      "Recognize, classify, and biomechanically characterize Colombian Sign Language (LSC), and differentiate deaf signers from interpreters using a multi-perspective sensor stack.",
     approach:
-      "Collected and processed multimodal data; trained transformer-based video models (ViViT) on Hugging Face to classify signing parameters.",
-    stack: ["Python", "TensorFlow", "Hugging Face", "ViViT"],
+      "Collected multimodal data from deaf signers and LSC interpreters via egocentric vision, conventional cameras, IMU, and EMG in static and conversational settings. Trained Random Forest, KNN, and Gradient Boosting on raw statistical, temporal, and spectral features, and fine-tuned a Video-Visual Transformer (ViViT) on raw video. Reached 95% accuracy on deaf-vs-interpreter classification and 40% accuracy on 50-sign recognition.",
+    stack: ["Python", "PyTorch", "Hugging Face", "ViViT", "IMU", "EMG"],
     image: "/project1.jpg",
     githubLink: "https://github.com/gomez2608/lsc50-analysis",
   },
@@ -29,9 +29,9 @@ export const projects: Project[] = [
     title: "ML for Urological Disease Diagnosis",
     category: "Healthcare · Clinical ML",
     problem:
-      "Improve accuracy and consistency in the diagnosis of urological diseases at Fundación Santa Fe de Bogotá.",
+      "Identify and explain diagnostic disagreement among urologists at Fundación Santa Fe de Bogotá, and use the model to drive consensus.",
     approach:
-      "Worked with clinical partners to build a supervised pipeline on de-identified patient data, validating against expert labels.",
+      "Built decision-tree models to flag discrepancies in urologic disease diagnostics across clinicians and extracted feature importances to explain disagreement. Inter-clinician agreement improved from 50% to 75% after model-informed standardization sessions, with feature importance feeding directly into an improved diagnostic workflow.",
     stack: ["Python", "scikit-learn", "Pandas", "NumPy"],
     image: "/project2.png",
   },
@@ -39,7 +39,8 @@ export const projects: Project[] = [
     id: "3",
     title: "Personal Portfolio",
     category: "Web · Open source",
-    problem: "Build a fast, accessible single-page portfolio that reflects the work, not the template.",
+    problem:
+      "Build a fast, accessible single-page portfolio that reflects the work, not the template.",
     approach:
       "Next.js 15 App Router with Tailwind v4, shadcn/ui primitives, Framer Motion reveals, and a strict dark palette. Deployed on Vercel.",
     stack: ["Next.js", "React", "TypeScript", "Tailwind"],

@@ -12,78 +12,47 @@ export type Experience = {
 export const experiences: Experience[] = [
   {
     jobTitle: "Machine Learning Engineer",
-    date: "Oct 2025 — Present",
+    date: "Jul 2025 — Present",
     location: "San Francisco, CA · Remote",
     company: "Provectus",
     jobDescription:
-      "ML Engineer specializing in GenAI solutions, leveraging AWS services to build, optimize, and deploy production-ready LLM applications with a focus on agentic workflows and model fine-tuning.",
+      "Delivering LLM-powered features end-to-end across the stack — Python ML backend, AWS serverless infrastructure, and React/TypeScript frontend — for enterprise document-processing platforms.",
     bp: [
-      "Optimize and benchmark state-of-the-art LLMs against production constraints.",
-      "Evaluate and harden ML pipelines: data preprocessing, training, and rigorous performance analysis.",
-      "Fine-tune expert models used inside agentic AI workflows.",
-      "Deploy GenAI solutions to production using AWS Bedrock and SageMaker.",
+      "Built production RAG-powered conversational assistants over structured extracted data using LangGraph, AWS Bedrock, and PostgreSQL with pgvector.",
+      "Designed scalable serverless extraction pipelines on AWS Step Functions, Lambda, Textract, and S3, with Alembic-versioned PostgreSQL and full SAM-based infrastructure-as-code.",
+      "Built model evaluation and optimization workflows with MLflow 3.4, DSPy-based LLM-as-judge, embedding-model benchmarking, and human-in-the-loop feedback loops.",
+      "Owned end-to-end delivery across ML backend, serverless infra, and React/TypeScript frontend for document-intensive enterprise pipelines.",
     ],
-    tools: "Python · AWS Bedrock · AWS SageMaker · MLflow · LiteLLM · Instructor",
-    contact: "",
-  },
-  {
-    jobTitle: "Machine Learning Intern (GenAI)",
-    date: "Jul 2025 — Sep 2025",
-    location: "San Francisco, CA · Remote",
-    company: "Provectus",
-    jobDescription:
-      "ML internship at Provectus focused on Generative AI, building features powered by agentic workflows for intelligent data parsing and processing.",
-    bp: [
-      "Benchmarked LLMs and proposed selection criteria adopted by the team.",
-      "Built evaluation harnesses for agentic AI workflows.",
-      "Shipped fine-tuned task-specific models for downstream agents.",
-    ],
-    tools: "Python · AWS Bedrock · AWS SageMaker · MLflow · LiteLLM",
+    tools:
+      "Python · AWS Lambda · Step Functions · SAM · Bedrock · SageMaker · Textract · S3 · DynamoDB · PostgreSQL (pgvector, Alembic) · MLflow · DSPy · LangGraph · Pydantic · React/TypeScript",
     contact: "",
   },
   {
     jobTitle: "Growth & Software Development Engineer",
-    date: "Jul 2023 — May 2025",
+    date: "Jul 2023 — Jun 2025",
     location: "San Francisco, CA · Remote",
-    company: "JustPaid (YC-backed)",
+    company: "JustPaid.ai (YC-W23)",
     jobDescription:
-      "Full-stack development of internal product features across a Django backend and a React frontend. Owned flag-based feature rollout, authentication, and an agentic contract-parsing pipeline.",
+      "Part-time agentic AI and full-stack development. Designed and shipped agentic workflows that turn unstructured PDFs into validated, structured records inside the product.",
     bp: [
-      "Built AI features leveraging agentic workflows for intelligent data parsing and structured DB entry.",
-      "Designed and shipped an agentic pipeline that parses contracts from raw PDFs into Pydantic models (Customer, Contract, LineItem).",
-      "Added a self-validation loop and agent-based decision system to ensure extraction accuracy.",
-      "Persisted validated records into PostgreSQL via the Django ORM.",
-      "Hardened the authentication workflow and added user-session telemetry (last login, last connected account).",
+      "Designed and implemented agentic AI workflows for automated information extraction from unstructured documents (PDFs), including NLP-based text extraction, structured parsing into Pydantic models, and self-validation loops with agent-based quality supervision.",
+      "Built end-to-end data pipelines integrating ML models with PostgreSQL databases — preprocessing, classification, and structured storage of extracted entities (customers, contracts, line items).",
     ],
-    tools: "Python · Django · NodeJS · LangChain · LangGraph · LlamaIndex · PostgreSQL",
+    tools: "Python · LlamaIndex · LangGraph · Django · PostgreSQL",
     contact: "Daniel Kivatinos · daniel@kivatinos.com",
   },
   {
-    jobTitle: "ML Graduate Teaching Assistant",
-    date: "Aug 2023 — May 2025",
+    jobTitle: "Teaching Assistant",
+    date: "Aug 2023 — Jun 2025",
     location: "Bogotá, Colombia",
     company: "Universidad de los Andes",
     jobDescription:
-      "Conducted laboratory sessions on machine learning fundamentals: optimization, linear and logistic regression, analytical solutions in OLS, hyperparameter tuning, and neural network architectures.",
+      "Led laboratory sessions on machine learning fundamentals: optimization techniques, linear and logistic regression, analytical OLS solutions, hyperparameter tuning, and neural network architectures.",
     bp: [
-      "Managed ~70 students per semester. Authored lab resources and assessed student work.",
+      "Managed ~70 students per semester; authored lab resources and assessed student work.",
       "Average student rating: 4.90 / 5.00.",
     ],
-    tools: "Python · NumPy · Pandas · scikit-learn · PyTorch · TensorFlow",
+    tools: "Python · R · scikit-learn · TensorFlow · PyTorch",
     contact: "Luis Felipe Giraldo Trujillo · lf.giraldo404@uniandes.edu.co",
-  },
-  {
-    jobTitle: "Consulting & Information Solutions Intern",
-    date: "Jan 2023 — Jun 2023",
-    location: "Bogotá, Colombia",
-    company: "Roche",
-    jobDescription:
-      "Healthcare data analysis and clinical-process visualization for Roche Colombia.",
-    bp: [
-      "Built an automated reports & graphics generator for thyroid-patient statistical data.",
-      "Translated clinical workflows (pathology and blood exams) into block diagrams used by hospital staff.",
-    ],
-    tools: "Python · Pandas · Power BI · SQL · Data Visualization",
-    contact: "",
   },
 ];

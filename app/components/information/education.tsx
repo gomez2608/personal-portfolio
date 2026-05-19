@@ -36,6 +36,14 @@ export default function Education() {
               {edu.university}
               {edu.location ? ` · ${edu.location}` : ""}
             </p>
+            {edu.thesis && (
+              <p className="text-base text-foreground/85 mt-4">
+                <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground mr-2">
+                  Thesis
+                </span>
+                {edu.thesis}
+              </p>
+            )}
             <p className="text-base text-foreground/85 mt-4">
               <span className="font-mono text-xs uppercase tracking-widest text-muted-foreground mr-2">
                 Coursework

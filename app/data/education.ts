@@ -5,6 +5,7 @@ export type Education = {
   university?: string;
   coursework: string;
   GPA: string;
+  thesis?: string;
 };
 
 export const educations: Education[] = [
@@ -13,15 +14,19 @@ export const educations: Education[] = [
     date: "Aug 2023 — Dec 2025",
     location: "Bogotá, Colombia",
     university: "Universidad de los Andes",
-    coursework: "Machine Learning for Engineering · Reinforcement Learning · Advanced Physiology",
-    GPA: "4.74 / 5.00",
+    coursework:
+      "Machine Learning for Engineering · Reinforcement Learning · Analysis & Processing of Medical Images",
+    GPA: "4.78 / 5.00",
+    thesis:
+      "Machine Learning Analysis of Colombian Sign Language: Recognition, Classification, and Biomechanical Characterization.",
   },
   {
-    name: "BSc in Biomedical Engineering",
-    date: "Jan 2019 — Jun 2023",
+    name: "BSc in Biomedical Engineering — Minor in Neuroscience",
+    date: "Jan 2019 — Dec 2022",
     location: "Bogotá, Colombia",
     university: "Universidad de los Andes",
-    coursework: "Data Structures & Algorithms · Scientific Programming · Signal Processing",
+    coursework:
+      "Data Structures & Algorithms · Scientific Programming · Signal Processing · Neuroscience · Neuroanatomy",
     GPA: "4.08 / 5.00",
   },
 ];
