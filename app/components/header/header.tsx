@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 
 const EASE = "cubic-bezier(.2,.7,.2,1)";
 
-/** Floating = scrolled past 40px; onHero = the header still overlaps the navy hero. */
+/** Floating = scrolled past 40px; onHero = the header still overlaps the hero. */
 function useHeaderScroll() {
   const { scrollY, scrollYProgress } = useScroll();
   const [floating, setFloating] = useState(false);
@@ -105,26 +105,27 @@ export default function Header() {
     maxWidth: floating ? 1120 : 1280,
     padding: floating ? "10px 10px 10px 16px" : "14px clamp(20px,4vw,40px)",
     borderRadius: floating ? 14 : 0,
+    // Over the hero the bar uses --hh-* tokens (navy in dark mode, Paper in light).
     background: onHero
       ? floating
-        ? "rgba(27,34,56,.72)"
-        : "rgba(27,34,56,0)"
+        ? "var(--hh-bg-float)"
+        : "var(--hh-bg-top)"
       : "var(--pill)",
-    color: onHero ? "#F7F5F0" : "var(--emph)",
+    color: onHero ? "var(--hh-fg)" : "var(--emph)",
     borderColor: onHero
       ? floating
-        ? "rgba(58,66,98,.9)"
-        : "rgba(58,66,98,0)"
+        ? "var(--hh-line-float)"
+        : "var(--hh-line-top)"
       : "var(--line)",
     boxShadow: floating
       ? onHero
-        ? "0 10px 30px rgba(0,0,0,.25)"
+        ? "var(--hh-shadow)"
         : "0 12px 32px rgba(15,18,32,.10)"
       : "none",
     transition: `max-width .45s ${EASE}, padding .45s ${EASE}, border-radius .45s, background .35s, color .35s, border-color .35s, box-shadow .45s`,
   };
 
-  const lineClass = onHero ? "border-hero-line-strong" : "border-line";
+  const lineClass = onHero ? "border-s-line-strong" : "border-line";
 
   return (
     <header
@@ -137,7 +138,6 @@ export default function Header() {
       <div
         className={cn(
           "pointer-events-auto relative mx-auto flex flex-wrap items-center justify-between gap-x-8 gap-y-3 overflow-hidden border backdrop-blur-[14px]",
-          onHero && "surface-dark",
         )}
         style={barStyle}
       >
@@ -151,15 +151,13 @@ export default function Header() {
             data-header-mark
             aria-hidden="true"
             className={cn(
-              "relative size-9 shrink-0 rounded-lg transition-[background] duration-[350ms]",
-              onHero ? "bg-paper" : "bg-emph",
+              "relative size-9 shrink-0 rounded-lg bg-emph transition-[background] duration-[350ms]",
             )}
             style={{ opacity: introActive ? 0 : 1 }}
           >
             <span
               className={cn(
-                "absolute top-1 left-1.5 text-sm leading-none font-bold tracking-[-.05em] transition-colors duration-[350ms]",
-                onHero ? "text-hero" : "text-emph-contrast",
+                "absolute top-1 left-1.5 text-sm leading-none font-bold tracking-[-.05em] text-emph-contrast transition-colors duration-[350ms]",
               )}
             >
               sg
@@ -211,11 +209,9 @@ export default function Header() {
                   className={cn(
                     "px-2.5 py-[7px] font-mono text-xs leading-none font-medium uppercase",
                     on
-                      ? onHero
-                        ? "bg-paper text-hero"
-                        : "bg-emph text-emph-contrast"
+                      ? "bg-emph text-emph-contrast"
                       : onHero
-                        ? "text-haze"
+                        ? "text-s-2"
                         : "text-graphite",
                   )}
                 >

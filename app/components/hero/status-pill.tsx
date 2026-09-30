@@ -37,22 +37,22 @@ export function StatusPill() {
   const atWork = now?.atWork ?? false;
 
   return (
-    <div className="flex items-center gap-3 rounded-full border border-hero-line px-3.5 py-2.5 font-mono text-xs leading-none text-haze">
+    <div className="flex items-center gap-3 rounded-full border border-s-line px-3.5 py-2.5 font-mono text-xs leading-none text-s-2">
       <span
         aria-hidden="true"
         className="size-2 rounded-full"
         style={{
-          background: atWork ? "#D6D9E6" : "#5E6070",
+          background: atWork ? "var(--status-on)" : "var(--status-off)",
           animation: "pulse-ring 2s infinite",
         }}
       />
       <span>
         Bogotá · <time suppressHydrationWarning>{now?.time ?? "--:--"}</time>
       </span>
-      <span aria-hidden="true" className="text-hero-meta">
+      <span aria-hidden="true" className="text-s-meta">
         ·
       </span>
-      <span className="text-paper">{atWork ? t.work : t.off}</span>
+      <span className="text-s-fg">{atWork ? t.work : t.off}</span>
     </div>
   );
 }

@@ -15,7 +15,7 @@
   --graphite: #5e6070;
   --muted: #b9b5aa;
   --grid: #efece5;
-  --footer: #0f1220;
+  --footer: #ece8df;
   /* Emphasis: active tab, header text/mark off the hero */
   --emph: #1b2238;
   --emph-contrast: #f7f5f0;
@@ -25,6 +25,35 @@
   --focus: #1b2238;
   --pill: rgba(255, 255, 255, 0.78);
   --chart-guide: rgba(27, 34, 56, 0.3);
+
+  /* Feature surfaces (hero, drawer header, intro): Paper in light, Navy in dark */
+  --s-bg: #f7f5f0;
+  --s-fg: #1b2238;
+  --s-2: #43465a;
+  --s-meta: #5e6070;
+  --s-line: #e4e0d6;
+  --s-line-strong: #cfcabe;
+  --s-cta: #1b2238;
+  --s-cta-fg: #f7f5f0;
+  --s-cta-hover: #0f1220;
+  --status-on: #1b2238;
+  --status-off: #b9b5aa;
+  --pulse: 27 34 56;
+  --intro-bg: #f7f5f0;
+  /* Footer */
+  --f-fg: #0f1220;
+  --f-meta: #5e6070;
+  --f-line: #d9d4c9;
+  --f-sep: #b9b5aa;
+  --f-hover: #43465a;
+  --f-hover-line: #5e6070;
+  /* Header while it overlaps the hero */
+  --hh-bg-float: rgba(255, 255, 255, 0.78);
+  --hh-bg-top: rgba(247, 245, 240, 0);
+  --hh-fg: #1b2238;
+  --hh-line-float: #e4e0d6;
+  --hh-line-top: rgba(228, 224, 214, 0);
+  --hh-shadow: 0 12px 32px rgba(15, 18, 32, 0.1);
   color-scheme: light;
 }
 
@@ -46,23 +75,45 @@ html[data-theme="dark"] {
   --focus: #f07a2e;
   --pill: rgba(22, 26, 43, 0.82);
   --chart-guide: rgba(236, 232, 223, 0.3);
+
+  --s-bg: #1b2238;
+  --s-fg: #f7f5f0;
+  --s-2: #d6d9e6;
+  --s-meta: #8a90a8;
+  --s-line: #2f3754;
+  --s-line-strong: #3a4262;
+  --s-cta: #f7f5f0;
+  --s-cta-fg: #1b2238;
+  --s-cta-hover: #ffffff;
+  --status-on: #d6d9e6;
+  --status-off: #5e6070;
+  --pulse: 214 217 230;
+  --intro-bg: #1b2238;
+  --f-fg: #f7f5f0;
+  --f-meta: #8a90a8;
+  --f-line: #2a2f45;
+  --f-sep: #43465a;
+  --f-hover: #d6d9e6;
+  --f-hover-line: #5e6070;
+  --hh-bg-float: rgba(27, 34, 56, 0.72);
+  --hh-bg-top: rgba(27, 34, 56, 0);
+  --hh-fg: #f7f5f0;
+  --hh-line-float: rgba(58, 66, 98, 0.9);
+  --hh-line-top: rgba(58, 66, 98, 0);
+  --hh-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
   color-scheme: dark;
 }
 
 @theme {
   --color-*: initial;
 
-  /* Theme-independent (hero, intro, drawer header, preview card) */
+  /* Theme-independent (preview card, "View code" button) */
   --color-tangerine: #f07a2e; /* Signal only — never as text on Paper/Fog */
   --color-hero: #1b2238;
   --color-paper: #f7f5f0;
-  --color-haze: #d6d9e6;
   --color-hero-meta: #8a90a8;
-  --color-hero-line: #2f3754;
   --color-hero-line-strong: #3a4262;
   --color-ink-fixed: #0f1220;
-  --color-footer-line: #2a2f45;
-  --color-footer-sep: #43465a;
   --color-white: #ffffff;
   --color-transparent: transparent;
   --color-current: currentColor;
@@ -84,6 +135,21 @@ html[data-theme="dark"] {
   --color-emph: var(--emph);
   --color-emph-contrast: var(--emph-contrast);
   --color-muted-text: var(--muted-text);
+  --color-s-bg: var(--s-bg);
+  --color-s-fg: var(--s-fg);
+  --color-s-2: var(--s-2);
+  --color-s-meta: var(--s-meta);
+  --color-s-line: var(--s-line);
+  --color-s-line-strong: var(--s-line-strong);
+  --color-s-cta: var(--s-cta);
+  --color-s-cta-fg: var(--s-cta-fg);
+  --color-s-cta-hover: var(--s-cta-hover);
+  --color-f-fg: var(--f-fg);
+  --color-f-meta: var(--f-meta);
+  --color-f-line: var(--f-line);
+  --color-f-sep: var(--f-sep);
+  --color-f-hover: var(--f-hover);
+  --color-f-hover-line: var(--f-hover-line);
 
   --font-sans: var(--font-manrope), system-ui, sans-serif;
   --font-mono: var(--font-dm-mono), ui-monospace, monospace;
@@ -110,10 +176,6 @@ a:focus-visible,
   outline-offset: 2px;
 }
 
-/* Navy/ink surfaces (hero, footer, drawer header, header over the hero) keep the tangerine ring. */
-.surface-dark {
-  --focus: #f07a2e;
-}
 
 @keyframes blink {
   50% {
@@ -123,13 +185,13 @@ a:focus-visible,
 
 @keyframes pulse-ring {
   0% {
-    box-shadow: 0 0 0 0 rgba(214, 217, 230, 0.6);
+    box-shadow: 0 0 0 0 rgb(var(--pulse) / 0.6);
   }
   70% {
-    box-shadow: 0 0 0 8px rgba(214, 217, 230, 0);
+    box-shadow: 0 0 0 8px rgb(var(--pulse) / 0);
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(214, 217, 230, 0);
+    box-shadow: 0 0 0 0 rgb(var(--pulse) / 0);
   }
 }
 

@@ -31,7 +31,8 @@ Single-page personal portfolio built with **Next.js 15** (App Router), **React 1
 
 - Tailwind CSS v4 with CSS-based config in `app/globals.css` (no `tailwind.config.ts`)
 - Theme tokens are CSS variables on `:root` / `html[data-theme="dark"]`, exposed as utilities: `bg`, `card`, `fog`, `line`, `ink`, `navy`, `slate`, `graphite`, `muted`, `footer`, `emph`, `emph-contrast`, `muted-text` (use for text instead of `muted`, which fails contrast)
-- Focus ring uses `--focus` (navy on light surfaces, tangerine in dark mode); add `surface-dark` to navy/ink surfaces so they keep the tangerine ring
-- Fixed (theme-independent) colors: `tangerine` (signal only — never as text on Paper/Fog), `hero`, `paper`, `haze`, `hero-meta`, `hero-line`, `hero-line-strong`, `ink-fixed`
+- Focus ring uses `--focus` (navy in light mode, tangerine in dark mode)
+- Whole page follows the theme. Feature surfaces use `s-*` tokens (hero, intro, drawer header: Paper in light, Navy in dark), the footer uses `f-*`, and the header over the hero uses `--hh-*`. Only the project preview card and "View code" button stay fixed dark (`hero`, `ink-fixed`, `paper`, `hero-meta`)
+- Fixed colors: `tangerine` (signal only — never as text on Paper/Fog), plus `hero`, `paper`, `hero-meta`, `hero-line-strong`, `ink-fixed` for the always-dark preview card
 - Fonts: **Manrope** (`font-sans`) and **DM Mono** (`font-mono`) via `next/font/google`
 - `prefers-reduced-motion` disables the intro, parallax, marquee motion and custom cursor

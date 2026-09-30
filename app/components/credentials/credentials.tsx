@@ -33,7 +33,7 @@ export default function Credentials() {
       aria-labelledby="credentials-label"
       className="border-t border-line pt-[72px] pb-[88px]"
     >
-      <div className="flex items-baseline justify-between px-[clamp(20px,4vw,40px)] pb-6 font-mono text-xs leading-none tracking-[.12em] text-graphite uppercase">
+      <div className="flex items-baseline justify-between px-[clamp(20px,4vw,40px)] pb-5 font-mono text-xs leading-none tracking-[.12em] text-graphite uppercase">
         <h2 id="credentials-label" className="m-0 text-xs font-normal">
           {t.creds} · {certifications.length}
         </h2>
@@ -48,7 +48,7 @@ export default function Credentials() {
         onPointerMove={onPointerMove}
         onPointerUp={endDrag}
         onPointerLeave={endDrag}
-        className="no-scrollbar flex cursor-grab gap-4 overflow-x-auto px-[clamp(20px,4vw,40px)] pb-3 select-none"
+        className="no-scrollbar flex cursor-grab gap-4 overflow-x-auto px-[clamp(20px,4vw,40px)] pt-1 pb-3 select-none"
       >
         <ul className="m-0 flex list-none gap-4 p-0">
           {certifications.map((c) => (

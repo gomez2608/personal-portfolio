@@ -85,16 +85,16 @@ export function CaseStudyDrawer({ index, onClose }: Props) {
             transition={{ duration: 0.45, ease: [0.2, 0.7, 0.2, 1] }}
             className="flex h-full w-[min(720px,100%)] flex-col overflow-y-auto bg-bg"
           >
-            <div className="surface-dark flex flex-col gap-7 bg-hero px-[clamp(24px,4vw,48px)] pt-8 pb-10 text-paper">
+            <div className="flex flex-col gap-7 bg-fog px-[clamp(24px,4vw,48px)] pt-8 pb-10 text-s-fg dark:bg-s-bg">
               <div className="flex items-center justify-between">
-                <span className="font-mono text-xs leading-none tracking-[.12em] text-haze uppercase">
+                <span className="font-mono text-xs leading-none tracking-[.12em] text-s-meta uppercase">
                   {project.tag}
                 </span>
                 <button
                   ref={closeRef}
                   type="button"
                   onClick={onClose}
-                  className="rounded-lg border border-hero-line-strong px-3 py-[9px] font-mono text-[13px] leading-none font-medium hover:border-haze"
+                  className="rounded-lg border border-s-line-strong px-3 py-[9px] font-mono text-[13px] leading-none font-medium hover:border-s-2"
                 >
                   {t.close} ✕
                 </button>
@@ -106,10 +106,10 @@ export function CaseStudyDrawer({ index, onClose }: Props) {
                 {project.title}
               </h2>
               <div className="flex flex-wrap items-baseline gap-4">
-                <span className="text-[72px] leading-[.9] font-extrabold tracking-[-.05em] text-tangerine">
+                <span className="text-[72px] leading-[.9] font-extrabold tracking-[-.05em] text-emph dark:text-tangerine">
                   {project.k1}
                 </span>
-                <span className="max-w-[280px] text-[17px] leading-[1.4] font-semibold text-haze">
+                <span className="max-w-[280px] text-[17px] leading-[1.4] font-semibold text-s-2">
                   {project.k1l}
                 </span>
               </div>

@@ -55,7 +55,7 @@ export function TypedRole() {
   const longest = roles.reduce((a, b) => (b.length > a.length ? b : a), "");
   const caret = (
     <span
-      className="ml-0.5 font-normal text-haze"
+      className="ml-0.5 font-normal text-s-2"
       style={{ animation: "blink 1s steps(1) infinite" }}
     >
       |
@@ -80,7 +80,7 @@ export function TypedRole() {
         {caret}
       </span>
       <span aria-hidden="true" className="col-start-1 row-start-1">
-        {t.build} <span className="font-medium text-haze">{typed}</span>
+        {t.build} <span className="font-medium text-s-2">{typed}</span>
         {caret}
       </span>
     </p>

@@ -28,11 +28,11 @@ export default function Hero() {
   return (
     <section
       id="top"
-      className="surface-dark overflow-hidden bg-hero text-paper"
+      className="overflow-hidden bg-s-bg text-s-fg"
     >
       <div className="mx-auto flex max-w-[1280px] flex-col gap-[clamp(36px,5vw,56px)] px-[clamp(20px,4vw,40px)] pt-[clamp(128px,16vw,176px)] pb-14">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <span className="font-mono text-[13px] leading-none tracking-[.12em] text-haze uppercase">
+          <span className="font-mono text-[13px] leading-none tracking-[.12em] text-s-2 uppercase">
             {t.kicker}
           </span>
           <StatusPill />
@@ -49,7 +49,7 @@ export default function Hero() {
         </motion.h1>
 
         <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,380px),1fr))] items-start gap-x-16 gap-y-8">
-          <p className="m-0 max-w-[600px] text-xl leading-[1.6] text-pretty text-haze">
+          <p className="m-0 max-w-[600px] text-xl leading-[1.6] text-pretty text-s-2">
             {t.hello}
           </p>
           <div className="flex flex-col gap-6">
@@ -59,7 +59,7 @@ export default function Hero() {
                 href={site.resumeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`${btn} bg-paper text-hero hover:bg-white`}
+                className={`${btn} bg-s-cta text-s-cta-fg hover:bg-s-cta-hover`}
               >
                 {t.cv} ↗
                 <NewTab />
@@ -68,7 +68,7 @@ export default function Hero() {
                 href={site.socials.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`${btn} border border-hero-line-strong hover:border-haze`}
+                className={`${btn} border border-s-line-strong hover:border-s-2`}
               >
                 LinkedIn ↗
                 <NewTab />
@@ -77,7 +77,7 @@ export default function Hero() {
                 href={site.socials.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`${btn} border border-hero-line-strong hover:border-haze`}
+                className={`${btn} border border-s-line-strong hover:border-s-2`}
               >
                 GitHub ↗
                 <NewTab />
@@ -86,10 +86,10 @@ export default function Hero() {
           </div>
         </div>
 
-        <dl className="m-0 grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] border-t border-hero-line">
+        <dl className="m-0 grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] border-t border-s-line">
           {t.facts.map(([k, v]) => (
             <div key={k} className="flex flex-col gap-2 pt-[18px] pr-4">
-              <dt className="font-mono text-[11px] leading-none tracking-[.1em] text-hero-meta uppercase">
+              <dt className="font-mono text-[11px] leading-none tracking-[.1em] text-s-meta uppercase">
                 {k}
               </dt>
               <dd className="m-0 text-base leading-[1.3] font-semibold">{v}</dd>

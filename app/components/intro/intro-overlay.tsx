@@ -92,7 +92,7 @@ export default function IntroOverlay() {
       onClick={() => stage < 4 && exit()}
       className="fixed inset-0 z-50 flex cursor-pointer items-center justify-center"
       style={{
-        backgroundColor: exiting ? "rgba(27,34,56,0)" : "#1B2238",
+        backgroundColor: exiting ? "transparent" : "var(--intro-bg)",
         transition: "background-color .7s ease .15s",
         pointerEvents: exiting ? "none" : "auto",
       }}
@@ -100,7 +100,7 @@ export default function IntroOverlay() {
       <div className="flex flex-col items-center gap-7">
         <div
           ref={boxRef}
-          className="relative size-[132px] origin-center rounded-[28px] bg-paper"
+          className="relative size-[132px] origin-center rounded-[28px] bg-emph"
           style={{
             transition: exiting
               ? "transform .9s cubic-bezier(.7,0,.2,1)"
@@ -110,7 +110,7 @@ export default function IntroOverlay() {
           }}
         >
           <span
-            className="absolute top-3.5 left-5 text-5xl leading-none font-bold tracking-[-.05em] text-hero transition-opacity duration-400"
+            className="absolute top-3.5 left-5 text-5xl leading-none font-bold tracking-[-.05em] text-emph-contrast transition-opacity duration-400"
             style={{ opacity: stage >= 2 ? 1 : 0 }}
           >
             sg
@@ -129,7 +129,7 @@ export default function IntroOverlay() {
           />
         </div>
         <span
-          className="font-mono text-[13px] leading-none tracking-[.14em] text-haze uppercase transition-opacity duration-300"
+          className="font-mono text-[13px] leading-none tracking-[.14em] text-s-2 uppercase transition-opacity duration-300"
           style={{ opacity: stage >= 2 && stage < 4 ? 1 : 0 }}
         >
           Frontier AI, made dependable

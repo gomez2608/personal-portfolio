@@ -190,7 +190,7 @@ export default function Work() {
         <div
           ref={previewRef}
           aria-hidden="true"
-          className="pointer-events-none absolute top-0 left-0 z-[4] flex size-[300px] flex-col justify-between rounded-xl bg-ink-fixed p-6 text-paper shadow-[0_24px_60px_rgba(15,18,32,.25)]"
+          className="pointer-events-none absolute top-0 left-0 z-[4] flex size-[300px] flex-col justify-between rounded-xl bg-ink-fixed p-6 dark:border dark:border-hero-line-strong text-paper shadow-[0_24px_60px_rgba(15,18,32,.25)]"
           style={{
             opacity: isProjects && hovered >= 0 ? 1 : 0,
             transition: "opacity .25s, transform .12s linear",
