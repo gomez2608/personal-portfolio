@@ -1,0 +1,476 @@
+{
+  "copy": {
+    "en": {
+      "kicker": "ML Engineer · Bogotá, Colombia",
+      "h1a": "Frontier AI,",
+      "h1b": "made dependable",
+      "hello": "I’m Sebastian, an ML engineer from Bogotá and a biomedical engineer from Universidad de los Andes. At Provectus I ship LLM, RAG, and agentic systems on AWS that hold up in production.",
+      "build": "I build",
+      "cv": "Résumé",
+      "drag": "Drag",
+      "creds": "Credentials",
+      "contact": "Contact",
+      "aboutLbl": "About",
+      "chart": "Accuracy over time",
+      "hover": "Hover",
+      "cta1": "Let’s build something useful",
+      "sign": "Made in Bogotá, 2026",
+      "replay": "Replay intro",
+      "close": "Close",
+      "code": "View code",
+      "open": "Click a project for the case study",
+      "work": "At work · replies today",
+      "off": "Off hours · replies tomorrow",
+      "nav": [
+        "About",
+        "Experience",
+        "Projects",
+        "Writing"
+      ],
+      "tabs": [
+        "Experience",
+        "Projects",
+        "Writing"
+      ],
+      "facts": [
+        [
+          "Based in",
+          "Bogotá, Colombia"
+        ],
+        [
+          "Now",
+          "ML Engineer, Provectus"
+        ],
+        [
+          "Trained as",
+          "Biomedical Engineer"
+        ],
+        [
+          "Speaks",
+          "Spanish, English"
+        ]
+      ],
+      "about": "Machine Learning Engineer with hands-on experience shipping production LLM, RAG, and agentic systems on AWS for document-intensive enterprise pipelines. MSc in Biomedical Engineering with research on multimodal data collection, computer vision, and deep learning.",
+      "about2": "Comfortable working end-to-end across ML backend, serverless infrastructure (AWS Lambda, Step Functions, SAM), and full-stack delivery. Focused on turning frontier AI methods — LLM evaluation, retrieval, and human-in-the-loop workflows — into reliable, observable, cost-aware production systems.",
+      "roles": [
+        "RAG assistants on AWS Bedrock.",
+        "agentic workflows for messy PDFs.",
+        "LLM evaluation with DSPy and MLflow.",
+        "sign-language models from EMG and video.",
+        "clinical ML that helps doctors agree."
+      ],
+      "exp": [
+        [
+          "Jul 2025 — Present",
+          "Machine Learning Engineer, Provectus",
+          "San Francisco, CA · Remote"
+        ],
+        [
+          "Jul 2023 — Jun 2025",
+          "Growth & Software Development Engineer, JustPaid.ai (YC-W23)",
+          "San Francisco, CA · Remote"
+        ],
+        [
+          "Aug 2023 — Jun 2025",
+          "Teaching Assistant, Universidad de los Andes",
+          "Bogotá, Colombia"
+        ]
+      ],
+      "pubStatus": [
+        "Under review",
+        "Conference abstract",
+        "Conference abstract"
+      ],
+      "pubVenue": [
+        "Journal article",
+        "ICS-EUS 2025",
+        "ICS-EUS 2025"
+      ],
+      "now": "Now",
+      "bk": [
+        "Problem",
+        "Method",
+        "Data",
+        "Outcome"
+      ],
+      "proj": [
+        {
+          "a": "01 · Research",
+          "tag": "Research · Multimodal ML",
+          "title": "MSc Thesis: Colombian Sign Language Analysis",
+          "k1": "95%",
+          "k1l": "accuracy on deaf-vs-interpreter classification",
+          "b": [
+            "Recognize, classify, and biomechanically characterize Colombian Sign Language (LSC), and differentiate deaf signers from interpreters using a multi-perspective sensor stack.",
+            "Trained Random Forest, KNN, and Gradient Boosting on raw statistical, temporal, and spectral features, and fine-tuned a Video-Visual Transformer (ViViT) on raw video.",
+            "Multimodal data from deaf signers and LSC interpreters via egocentric vision, conventional cameras, IMU, and EMG in static and conversational settings.",
+            "Reached 95% accuracy on deaf-vs-interpreter classification and 40% accuracy on 50-sign recognition."
+          ],
+          "code": "https://github.com/gomez2608/lsc50-analysis"
+        },
+        {
+          "a": "02 · Clinical ML",
+          "tag": "Healthcare · Clinical ML",
+          "title": "ML for Urological Disease Diagnosis",
+          "k1": "50→75%",
+          "k1l": "inter-clinician agreement after standardization",
+          "b": [
+            "Identify and explain diagnostic disagreement among urologists at Fundación Santa Fe de Bogotá, and use the model to drive consensus.",
+            "Built decision-tree models to flag discrepancies in urologic disease diagnostics across clinicians and extracted feature importances to explain disagreement.",
+            "Diagnostic records from urologists at Fundación Santa Fe de Bogotá.",
+            "Inter-clinician agreement improved from 50% to 75% after model-informed standardization sessions, with feature importance feeding directly into an improved diagnostic workflow."
+          ],
+          "code": ""
+        },
+        {
+          "a": "03 · Production GenAI",
+          "tag": "Production · Provectus",
+          "title": "RAG assistants over extracted enterprise documents",
+          "k1": "E2E",
+          "k1l": "ML backend, serverless infra and React frontend",
+          "b": [
+            "Conversational access to structured data extracted from document-intensive enterprise pipelines.",
+            "Built production RAG-powered conversational assistants using LangGraph, AWS Bedrock, and PostgreSQL with pgvector, on serverless extraction pipelines with Step Functions, Lambda, Textract, and S3.",
+            "Alembic-versioned PostgreSQL and full SAM-based infrastructure-as-code.",
+            "Model evaluation and optimization with MLflow 3.4, DSPy-based LLM-as-judge, embedding-model benchmarking, and human-in-the-loop feedback loops."
+          ],
+          "code": ""
+        }
+      ]
+    },
+    "es": {
+      "kicker": "Ingeniero de ML · Bogotá, Colombia",
+      "h1a": "IA de frontera,",
+      "h1b": "hecha confiable",
+      "hello": "Soy Sebastian, ingeniero de ML de Bogotá e ingeniero biomédico de la Universidad de los Andes. En Provectus llevo a producción sistemas LLM, RAG y agénticos sobre AWS que se sostienen en el mundo real.",
+      "build": "Construyo",
+      "cv": "Hoja de vida",
+      "drag": "Arrastra",
+      "creds": "Certificaciones",
+      "contact": "Contacto",
+      "aboutLbl": "Sobre mí",
+      "chart": "Precisión en el tiempo",
+      "hover": "Pasa el cursor",
+      "cta1": "Construyamos algo útil",
+      "sign": "Hecho en Bogotá, 2026",
+      "replay": "Ver intro",
+      "close": "Cerrar",
+      "code": "Ver código",
+      "open": "Haz clic en un proyecto para ver el caso",
+      "work": "Trabajando · respondo hoy",
+      "off": "Fuera de horario · respondo mañana",
+      "nav": [
+        "Sobre mí",
+        "Experiencia",
+        "Proyectos",
+        "Escritos"
+      ],
+      "tabs": [
+        "Experiencia",
+        "Proyectos",
+        "Escritos"
+      ],
+      "facts": [
+        [
+          "Vive en",
+          "Bogotá, Colombia"
+        ],
+        [
+          "Ahora",
+          "Ingeniero de ML, Provectus"
+        ],
+        [
+          "Formación",
+          "Ingeniero biomédico"
+        ],
+        [
+          "Idiomas",
+          "Español, inglés"
+        ]
+      ],
+      "about": "Ingeniero de Machine Learning con experiencia llevando a producción sistemas LLM, RAG y agénticos sobre AWS para pipelines empresariales con alto volumen de documentos. MSc en Ingeniería Biomédica con investigación en captura de datos multimodales, visión por computador y deep learning.",
+      "about2": "Trabajo de punta a punta: backend de ML, infraestructura serverless (AWS Lambda, Step Functions, SAM) y entrega full-stack. Me enfoco en convertir métodos de IA de frontera — evaluación de LLMs, retrieval y flujos con humano en el ciclo — en sistemas de producción confiables, observables y eficientes en costo.",
+      "roles": [
+        "asistentes RAG sobre AWS Bedrock.",
+        "flujos agénticos para PDFs caóticos.",
+        "evaluación de LLMs con DSPy y MLflow.",
+        "modelos de lengua de señas con EMG y video.",
+        "ML clínico que ayuda a los médicos a coincidir."
+      ],
+      "exp": [
+        [
+          "Jul 2025 — Hoy",
+          "Ingeniero de Machine Learning, Provectus",
+          "San Francisco, CA · Remoto"
+        ],
+        [
+          "Jul 2023 — Jun 2025",
+          "Ingeniero de Growth y Desarrollo de Software, JustPaid.ai (YC-W23)",
+          "San Francisco, CA · Remoto"
+        ],
+        [
+          "Ago 2023 — Jun 2025",
+          "Asistente de docencia, Universidad de los Andes",
+          "Bogotá, Colombia"
+        ]
+      ],
+      "pubStatus": [
+        "En revisión",
+        "Resumen de congreso",
+        "Resumen de congreso"
+      ],
+      "pubVenue": [
+        "Artículo de revista",
+        "ICS-EUS 2025",
+        "ICS-EUS 2025"
+      ],
+      "now": "Hoy",
+      "bk": [
+        "Problema",
+        "Método",
+        "Datos",
+        "Resultado"
+      ],
+      "proj": [
+        {
+          "a": "01 · Investigación",
+          "tag": "Investigación · ML multimodal",
+          "title": "Tesis de MSc: análisis de la Lengua de Señas Colombiana",
+          "k1": "95%",
+          "k1l": "de precisión en clasificación sordo vs. intérprete",
+          "b": [
+            "Reconocer, clasificar y caracterizar biomecánicamente la Lengua de Señas Colombiana (LSC), y diferenciar señantes sordos de intérpretes con un conjunto de sensores multiperspectiva.",
+            "Entrené Random Forest, KNN y Gradient Boosting sobre características estadísticas, temporales y espectrales, y ajusté un Video-Visual Transformer (ViViT) sobre video crudo.",
+            "Datos multimodales de señantes sordos e intérpretes de LSC: visión egocéntrica, cámaras convencionales, IMU y EMG, en contextos estáticos y conversacionales.",
+            "95% de precisión en clasificación sordo vs. intérprete y 40% en reconocimiento de 50 señas."
+          ],
+          "code": "https://github.com/gomez2608/lsc50-analysis"
+        },
+        {
+          "a": "02 · ML clínico",
+          "tag": "Salud · ML clínico",
+          "title": "ML para diagnóstico de enfermedades urológicas",
+          "k1": "50→75%",
+          "k1l": "de acuerdo entre clínicos tras la estandarización",
+          "b": [
+            "Identificar y explicar el desacuerdo diagnóstico entre urólogos de la Fundación Santa Fe de Bogotá, y usar el modelo para lograr consenso.",
+            "Modelos de árboles de decisión para detectar discrepancias diagnósticas entre clínicos, con importancia de variables para explicar el desacuerdo.",
+            "Registros diagnósticos de urólogos de la Fundación Santa Fe de Bogotá.",
+            "El acuerdo entre clínicos pasó del 50% al 75% tras sesiones de estandarización guiadas por el modelo."
+          ],
+          "code": ""
+        },
+        {
+          "a": "03 · GenAI en producción",
+          "tag": "Producción · Provectus",
+          "title": "Asistentes RAG sobre documentos empresariales",
+          "k1": "E2E",
+          "k1l": "backend de ML, infraestructura serverless y frontend React",
+          "b": [
+            "Acceso conversacional a datos estructurados extraídos de pipelines empresariales con alto volumen de documentos.",
+            "Asistentes conversacionales RAG en producción con LangGraph, AWS Bedrock y PostgreSQL con pgvector, sobre pipelines serverless con Step Functions, Lambda, Textract y S3.",
+            "PostgreSQL versionado con Alembic e infraestructura como código con SAM.",
+            "Evaluación y optimización con MLflow 3.4, LLM-as-judge con DSPy, benchmarking de modelos de embeddings y ciclos de retroalimentación con humanos."
+          ],
+          "code": ""
+        }
+      ]
+    }
+  },
+  "experienceTags": [
+    [
+      "Python",
+      "LangGraph",
+      "Bedrock",
+      "SageMaker",
+      "Step Functions",
+      "AWS Lambda",
+      "Textract",
+      "PostgreSQL",
+      "MLflow",
+      "DSPy",
+      "React"
+    ],
+    [
+      "Python",
+      "LlamaIndex",
+      "LangGraph",
+      "Django",
+      "PostgreSQL"
+    ],
+    [
+      "Python",
+      "R",
+      "scikit-learn",
+      "TensorFlow",
+      "PyTorch"
+    ]
+  ],
+  "projectTags": [
+    [
+      "Python",
+      "PyTorch",
+      "Hugging Face",
+      "ViViT",
+      "IMU",
+      "EMG"
+    ],
+    [
+      "Python",
+      "scikit-learn",
+      "Pandas",
+      "NumPy"
+    ],
+    [
+      "LangGraph",
+      "Bedrock",
+      "pgvector",
+      "Step Functions",
+      "Textract",
+      "MLflow",
+      "DSPy"
+    ]
+  ],
+  "publications": [
+    "Machine Learning Analysis of Colombian Sign Language: Recognition, Classification, and Biomechanical Characterization.",
+    "AI-Based Platform for Automated Uroflowmetry Curve Morphology Classification.",
+    "Improving Uroflowmetry Interpretation: Effects of Standardization Sessions on Interobserver Agreement and AI Model Consistency."
+  ],
+  "certifications": [
+    {
+      "name": "Claude Certified Architect — Professional",
+      "org": "Anthropic",
+      "date": "Sep 2026"
+    },
+    {
+      "name": "Claude Certified Architect — Foundations",
+      "org": "Anthropic",
+      "date": "Jul 2026"
+    },
+    {
+      "name": "AWS Certified Machine Learning Engineer — Associate",
+      "org": "AWS",
+      "date": "Jan 2026"
+    },
+    {
+      "name": "AWS Cloud Practitioner Essentials",
+      "org": "AWS",
+      "date": "Jul 2025"
+    },
+    {
+      "name": "Rapid Application Development with Large Language Models (LLMs)",
+      "org": "NVIDIA",
+      "date": "May 2025"
+    },
+    {
+      "name": "Efficient Large Language Model (LLM) Customization",
+      "org": "NVIDIA",
+      "date": "May 2025"
+    },
+    {
+      "name": "Deep Learning with PyTorch: Generative Adversarial Networks (GANs)",
+      "org": "Coursera",
+      "date": "May 2025"
+    },
+    {
+      "name": "Building LLM Applications with Prompt Engineering",
+      "org": "NVIDIA",
+      "date": "Apr 2025"
+    },
+    {
+      "name": "Generative AI with Diffusion Models",
+      "org": "NVIDIA",
+      "date": "Oct 2024"
+    },
+    {
+      "name": "Building Transformer-Based Natural Language Processing (NLP) Applications",
+      "org": "NVIDIA",
+      "date": "Nov 2023"
+    },
+    {
+      "name": "Django For Everybody Specialization",
+      "org": "University of Michigan",
+      "date": "Apr 2023"
+    }
+  ],
+  "careerChartEvents": {
+    "en": [
+      [
+        2019.05,
+        "BSc Biomedical Eng. · Uniandes"
+      ],
+      [
+        2023.5,
+        "JustPaid.ai (YC-W23)"
+      ],
+      [
+        2023.62,
+        "MSc Biomedical Eng. + TA"
+      ],
+      [
+        2025.5,
+        "ML Engineer · Provectus"
+      ],
+      [
+        2025.97,
+        "MSc done · AWS ML Engineer cert"
+      ]
+    ],
+    "es": [
+      [
+        2019.05,
+        "Pregrado Ing. Biomédica · Uniandes"
+      ],
+      [
+        2023.5,
+        "JustPaid.ai (YC-W23)"
+      ],
+      [
+        2023.62,
+        "MSc Ing. Biomédica + docencia"
+      ],
+      [
+        2025.5,
+        "Ingeniero ML · Provectus"
+      ],
+      [
+        2025.97,
+        "Grado MSc · cert. AWS ML Engineer"
+      ]
+    ]
+  },
+  "marqueeStack": [
+    "Python",
+    "PyTorch",
+    "LangGraph",
+    "AWS Bedrock",
+    "SageMaker",
+    "Step Functions",
+    "PostgreSQL + pgvector",
+    "MLflow",
+    "DSPy",
+    "TypeScript"
+  ],
+  "logoSources": {
+    "Python": "https://cdn.simpleicons.org/python/1B2238",
+    "PyTorch": "https://cdn.simpleicons.org/pytorch/1B2238",
+    "LangGraph": "https://cdn.simpleicons.org/langchain/1B2238",
+    "MLflow": "https://cdn.simpleicons.org/mlflow/1B2238",
+    "PostgreSQL + pgvector": "https://cdn.simpleicons.org/postgresql/1B2238",
+    "PostgreSQL": "https://cdn.simpleicons.org/postgresql/1B2238",
+    "pgvector": "https://cdn.simpleicons.org/postgresql/1B2238",
+    "TypeScript": "https://cdn.simpleicons.org/typescript/1B2238",
+    "React": "https://cdn.simpleicons.org/react/1B2238",
+    "TensorFlow": "https://cdn.simpleicons.org/tensorflow/1B2238",
+    "scikit-learn": "https://cdn.simpleicons.org/scikitlearn/1B2238",
+    "Pandas": "https://cdn.simpleicons.org/pandas/1B2238",
+    "NumPy": "https://cdn.simpleicons.org/numpy/1B2238",
+    "Django": "https://cdn.simpleicons.org/django/1B2238",
+    "Hugging Face": "https://cdn.simpleicons.org/huggingface/1B2238",
+    "R": "https://cdn.simpleicons.org/r/1B2238",
+    "NVIDIA": "https://cdn.simpleicons.org/nvidia/1B2238",
+    "Coursera": "https://cdn.simpleicons.org/coursera/1B2238",
+    "Anthropic": "https://cdn.simpleicons.org/anthropic/1B2238",
+    "__aws_services": "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-original-wordmark.svg"
+  }
+}

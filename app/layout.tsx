@@ -1,26 +1,28 @@
 import type { Metadata } from "next";
-import Script from "next/script";
-import { Inter, Geist_Mono } from "next/font/google";
+import { Manrope, DM_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { site } from "@/app/data/site";
+import { copy } from "@/app/data/content";
+import { Providers } from "@/app/components/providers/providers";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
+// Variable font: one file covers weights 400–800.
+const manrope = Manrope({
+  variable: "--font-manrope",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const dmMono = DM_Mono({
+  variable: "--font-dm-mono",
   subsets: ["latin"],
   weight: ["400", "500"],
+  display: "swap",
 });
 
 const siteUrl = "https://www.sebastiangomez.me";
 const siteTitle = `${site.name} | ${site.role}`;
-const siteDescription =
-  "Personal portfolio of Sebastian Gomez Ahumada — ML Engineer with a MSc in Biomedical Engineering, based in Bogotá, Colombia. Building production GenAI on AWS with LangChain, PyTorch, and TensorFlow.";
+const siteDescription = copy.en.hello;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -33,25 +35,22 @@ export const metadata: Metadata = {
     "Sebastian Gomez",
     "ML Engineer",
     "Machine Learning",
-    "Biomedical Engineering",
-    "Generative AI",
+    "LLM",
+    "RAG",
     "Agentic AI",
-    "LangChain",
+    "LLM evaluation",
     "LangGraph",
+    "DSPy",
+    "MLflow",
     "PyTorch",
-    "TensorFlow",
-    "NLP",
-    "AWS",
     "AWS Bedrock",
     "AWS SageMaker",
-    "Next.js",
-    "React",
+    "Biomedical Engineering",
     "Bogotá",
     "Colombia",
-    "Portfolio",
   ],
-  authors: [{ name: "Sebastian Gomez Ahumada" }],
-  creator: "Sebastian Gomez Ahumada",
+  authors: [{ name: site.fullName }],
+  creator: site.fullName,
   openGraph: {
     type: "website",
     siteName: site.name,
@@ -59,11 +58,14 @@ export const metadata: Metadata = {
     description: siteDescription,
     url: siteUrl,
     locale: "en_US",
+    alternateLocale: ["es_CO"],
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: `${site.name} — ${site.role}` }],
   },
   twitter: {
     card: "summary_large_image",
     title: siteTitle,
     description: siteDescription,
+    images: ["/og-image.png"],
   },
   robots: {
     index: true,
@@ -74,25 +76,28 @@ export const metadata: Metadata = {
 const personJsonLd = {
   "@context": "https://schema.org",
   "@type": "Person",
-  name: site.name,
+  name: site.fullName,
   jobTitle: site.role,
   url: siteUrl,
-  email: `mailto:${site.email}`,
   worksFor: { "@type": "Organization", name: "Provectus" },
   alumniOf: { "@type": "CollegeOrUniversity", name: "Universidad de los Andes" },
   address: { "@type": "PostalAddress", addressLocality: "Bogotá", addressCountry: "CO" },
   knowsAbout: [
     "Machine Learning",
-    "Generative AI",
+    "Large Language Models",
+    "Retrieval-Augmented Generation",
     "Agentic AI",
-    "LangChain",
+    "LLM evaluation",
     "PyTorch",
-    "TensorFlow",
     "AWS Bedrock",
     "AWS SageMaker",
   ],
   sameAs: [site.socials.linkedin, site.socials.github],
 };
+
+// Runs before paint: skip the logo intro for returning visitors in this session
+// and for anyone who prefers reduced motion.
+const introScript = `try{if(sessionStorage.getItem('sg-intro')||matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.setAttribute('data-intro-seen','')}catch(e){}`;
 
 export default function RootLayout({
   children,
@@ -100,16 +105,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth">
-      <body
-        className={`${inter.variable} ${geistMono.variable} antialiased font-sans`}
-      >
-        {children}
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: introScript }} />
+      </head>
+      <body className={`${manrope.variable} ${dmMono.variable}`}>
+        <Providers>{children}</Providers>
         <Analytics />
-        <Script
-          id="person-jsonld"
+        <script
           type="application/ld+json"
-          strategy="afterInteractive"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
         />
       </body>

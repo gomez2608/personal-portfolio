@@ -10,26 +10,28 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Architecture
 
-Single-page personal portfolio built with **Next.js 15** (App Router), **React 19**, **Tailwind CSS v4**, and **shadcn/ui** (new-york style).
+Single-page personal portfolio built with **Next.js 15** (App Router), **React 19**, **Tailwind CSS v4**, **Framer Motion**, and **next-themes**. Design source: brand kit "Warm Calibrated · Ink & Tangerine" v1.0 (v2 handoff).
 
 ### Path aliases
 
-- `@/*` → `./src/*` (tsconfig paths)
+- `@/*` → `./src/*`, falling back to `./*` (so `@/app/...` resolves to `app/`)
 
 ### Project layout
 
-- `app/` — Next.js App Router: layout, page, globals.css, and page-level components
-- `app/Components/` — Page section components (navbar, information, projects, footer, profile). Each in its own folder.
-- `src/components/ui/` — shadcn/ui primitives (button, card, input, label, navigation-menu)
+- `app/layout.tsx` — fonts, metadata/OG (`public/og-image.png`), JSON-LD, the pre-paint intro script, `<Providers>`
+- `app/page.tsx` — composes the sections (server component; interactive leaves are `"use client"`)
+- `app/components/<section>/` — one folder per section: `intro`, `cursor`, `header`, `hero`, `marquee`, `about` (incl. canvas `accuracy-chart`), `work` (tabs, hover preview, `case-study-drawer`), `credentials`, `footer`
+- `app/components/providers/` — `ThemeProvider` (next-themes, `data-theme`, key `sg-theme`), `LangProvider` (`useLang()`, key `sga-lang`), `UIProvider` (`useUI()`: work tab, nav highlight, intro state/replay; `scrollToId()`)
+- `app/components/shared/` — `TechLogo` (bundled simple-icons + AWS wordmark, `currentColor`), `LogoTag`/`LogoTagList`, `Reveal`
+- `app/data/content.json` — **all copy (EN/ES)**, tags, certifications, publications, chart milestones. Typed via `app/data/content.ts`. Edit copy here, not in components.
+- `app/data/site.ts` — name, socials, résumé URL
 - `src/lib/utils.ts` — `cn()` helper (clsx + tailwind-merge)
 
 ### Styling
 
 - Tailwind CSS v4 with CSS-based config in `app/globals.css` (no `tailwind.config.ts`)
-- Custom color palette: `white`, `palewhite`, `buttonwhite`, `beige`, `green`, `blue`, `solid-beige`, `text-white`
-- Fonts: **Inter** and **Aleo** loaded via `next/font/google`, exposed as CSS variables `--font-inter` and `--font-aleo`
-- Dark background by default (`--background: #111111`)
-
-### Adding shadcn/ui components
-
-Configured via `components.json`. Use `npx shadcn@latest add <component>` to add new UI primitives.
+- Theme tokens are CSS variables on `:root` / `html[data-theme="dark"]`, exposed as utilities: `bg`, `card`, `fog`, `line`, `ink`, `navy`, `slate`, `graphite`, `muted`, `footer`, `emph`, `emph-contrast`, `muted-text` (use for text instead of `muted`, which fails contrast)
+- Focus ring uses `--focus` (navy on light surfaces, tangerine in dark mode); add `surface-dark` to navy/ink surfaces so they keep the tangerine ring
+- Fixed (theme-independent) colors: `tangerine` (signal only — never as text on Paper/Fog), `hero`, `paper`, `haze`, `hero-meta`, `hero-line`, `hero-line-strong`, `ink-fixed`
+- Fonts: **Manrope** (`font-sans`) and **DM Mono** (`font-mono`) via `next/font/google`
+- `prefers-reduced-motion` disables the intro, parallax, marquee motion and custom cursor

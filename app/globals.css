@@ -1,113 +1,167 @@
 @import "tailwindcss";
-@import "tw-animate-css";
+
+/* Dark mode follows the `data-theme` attribute set by next-themes. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* Brand kit v1.0 — "Warm Calibrated · Ink & Tangerine" */
+:root {
+  --bg: #f7f5f0; /* Paper */
+  --card: #ffffff;
+  --fog: #ece8df;
+  --line: #e4e0d6;
+  --ink: #0f1220;
+  --navy: #1b2238;
+  --slate: #43465a;
+  --graphite: #5e6070;
+  --muted: #b9b5aa;
+  --grid: #efece5;
+  --footer: #0f1220;
+  /* Emphasis: active tab, header text/mark off the hero */
+  --emph: #1b2238;
+  --emph-contrast: #f7f5f0;
+  /* Text-safe muted (inactive tabs): ≥3:1 on --bg for large text; --muted stays for borders */
+  --muted-text: #7d7a70;
+  /* Focus ring: tangerine is only 2.5:1 on Paper, so light surfaces use navy */
+  --focus: #1b2238;
+  --pill: rgba(255, 255, 255, 0.78);
+  --chart-guide: rgba(27, 34, 56, 0.3);
+  color-scheme: light;
+}
+
+html[data-theme="dark"] {
+  --bg: #0f1220;
+  --card: #161a2b;
+  --fog: #131728;
+  --line: #262b40;
+  --ink: #f7f5f0;
+  --navy: #ece8df;
+  --slate: #b4b7c6;
+  --graphite: #8a8fa3;
+  --muted: #3e4460;
+  --grid: #1c2033;
+  --footer: #0a0c16;
+  --emph: #f7f5f0;
+  --emph-contrast: #1b2238;
+  --muted-text: #7c83a0;
+  --focus: #f07a2e;
+  --pill: rgba(22, 26, 43, 0.82);
+  --chart-guide: rgba(236, 232, 223, 0.3);
+  color-scheme: dark;
+}
 
 @theme {
   --color-*: initial;
 
-  /* Base */
-  --color-background: #0b0b0c;
-  --color-foreground: #fafafa;
-  --color-muted: #71717a;
-  --color-muted-foreground: #a1a1aa;
-  --color-border: #27272a;
+  /* Theme-independent (hero, intro, drawer header, preview card) */
+  --color-tangerine: #f07a2e; /* Signal only — never as text on Paper/Fog */
+  --color-hero: #1b2238;
+  --color-paper: #f7f5f0;
+  --color-haze: #d6d9e6;
+  --color-hero-meta: #8a90a8;
+  --color-hero-line: #2f3754;
+  --color-hero-line-strong: #3a4262;
+  --color-ink-fixed: #0f1220;
+  --color-footer-line: #2a2f45;
+  --color-footer-sep: #43465a;
+  --color-white: #ffffff;
+  --color-transparent: transparent;
+  --color-current: currentColor;
 
-  /* Brand accent (teal) */
-  --color-brand: #68b0ab;
-  --color-brand-foreground: #0b0b0c;
-
-  /* shadcn-compatible tokens (used by Card, Button, Navigation) */
-  --color-primary: #fafafa;
-  --color-primary-foreground: #0b0b0c;
-  --color-secondary: #18181b;
-  --color-secondary-foreground: #fafafa;
-  --color-accent: #1f1e1e;
-  --color-accent-foreground: #fafafa;
-  --color-destructive: #ef4444;
-  --color-card: #0b0b0c;
-  --color-card-foreground: #fafafa;
-  --color-popover: #0b0b0c;
-  --color-popover-foreground: #fafafa;
-  --color-input: #27272a;
-  --color-ring: #68b0ab;
+  --ease-brand: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 @theme inline {
-  --font-sans: var(--font-inter);
-  --font-mono: var(--font-geist-mono);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-}
+  --color-bg: var(--bg);
+  --color-card: var(--card);
+  --color-fog: var(--fog);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-navy: var(--navy);
+  --color-slate: var(--slate);
+  --color-graphite: var(--graphite);
+  --color-muted: var(--muted);
+  --color-footer: var(--footer);
+  --color-emph: var(--emph);
+  --color-emph-contrast: var(--emph-contrast);
+  --color-muted-text: var(--muted-text);
 
-:root {
-  --radius: 0.625rem;
+  --font-sans: var(--font-manrope), system-ui, sans-serif;
+  --font-mono: var(--font-dm-mono), ui-monospace, monospace;
 }
 
 body {
-  font-family: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: var(--color-background);
-  color: var(--color-foreground);
-  min-height: 100vh;
-  position: relative;
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  transition: background 0.4s, color 0.4s;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Subtle hero gradient */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(104, 176, 171, 0.15), transparent 60%);
-  pointer-events: none;
-  z-index: -1;
+::selection {
+  background: #1b2238;
+  color: #f7f5f0;
 }
 
-/* SVG noise grain overlay */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  opacity: 0.035;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+button:focus-visible,
+a:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
 }
 
-/* Animated brand gradient on hero name */
-.gradient-name {
-  background-image: linear-gradient(
-    110deg,
-    var(--color-foreground) 0%,
-    var(--color-brand) 35%,
-    var(--color-foreground) 65%,
-    var(--color-brand) 100%
-  );
-  background-size: 200% 100%;
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  animation: gradient-sweep 9s ease-in-out infinite;
+/* Navy/ink surfaces (hero, footer, drawer header, header over the hero) keep the tangerine ring. */
+.surface-dark {
+  --focus: #f07a2e;
 }
 
-@keyframes gradient-sweep {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-}
-
-@layer base {
-  * {
-    @apply border-border;
+@keyframes blink {
+  50% {
+    opacity: 0;
   }
-  *:focus-visible {
-    outline: 2px solid var(--color-brand);
-    outline-offset: 2px;
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(214, 217, 230, 0.6);
   }
+  70% {
+    box-shadow: 0 0 0 8px rgba(214, 217, 230, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(214, 217, 230, 0);
+  }
+}
+
+/* Keep anchored sections and focused elements clear of the fixed header. */
+section[id] {
+  scroll-margin-top: 88px;
+}
+
+/* The logo intro runs once per session; the inline head script marks returning visitors. */
+html[data-intro-seen] [data-intro-overlay] {
+  display: none;
+}
+html[data-intro-seen] [data-header-mark] {
+  opacity: 1 !important;
+}
+
+/* The custom cursor replaces the header logo dot when it's pulled close. */
+html[data-cursor-near] [data-mark-dot] {
+  opacity: 0;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
