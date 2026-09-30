@@ -2,13 +2,16 @@ import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import type { ContactResponse } from "@/lib/contact";
 import { contactSchema } from "@/lib/contact-schema";
+import { renderConfirmationEmail } from "@/lib/confirmation-email";
+import { site } from "@/app/data/site";
 
 export const runtime = "nodejs";
 
-// Until the domain is verified in Resend, set CONTACT_FROM_EMAIL=onboarding@resend.dev to test.
+// Sender shown in inboxes: "Sebastian Gomez <contact@sebastiangomezahumada.com>".
+// CONTACT_FROM_EMAIL overrides it (e.g. onboarding@resend.dev for testing).
 const FROM =
   process.env.CONTACT_FROM_EMAIL ??
-  "Portfolio <contact@sebastiangomezahumada.com>";
+  `${site.name} <contact@${new URL(site.url).host.replace(/^www\./, "")}>`;
 
 // Simple in-memory rate limit: 5 requests per IP per 10 minutes. It resets on cold
 // starts and isn't shared across instances; swap in Upstash if that matters.
@@ -65,7 +68,7 @@ export async function POST(req: Request) {
   if (!parsed.success) {
     return reply({ ok: false, error: "invalid" }, 400);
   }
-  const { reason, name, email, message } = parsed.data;
+  const { reason, name, email, message, lang } = parsed.data;
 
   const apiKey = process.env.RESEND_API_KEY;
   const to = process.env.CONTACT_TO_EMAIL;
@@ -92,6 +95,24 @@ export async function POST(req: Request) {
     if (error) {
       console.error("[contact] Resend error", error);
       return reply({ ok: false, error: "server" }, 500);
+    }
+
+    // Confirmation to the visitor: fixed copy only (never echoes their message).
+    // Best-effort: the owner already has the message, so a failure here isn't an error.
+    try {
+      const confirmation = renderConfirmationEmail(lang, name);
+      const { error: confirmError } = await resend.emails.send({
+        from: FROM,
+        to: email,
+        subject: confirmation.subject,
+        html: confirmation.html,
+        text: confirmation.text,
+      });
+      if (confirmError) {
+        console.error("[contact] confirmation email failed", confirmError);
+      }
+    } catch (err) {
+      console.error("[contact] confirmation email failed", err);
     }
   } catch (err) {
     console.error("[contact] send failed", err);

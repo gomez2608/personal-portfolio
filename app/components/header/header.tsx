@@ -259,7 +259,7 @@ export default function Header() {
           <button
             type="button"
             onClick={toContact}
-            className="flex items-center gap-2 rounded-lg bg-emph px-3.5 py-2.5 text-[13px] leading-none font-semibold whitespace-nowrap text-emph-contrast transition-colors duration-[350ms]"
+            className="flex items-center gap-2 rounded-lg bg-emph px-3.5 py-2.5 text-[13px] leading-none font-semibold whitespace-nowrap text-emph-contrast transition-colors duration-[350ms] max-sm:hidden"
           >
             {t.cta}
             <span
@@ -300,6 +300,18 @@ export default function Header() {
                 {label}
               </button>
             ))}
+            {/* On phones the header CTA doesn't fit in the bar, so it lives here. */}
+            <button
+              type="button"
+              onClick={toContact}
+              className="mt-1 flex items-center justify-between gap-2 rounded-lg bg-emph px-3 py-3.5 text-left text-base leading-none font-semibold text-emph-contrast sm:hidden"
+            >
+              {t.cta}
+              <span
+                aria-hidden="true"
+                className="size-2 rounded-full bg-tangerine"
+              />
+            </button>
           </nav>
         </div>
       )}

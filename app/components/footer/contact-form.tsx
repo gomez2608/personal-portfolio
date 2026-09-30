@@ -22,7 +22,7 @@ const fieldClass =
   "border-0 border-b bg-transparent pt-2 pb-3 text-[17px] font-medium text-f-fg outline-none transition-colors duration-200 placeholder:text-f-meta focus:border-f-fg";
 
 export function ContactForm() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const fm = t.contactForm;
   const [reason, setReason] = useState(0);
   const [name, setName] = useState("");
@@ -74,6 +74,7 @@ export function ContactForm() {
           email: email.trim(),
           message: message.trim(),
           company,
+          lang,
         }),
       });
       const data = (await res
@@ -140,10 +141,7 @@ export function ContactForm() {
       noValidate
       onSubmit={submit}
       aria-describedby="contact-hint"
-      className={cn(
-        cardClass,
-        "relative gap-[22px] p-[clamp(20px,4vw,32px)]",
-      )}
+      className={cn(cardClass, "relative gap-[22px] p-[clamp(20px,4vw,32px)]")}
     >
       <fieldset className="m-0 flex flex-col gap-2.5 border-0 p-0">
         <legend className={cn(labelClass, "mb-2.5 p-0")}>{fm.about}</legend>

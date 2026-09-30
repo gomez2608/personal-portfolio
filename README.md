@@ -1,6 +1,6 @@
 # Personal Portfolio — Sebastian Gomez
 
-ML Engineer portfolio at [sebastiangomez.me](https://www.sebastiangomez.me).
+ML Engineer portfolio at [sebastiangomezahumada.com](https://sebastiangomezahumada.com).
 
 ## Stack
 

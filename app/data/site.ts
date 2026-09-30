@@ -3,6 +3,7 @@ export const site = {
   fullName: "Sebastian Gomez Ahumada",
   role: "ML Engineer",
   location: "Bogotá, Colombia",
+  url: "https://sebastiangomezahumada.com",
   socials: {
     linkedin: "https://www.linkedin.com/in/sebastiangahumada/",
     github: "https://github.com/gomez2608",

@@ -27,7 +27,7 @@ export default function Education() {
         {edu.items.map((item) => (
           <div
             key={item.degree}
-            className="grid grid-cols-[minmax(110px,200px)_minmax(0,1fr)] gap-x-6 gap-y-3 border-b border-line py-7"
+            className="grid grid-cols-1 gap-x-6 gap-y-3 border-b border-line py-7 sm:grid-cols-[minmax(110px,200px)_minmax(0,1fr)]"
           >
             <span className="font-mono text-xs leading-[1.6] tracking-[.06em] text-graphite uppercase">
               {item.date}

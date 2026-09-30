@@ -92,7 +92,7 @@ export default function Credentials() {
         onPointerUp={endDrag}
         onPointerLeave={endDrag}
         onClickCapture={onClickCapture}
-        className="no-scrollbar flex cursor-grab gap-4 overflow-x-auto px-[clamp(20px,4vw,40px)] pt-1 pb-3 select-none"
+        className="no-scrollbar relative flex cursor-grab gap-4 overflow-x-auto px-[clamp(20px,4vw,40px)] pt-1 pb-3 select-none"
       >
         <ul className="m-0 flex list-none gap-4 p-0">
           {certifications.map((c) => (

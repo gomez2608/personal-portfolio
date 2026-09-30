@@ -11,8 +11,9 @@ import { ExperienceRow } from "./experience-row";
 
 const PROJECTS_TAB = 1;
 
+// Two columns (date | content) from 640px; stacked on phones.
 const rowGrid =
-  "relative grid grid-cols-[minmax(110px,200px)_minmax(0,1fr)] gap-x-6 gap-y-3 border-b border-line py-7";
+  "relative grid grid-cols-1 gap-x-6 gap-y-3 border-b border-line py-7 sm:grid-cols-[minmax(110px,200px)_minmax(0,1fr)]";
 const dateCell =
   "font-mono text-xs leading-[1.6] tracking-[.06em] text-graphite uppercase";
 const titleText =

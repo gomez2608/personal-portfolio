@@ -283,6 +283,38 @@
         "hint": "All fields are required",
         "errSend": "Couldn’t send right now. Try again, or reach me on LinkedIn.",
         "errRate": "Too many messages. Try again in a few minutes."
+      },
+      "confirmationEmail": {
+        "subject": "Thanks for reaching out",
+        "title": "Message received",
+        "preheader": "Message received. I usually reply within 1–2 business days. Here’s where things stand.",
+        "receipt": "Receipt",
+        "headline": [
+          "Thanks for",
+          "reaching out"
+        ],
+        "intro": "Hi {name}, your message is in. Here are the details.",
+        "introNoName": "Hi there, your message is in. Here are the details.",
+        "rows": [
+          [
+            "Status",
+            "Received"
+          ],
+          [
+            "Read by",
+            "Sebastian, personally"
+          ],
+          [
+            "Expected reply",
+            "Within 1–2 business days"
+          ]
+        ],
+        "whileYouWait": "While you wait",
+        "talkMeta": "Talk · PyCon Colombia 2026",
+        "linkedinTitle": "Follow along on LinkedIn",
+        "linkedinMeta": "LinkedIn",
+        "role": "ML Engineer · Bogotá",
+        "footnote": "You’re receiving this because this address was entered in the contact form at {site}. If that wasn’t you, you can ignore this email."
       }
     },
     "es": {
@@ -568,6 +600,38 @@
         "hint": "Todos los campos son obligatorios",
         "errSend": "No se pudo enviar. Inténtalo de nuevo o escríbeme por LinkedIn.",
         "errRate": "Demasiados mensajes. Inténtalo de nuevo en unos minutos."
+      },
+      "confirmationEmail": {
+        "subject": "Gracias por escribirme",
+        "title": "Mensaje recibido",
+        "preheader": "Mensaje recibido. Suelo responder en 1–2 días hábiles. Así van las cosas.",
+        "receipt": "Recibo",
+        "headline": [
+          "Gracias por",
+          "escribirme"
+        ],
+        "intro": "Hola {name}, tu mensaje llegó. Estos son los detalles.",
+        "introNoName": "Hola, tu mensaje llegó. Estos son los detalles.",
+        "rows": [
+          [
+            "Estado",
+            "Recibido"
+          ],
+          [
+            "Lo lee",
+            "Sebastian, personalmente"
+          ],
+          [
+            "Respuesta esperada",
+            "En 1–2 días hábiles"
+          ]
+        ],
+        "whileYouWait": "Mientras tanto",
+        "talkMeta": "Charla · PyCon Colombia 2026",
+        "linkedinTitle": "Sígueme en LinkedIn",
+        "linkedinMeta": "LinkedIn",
+        "role": "Ingeniero de ML · Bogotá",
+        "footnote": "Recibes este correo porque esta dirección se ingresó en el formulario de contacto de {site}. Si no fuiste tú, puedes ignorarlo."
       }
     }
   },

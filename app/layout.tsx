@@ -20,7 +20,7 @@ const dmMono = DM_Mono({
   display: "swap",
 });
 
-const siteUrl = "https://www.sebastiangomez.me";
+const siteUrl = site.url;
 const siteTitle = `${site.name} | ${site.role}`;
 const siteDescription = copy.en.hello;
 
