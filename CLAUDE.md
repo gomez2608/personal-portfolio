@@ -20,12 +20,19 @@ Single-page personal portfolio built with **Next.js 15** (App Router), **React 1
 
 - `app/layout.tsx` — fonts, metadata/OG (`public/og-image.png`), JSON-LD, the pre-paint intro script, `<Providers>`
 - `app/page.tsx` — composes the sections (server component; interactive leaves are `"use client"`)
-- `app/components/<section>/` — one folder per section: `intro`, `cursor`, `header`, `hero`, `marquee`, `about` (incl. canvas `accuracy-chart`), `work` (tabs, hover preview, `case-study-drawer`), `credentials`, `footer`
-- `app/components/providers/` — `ThemeProvider` (next-themes, `data-theme`, key `sg-theme`), `LangProvider` (`useLang()`, key `sga-lang`), `UIProvider` (`useUI()`: work tab, nav highlight, intro state/replay; `scrollToId()`)
+- `app/components/<section>/` — one folder per section, in page order: `intro`, `cursor`, `header` (nav, Menu dropdown below 1180px, "Get in touch"), `hero`, `marquee`, `about` (incl. canvas `accuracy-chart`), `work` (tabs, expandable `experience-row`, project hover preview, `case-study-drawer`), `talks`, `education`, `credentials`, `footer` (incl. `contact-form`)
+- `app/api/contact/route.ts` — contact form endpoint (Resend). Validates with the zod schema in `src/lib/contact-schema.ts`, has a `company` honeypot, and rate-limits in memory (5 requests / 10 min per IP)
+- `app/components/providers/` — `ThemeProvider` (next-themes, `data-theme`, key `sg-theme`), `LangProvider` (`useLang()`, key `sga-lang`), `UIProvider` (`useUI()`: work tab, nav highlight, open case study, intro state/replay; `scrollToId()`)
 - `app/components/shared/` — `TechLogo` (bundled simple-icons + AWS wordmark, `currentColor`), `LogoTag`/`LogoTagList`, `Reveal`
 - `app/data/content.json` — **all copy (EN/ES)**, tags, certifications, publications, chart milestones. Typed via `app/data/content.ts`. Edit copy here, not in components.
 - `app/data/site.ts` — name, socials, résumé URL
 - `src/lib/utils.ts` — `cn()` helper (clsx + tailwind-merge)
+- `src/lib/contact.ts` — contact form constants shared by client and server (no zod, so it stays out of the client bundle)
+
+### Environment
+
+- `RESEND_API_KEY`, `CONTACT_TO_EMAIL` — required for the contact form (Vercel + `.env.local`)
+- `CONTACT_FROM_EMAIL` — optional sender override; use `onboarding@resend.dev` until `sebastiangomezahumada.com` is verified in Resend
 
 ### Styling
 

@@ -1,23 +1,21 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { NewTab, useLang } from "@/app/components/providers/lang-provider";
+import { useUI } from "@/app/components/providers/ui-provider";
 import { LogoTagList } from "@/app/components/shared/logo-tag";
 import { projectTags } from "@/app/data/content";
-
-type Props = {
-  /** Index into t.proj, or -1 when closed. */
-  index: number;
-  onClose: () => void;
-};
 
 const FOCUSABLE =
   'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-export function CaseStudyDrawer({ index, onClose }: Props) {
+/** Project case study. Opened from Work → Projects and from Education (thesis) via `useUI().openCase`. */
+export function CaseStudyDrawer() {
   const { t } = useLang();
+  const { openCase: index, setOpenCase } = useUI();
+  const onClose = useCallback(() => setOpenCase(-1), [setOpenCase]);
   const open = index >= 0;
   const project = open ? t.proj[index] : null;
   const panelRef = useRef<HTMLDivElement>(null);
@@ -132,7 +130,7 @@ export function CaseStudyDrawer({ index, onClose }: Props) {
                 ))}
               </dl>
               <LogoTagList
-                names={projectTags[index]}
+                names={projectTags[index] ?? []}
                 tagClassName="px-[11px] py-[7px]"
               />
               {project.code && (

@@ -1,45 +1,34 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useLang } from "@/app/components/providers/lang-provider";
 import { useUI } from "@/app/components/providers/ui-provider";
 import { LogoTagList } from "@/app/components/shared/logo-tag";
 import { Reveal } from "@/app/components/shared/reveal";
-import { experienceTags, projectTags, publications } from "@/app/data/content";
+import { projectTags, publications } from "@/app/data/content";
 import { cn } from "@/lib/utils";
-import { CaseStudyDrawer } from "./case-study-drawer";
-
-type Row = { a: string; b: string; c: string; tags: string[] };
+import { ExperienceRow } from "./experience-row";
 
 const PROJECTS_TAB = 1;
 
+const rowGrid =
+  "relative grid grid-cols-[minmax(110px,200px)_minmax(0,1fr)] gap-x-6 gap-y-3 border-b border-line py-7";
+const dateCell =
+  "font-mono text-xs leading-[1.6] tracking-[.06em] text-graphite uppercase";
+const titleText =
+  "m-0 text-2xl leading-[1.3] font-bold tracking-[-.025em] text-pretty";
+const metaText = "font-mono text-sm leading-[1.4] font-medium text-navy";
+
 export default function Work() {
   const { t } = useLang();
-  const { tab, setTab, setNavOn } = useUI();
+  const { tab, setTab, setNavOn, setOpenCase } = useUI();
   const [hovered, setHovered] = useState(-1);
-  const [openCase, setOpenCase] = useState(-1);
+  // Experience accordion: one row open at a time, the first (Provectus) by default.
+  const [openExp, setOpenExp] = useState(0);
   const listRef = useRef<HTMLDivElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
 
   const isProjects = tab === PROJECTS_TAB;
-  const closeCase = useCallback(() => setOpenCase(-1), []);
-
-  const rows: Row[] =
-    tab === 0
-      ? t.exp.map(([a, b, c], i) => ({ a, b, c, tags: experienceTags[i] }))
-      : isProjects
-        ? t.proj.map((p, i) => ({
-            a: p.a,
-            b: p.title,
-            c: "↗",
-            tags: projectTags[i],
-          }))
-        : publications.map((title, i) => ({
-            a: t.pubVenue[i],
-            b: `“${title}”`,
-            c: t.pubStatus[i],
-            tags: [],
-          }));
 
   const pick = (i: number) => {
     setTab(i);
@@ -139,58 +128,73 @@ export default function Work() {
         onMouseLeave={() => setHovered(-1)}
         className="relative flex min-h-[240px] flex-col border-t border-line"
       >
-        {rows.map((r, i) => {
-          const interactive = isProjects;
-          return (
+        {tab === 0 &&
+          t.experience.map((exp, i) => (
+            <ExperienceRow
+              key={`exp-${i}`}
+              id={`exp-${i}`}
+              exp={exp}
+              open={openExp === i}
+              onToggle={() => setOpenExp(openExp === i ? -1 : i)}
+              className={rowGrid}
+              dateClassName={dateCell}
+              titleClassName={titleText}
+              metaClassName={metaText}
+            />
+          ))}
+
+        {isProjects &&
+          t.proj.map((p, i) => (
             <div
-              key={`${tab}-${i}`}
-              onMouseEnter={interactive ? () => setHovered(i) : undefined}
+              key={`proj-${i}`}
+              onMouseEnter={() => setHovered(i)}
               className={cn(
-                "relative grid grid-cols-[minmax(110px,200px)_minmax(0,1fr)] gap-x-6 gap-y-3 border-b border-line py-7 transition-[padding] duration-[250ms]",
-                interactive ? "cursor-pointer" : "cursor-default",
+                rowGrid,
+                "cursor-pointer transition-[padding] duration-[250ms]",
               )}
-              style={{ paddingLeft: interactive && hovered === i ? 16 : 0 }}
+              style={{ paddingLeft: hovered === i ? 16 : 0 }}
             >
-              <span className="font-mono text-xs leading-[1.6] tracking-[.06em] text-graphite uppercase">
-                {r.a}
-              </span>
+              <span className={dateCell}>{p.a}</span>
               <div className="flex min-w-0 flex-col gap-3.5">
                 <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1.5">
-                  <h3 className="m-0 text-2xl leading-[1.3] font-bold tracking-[-.025em] text-pretty">
-                    {interactive ? (
-                      // Stretched over the whole row, so any click on the row opens the case study.
-                      <button
-                        type="button"
-                        aria-haspopup="dialog"
-                        onClick={() => {
-                          setOpenCase(i);
-                          setHovered(-1);
-                        }}
-                        className="text-left after:absolute after:inset-0 after:content-['']"
-                      >
-                        {r.b}
-                      </button>
-                    ) : (
-                      r.b
-                    )}
+                  <h3 className={titleText}>
+                    {/* Stretched over the whole row, so any click on the row opens the case study. */}
+                    <button
+                      type="button"
+                      aria-haspopup="dialog"
+                      onClick={() => {
+                        setOpenCase(i);
+                        setHovered(-1);
+                      }}
+                      className="text-left after:absolute after:inset-0 after:content-['']"
+                    >
+                      {p.title}
+                    </button>
                   </h3>
-                  <span
-                    className="font-mono text-sm leading-[1.4] font-medium text-navy"
-                    aria-hidden={r.c === "↗"}
-                  >
-                    {r.c}
+                  <span className={metaText} aria-hidden="true">
+                    ↗
                   </span>
                 </div>
-                <LogoTagList names={r.tags} />
+                <LogoTagList names={projectTags[i] ?? []} />
               </div>
             </div>
-          );
-        })}
+          ))}
+
+        {tab === 2 &&
+          publications.map((title, i) => (
+            <div key={`pub-${i}`} className={rowGrid}>
+              <span className={dateCell}>{t.pubVenue[i]}</span>
+              <div className="flex min-w-0 flex-wrap items-baseline justify-between gap-x-6 gap-y-1.5">
+                <h3 className={titleText}>“{title}”</h3>
+                <span className={metaText}>{t.pubStatus[i]}</span>
+              </div>
+            </div>
+          ))}
 
         <div
           ref={previewRef}
           aria-hidden="true"
-          className="pointer-events-none absolute top-0 left-0 z-[4] flex size-[300px] flex-col justify-between rounded-xl bg-ink-fixed p-6 dark:border dark:border-hero-line-strong text-paper shadow-[0_24px_60px_rgba(15,18,32,.25)]"
+          className="pointer-events-none absolute top-0 left-0 z-[4] flex size-[300px] flex-col justify-between rounded-xl bg-ink-fixed p-6 text-paper shadow-[0_24px_60px_rgba(15,18,32,.25)] dark:border dark:border-hero-line-strong"
           style={{
             opacity: isProjects && hovered >= 0 ? 1 : 0,
             transition: "opacity .25s, transform .12s linear",
@@ -212,8 +216,6 @@ export default function Work() {
           </span>
         </div>
       </div>
-
-      <CaseStudyDrawer index={openCase} onClose={closeCase} />
     </Reveal>
   );
 }

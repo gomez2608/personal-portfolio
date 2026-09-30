@@ -65,7 +65,7 @@ function ThemeToggle({ lineClass }: { lineClass: string }) {
           : `Switch to ${label.toLowerCase()} theme`
       }
       className={cn(
-        "flex items-center gap-2 rounded-lg border px-2.5 py-[7px] font-mono text-xs leading-none font-medium hover:border-current",
+        "flex size-8 shrink-0 items-center justify-center rounded-lg border hover:border-current",
         lineClass,
       )}
     >
@@ -76,7 +76,6 @@ function ThemeToggle({ lineClass }: { lineClass: string }) {
           dark ? "bg-transparent" : "bg-current",
         )}
       />
-      {label}
     </button>
   );
 }
@@ -85,16 +84,41 @@ export default function Header() {
   const { t, lang, setLang } = useLang();
   const { navOn, setNavOn, setTab, introActive } = useUI();
   const { floating, onHero, scrollYProgress } = useHeaderScroll();
+  const [menuOpen, setMenuOpen] = useState(false);
 
+  // About → #about; Experience/Projects/Writing → Work tab 0–2; Credentials → #certificates.
   const goNav = (i: number) => {
     setNavOn(i);
+    setMenuOpen(false);
     if (i === 0) {
       scrollToId("about");
+    } else if (i === t.nav.length - 1) {
+      scrollToId("certificates");
     } else {
       setTab(i - 1);
       scrollToId("work");
     }
   };
+
+  const toContact = () => {
+    setMenuOpen(false);
+    scrollToId("contact-form");
+  };
+
+  // The menu closes on Escape and when the viewport grows past the menu breakpoint.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const mq = window.matchMedia("(min-width: 1180px)");
+    const onKey = (e: KeyboardEvent) =>
+      e.key === "Escape" && setMenuOpen(false);
+    const onWide = () => mq.matches && setMenuOpen(false);
+    window.addEventListener("keydown", onKey);
+    mq.addEventListener("change", onWide);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      mq.removeEventListener("change", onWide);
+    };
+  }, [menuOpen]);
 
   const toTop = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -137,14 +161,14 @@ export default function Header() {
     >
       <div
         className={cn(
-          "pointer-events-auto relative mx-auto flex flex-wrap items-center justify-between gap-x-8 gap-y-3 overflow-hidden border backdrop-blur-[14px]",
+          "pointer-events-auto relative mx-auto flex flex-nowrap items-center justify-between gap-x-8 overflow-hidden border backdrop-blur-[14px]",
         )}
         style={barStyle}
       >
         <a
           href="#top"
           onClick={toTop}
-          className="flex items-center gap-3"
+          className="flex shrink-0 items-center gap-3"
           aria-label={`${site.name} — top`}
         >
           <span
@@ -167,14 +191,14 @@ export default function Header() {
               className="absolute right-1.5 bottom-1.5 size-[9px] rounded-full bg-tangerine transition-opacity duration-200"
             />
           </span>
-          <span className="text-[15px] leading-none font-bold tracking-[-.01em]">
+          <span className="text-[15px] leading-none font-bold tracking-[-.01em] whitespace-nowrap max-[520px]:hidden">
             {site.name}
           </span>
         </a>
 
         <nav
           aria-label={lang === "es" ? "Principal" : "Primary"}
-          className="flex flex-wrap gap-[26px]"
+          className="flex gap-[22px] max-[1180px]:hidden"
         >
           {t.nav.map((label, i) => (
             <button
@@ -191,6 +215,18 @@ export default function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            aria-expanded={menuOpen}
+            aria-controls="site-menu"
+            onClick={() => setMenuOpen((o) => !o)}
+            className={cn(
+              "rounded-lg border px-[11px] py-[9px] font-mono text-xs leading-none font-medium tracking-[.06em] uppercase hover:border-current min-[1180px]:hidden",
+              lineClass,
+            )}
+          >
+            {menuOpen ? t.menu[1] : t.menu[0]}
+          </button>
           <ThemeToggle lineClass={lineClass} />
           <div
             role="group"
@@ -220,6 +256,17 @@ export default function Header() {
               );
             })}
           </div>
+          <button
+            type="button"
+            onClick={toContact}
+            className="flex items-center gap-2 rounded-lg bg-emph px-3.5 py-2.5 text-[13px] leading-none font-semibold whitespace-nowrap text-emph-contrast transition-colors duration-[350ms]"
+          >
+            {t.cta}
+            <span
+              aria-hidden="true"
+              className="size-[7px] rounded-full bg-tangerine"
+            />
+          </button>
         </div>
 
         <motion.div
@@ -228,6 +275,34 @@ export default function Header() {
           style={{ scaleX: scrollYProgress, opacity: floating ? 0.9 : 0 }}
         />
       </div>
+
+      {/* Narrow-screen menu. Lives outside the blurred bar, which would otherwise be its containing block. */}
+      {menuOpen && (
+        <div
+          className="pointer-events-auto fixed inset-0 z-[-1] min-[1180px]:hidden"
+          onClick={() => setMenuOpen(false)}
+        >
+          <nav
+            id="site-menu"
+            aria-label={lang === "es" ? "Menú" : "Menu"}
+            onClick={(e) => e.stopPropagation()}
+            className="absolute right-[clamp(12px,3vw,24px)] flex w-[min(280px,calc(100%-24px))] flex-col rounded-xl border border-line bg-card p-2 shadow-[0_18px_40px_rgba(15,18,32,.16)]"
+            style={{ top: floating ? 84 : 70 }}
+          >
+            {t.nav.map((label, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => goNav(i)}
+                aria-current={navOn === i ? "true" : undefined}
+                className="rounded-lg px-3 py-3.5 text-left text-base leading-none font-semibold text-navy hover:bg-fog"
+              >
+                {label}
+              </button>
+            ))}
+          </nav>
+        </div>
+      )}
     </header>
   );
 }

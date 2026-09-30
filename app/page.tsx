@@ -5,6 +5,9 @@ import Hero from "./components/hero/hero";
 import StackMarquee from "./components/marquee/stack-marquee";
 import About from "./components/about/about";
 import Work from "./components/work/work";
+import { CaseStudyDrawer } from "./components/work/case-study-drawer";
+import Talks from "./components/talks/talks";
+import Education from "./components/education/education";
 import Credentials from "./components/credentials/credentials";
 import Footer from "./components/footer/footer";
 
@@ -25,9 +28,12 @@ export default function Home() {
       <main className="mx-auto max-w-[1280px]">
         <About />
         <Work />
+        <Talks />
+        <Education />
         <Credentials />
       </main>
       <Footer />
+      <CaseStudyDrawer />
     </>
   );
 }

@@ -54,6 +54,8 @@
   --hh-line-float: #e4e0d6;
   --hh-line-top: rgba(228, 224, 214, 0);
   --hh-shadow: 0 12px 32px rgba(15, 18, 32, 0.1);
+  /* Form validation text */
+  --err: #b4481f;
   color-scheme: light;
 }
 
@@ -101,19 +103,23 @@ html[data-theme="dark"] {
   --hh-line-float: rgba(58, 66, 98, 0.9);
   --hh-line-top: rgba(58, 66, 98, 0);
   --hh-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  --err: #f2a48c;
   color-scheme: dark;
 }
 
 @theme {
   --color-*: initial;
 
-  /* Theme-independent (preview card, "View code" button) */
+  /* Theme-independent (preview card, Talks card, "View code" button) */
   --color-tangerine: #f07a2e; /* Signal only — never as text on Paper/Fog */
   --color-hero: #1b2238;
   --color-paper: #f7f5f0;
   --color-hero-meta: #8a90a8;
+  --color-haze: #d6d9e6;
+  --color-hero-line: #2f3754;
   --color-hero-line-strong: #3a4262;
   --color-ink-fixed: #0f1220;
+  --color-invalid: #e07a5f; /* invalid field underline */
   --color-white: #ffffff;
   --color-transparent: transparent;
   --color-current: currentColor;
@@ -150,6 +156,7 @@ html[data-theme="dark"] {
   --color-f-sep: var(--f-sep);
   --color-f-hover: var(--f-hover);
   --color-f-hover-line: var(--f-hover-line);
+  --color-err: var(--err);
 
   --font-sans: var(--font-manrope), system-ui, sans-serif;
   --font-mono: var(--font-dm-mono), ui-monospace, monospace;

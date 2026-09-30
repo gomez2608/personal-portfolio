@@ -5,15 +5,18 @@ import {
   siHuggingface,
   siLangchain,
   siMlflow,
+  siNextdotjs,
   siNumpy,
   siNvidia,
   siPandas,
   siPostgresql,
+  siPydantic,
   siPython,
   siPytorch,
   siR,
   siReact,
   siScikitlearn,
+  siTailwindcss,
   siTensorflow,
   siTypescript,
   type SimpleIcon,
@@ -40,6 +43,9 @@ const SIMPLE_ICONS: Record<string, SimpleIcon> = {
   NVIDIA: siNvidia,
   Coursera: siCoursera,
   Anthropic: siAnthropic,
+  "Next.js": siNextdotjs,
+  Tailwind: siTailwindcss,
+  Pydantic: siPydantic,
 };
 
 /** AWS services share the AWS wordmark (devicon), tinted to the theme like the others. */
@@ -51,6 +57,8 @@ const AWS_KEYS = new Set([
   "AWS Lambda",
   "Textract",
   "S3",
+  "DynamoDB",
+  "SAM",
   "AWS",
 ]);
 

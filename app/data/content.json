@@ -25,7 +25,8 @@
         "About",
         "Experience",
         "Projects",
-        "Writing"
+        "Writing",
+        "Credentials"
       ],
       "tabs": [
         "Experience",
@@ -58,23 +59,6 @@
         "LLM evaluation with DSPy and MLflow.",
         "sign-language models from EMG and video.",
         "clinical ML that helps doctors agree."
-      ],
-      "exp": [
-        [
-          "Jul 2025 — Present",
-          "Machine Learning Engineer, Provectus",
-          "San Francisco, CA · Remote"
-        ],
-        [
-          "Jul 2023 — Jun 2025",
-          "Growth & Software Development Engineer, JustPaid.ai (YC-W23)",
-          "San Francisco, CA · Remote"
-        ],
-        [
-          "Aug 2023 — Jun 2025",
-          "Teaching Assistant, Universidad de los Andes",
-          "Bogotá, Colombia"
-        ]
       ],
       "pubStatus": [
         "Under review",
@@ -135,8 +119,171 @@
             "Model evaluation and optimization with MLflow 3.4, DSPy-based LLM-as-judge, embedding-model benchmarking, and human-in-the-loop feedback loops."
           ],
           "code": ""
+        },
+        {
+          "a": "04 · Web · Open source",
+          "tag": "Web · Open source",
+          "title": "Personal Portfolio",
+          "k1": "OSS",
+          "k1l": "Next.js 15, Tailwind v4 and Framer Motion on Vercel",
+          "b": [
+            "Build a fast, accessible single-page portfolio that reflects the work, not the template.",
+            "Next.js 15 App Router with Tailwind v4, shadcn/ui primitives, Framer Motion reveals, and a strict dark palette.",
+            "Résumé, projects, publications and credentials.",
+            "Deployed on Vercel."
+          ],
+          "code": "https://github.com/gomez2608/personal-portfolio"
         }
-      ]
+      ],
+      "cta": "Get in touch",
+      "menu": [
+        "Menu",
+        "Close"
+      ],
+      "experience": [
+        {
+          "date": "Jul 2025 — Present",
+          "title": "Machine Learning Engineer, Provectus",
+          "location": "San Francisco, CA · Remote",
+          "summary": "Delivering LLM-powered features end-to-end across the stack — Python ML backend, AWS serverless infrastructure, and React/TypeScript frontend — for enterprise document-processing platforms.",
+          "bullets": [
+            "Built production RAG-powered conversational assistants over structured extracted data using LangGraph, AWS Bedrock, and PostgreSQL with pgvector.",
+            "Designed scalable serverless extraction pipelines on AWS Step Functions, Lambda, Textract, and S3, with Alembic-versioned PostgreSQL and full SAM-based infrastructure-as-code.",
+            "Built model evaluation and optimization workflows with MLflow 3.4, DSPy-based LLM-as-judge, embedding-model benchmarking, and human-in-the-loop feedback loops.",
+            "Owned end-to-end delivery across ML backend, serverless infra, and React/TypeScript frontend for document-intensive enterprise pipelines."
+          ],
+          "reference": null,
+          "tags": [
+            "Python",
+            "AWS Lambda",
+            "Step Functions",
+            "SAM",
+            "Bedrock",
+            "SageMaker",
+            "Textract",
+            "S3",
+            "DynamoDB",
+            "PostgreSQL",
+            "pgvector",
+            "Alembic",
+            "MLflow",
+            "DSPy",
+            "LangGraph",
+            "Pydantic",
+            "React",
+            "TypeScript"
+          ]
+        },
+        {
+          "date": "Jul 2023 — Jun 2025",
+          "title": "Growth & Software Development Engineer, JustPaid.ai (YC-W23)",
+          "location": "San Francisco, CA · Remote",
+          "summary": "Part-time agentic AI and full-stack development. Designed and shipped agentic workflows that turn unstructured PDFs into validated, structured records inside the product.",
+          "bullets": [
+            "Designed and implemented agentic AI workflows for automated information extraction from unstructured documents (PDFs), including NLP-based text extraction, structured parsing into Pydantic models, and self-validation loops with agent-based quality supervision.",
+            "Built end-to-end data pipelines integrating ML models with PostgreSQL databases — preprocessing, classification, and structured storage of extracted entities (customers, contracts, line items)."
+          ],
+          "reference": "Reference: Daniel Kivatinos · daniel@kivatinos.com",
+          "tags": [
+            "Python",
+            "LlamaIndex",
+            "LangGraph",
+            "Django",
+            "PostgreSQL",
+            "Pydantic"
+          ]
+        },
+        {
+          "date": "Aug 2023 — Jun 2025",
+          "title": "Teaching Assistant, Universidad de los Andes",
+          "location": "Bogotá, Colombia",
+          "summary": "Led laboratory sessions on machine learning fundamentals: optimization techniques, linear and logistic regression, analytical OLS solutions, hyperparameter tuning, and neural network architectures.",
+          "bullets": [
+            "Managed ~70 students per semester; authored lab resources and assessed student work.",
+            "Average student rating: 4.90 / 5.00."
+          ],
+          "reference": "Reference: Luis Felipe Giraldo Trujillo · lf.giraldo404@uniandes.edu.co",
+          "tags": [
+            "Python",
+            "R",
+            "scikit-learn",
+            "TensorFlow",
+            "PyTorch"
+          ]
+        }
+      ],
+      "experienceToggle": {
+        "more": "Show details +",
+        "less": "Hide details −"
+      },
+      "talks": {
+        "label": "Talks",
+        "kind": "Speaker · with Mateo Rios Querubin",
+        "when": "Medellín · Jul 2026",
+        "event": "PyCon Colombia 2026",
+        "title": "From Expert Judgment to Autonomous Optimization: Encoding Human Expertise into LLM Judges with DSPy",
+        "summary": "How we evaluated an LLM pipeline for reinsurance contracts: five domain experts’ reviews distilled with DSPy into a panel of calibrated LLM judges, within 10% of expert consensus on every dimension, then used as the fitness function for autonomous prompt optimization with MIPROv2 and GEPA.",
+        "tags": [
+          "DSPy",
+          "MLflow",
+          "LiteLLM",
+          "Pydantic"
+        ],
+        "link": "https://2026.pycon.co/talks/33/",
+        "linkLabel": "View talk"
+      },
+      "education": {
+        "label": "Education",
+        "thesisButton": "Thesis case study",
+        "items": [
+          {
+            "date": "Aug 2023 — Dec 2025",
+            "degree": "MSc in Biomedical Engineering",
+            "school": "Universidad de los Andes · Bogotá, Colombia",
+            "thesis": "Thesis: Machine Learning Analysis of Colombian Sign Language: Recognition, Classification, and Biomechanical Characterization.",
+            "opensThesisCaseStudy": true,
+            "coursework": "Coursework: Machine Learning for Engineering · Reinforcement Learning · Analysis & Processing of Medical Images",
+            "gpa": "4.78 / 5.00"
+          },
+          {
+            "date": "2019 — 2023",
+            "degree": "BSc in Biomedical Engineering — Minor in Neuroscience",
+            "school": "Universidad de los Andes · Bogotá, Colombia",
+            "thesis": null,
+            "opensThesisCaseStudy": false,
+            "coursework": "Coursework: Data Structures & Algorithms · Scientific Programming · Signal Processing · Neuroscience · Neuroanatomy",
+            "gpa": "4.08 / 5.00"
+          }
+        ]
+      },
+      "credentialsVerifyLabel": "Verify ↗",
+      "contactForm": {
+        "lead": "Hiring for an ML or AI role, need a hand shipping an LLM system, or want to talk research? Send a note.",
+        "reply": "I usually reply within 1–2 business days",
+        "about": "What’s this about",
+        "reasons": [
+          "A role",
+          "A project",
+          "Research",
+          "Just saying hi"
+        ],
+        "name": "Name",
+        "namePh": "Your name",
+        "email": "Email",
+        "msg": "Message",
+        "msgPh": "A few lines about what you have in mind",
+        "send": "Send message",
+        "sending": "Sending…",
+        "thanks": "Thanks",
+        "thanks2": "Your message is in. I’ll get back to you at the email you left.",
+        "another": "Send another",
+        "errName": "Add your name",
+        "errEmail": "Check your email",
+        "errMsg": "Write a short message",
+        "hint": "All fields are required",
+        "errSend": "Couldn’t send right now. Try again, or reach me on LinkedIn.",
+        "errRate": "Too many messages. Try again in a few minutes."
+      }
     },
     "es": {
       "kicker": "Ingeniero de ML · Bogotá, Colombia",
@@ -163,7 +310,8 @@
         "Sobre mí",
         "Experiencia",
         "Proyectos",
-        "Escritos"
+        "Escritos",
+        "Certificaciones"
       ],
       "tabs": [
         "Experiencia",
@@ -196,23 +344,6 @@
         "evaluación de LLMs con DSPy y MLflow.",
         "modelos de lengua de señas con EMG y video.",
         "ML clínico que ayuda a los médicos a coincidir."
-      ],
-      "exp": [
-        [
-          "Jul 2025 — Hoy",
-          "Ingeniero de Machine Learning, Provectus",
-          "San Francisco, CA · Remoto"
-        ],
-        [
-          "Jul 2023 — Jun 2025",
-          "Ingeniero de Growth y Desarrollo de Software, JustPaid.ai (YC-W23)",
-          "San Francisco, CA · Remoto"
-        ],
-        [
-          "Ago 2023 — Jun 2025",
-          "Asistente de docencia, Universidad de los Andes",
-          "Bogotá, Colombia"
-        ]
       ],
       "pubStatus": [
         "En revisión",
@@ -273,39 +404,173 @@
             "Evaluación y optimización con MLflow 3.4, LLM-as-judge con DSPy, benchmarking de modelos de embeddings y ciclos de retroalimentación con humanos."
           ],
           "code": ""
+        },
+        {
+          "a": "04 · Web · Código abierto",
+          "tag": "Web · Código abierto",
+          "title": "Portafolio personal",
+          "k1": "OSS",
+          "k1l": "Next.js 15, Tailwind v4 y Framer Motion en Vercel",
+          "b": [
+            "Construir un portafolio de una sola página, rápido y accesible, que refleje el trabajo y no la plantilla.",
+            "Next.js 15 App Router con Tailwind v4, primitivas de shadcn/ui, animaciones con Framer Motion y una paleta oscura estricta.",
+            "Hoja de vida, proyectos, publicaciones y certificaciones.",
+            "Desplegado en Vercel."
+          ],
+          "code": "https://github.com/gomez2608/personal-portfolio"
         }
-      ]
+      ],
+      "cta": "Contáctame",
+      "menu": [
+        "Menú",
+        "Cerrar"
+      ],
+      "experience": [
+        {
+          "date": "Jul 2025 — Hoy",
+          "title": "Ingeniero de Machine Learning, Provectus",
+          "location": "San Francisco, CA · Remoto",
+          "summary": "Entrego funcionalidades con LLMs de punta a punta — backend de ML en Python, infraestructura serverless en AWS y frontend en React/TypeScript — para plataformas empresariales de procesamiento de documentos.",
+          "bullets": [
+            "Construí asistentes conversacionales RAG en producción sobre datos estructurados extraídos, con LangGraph, AWS Bedrock y PostgreSQL con pgvector.",
+            "Diseñé pipelines serverless de extracción escalables sobre AWS Step Functions, Lambda, Textract y S3, con PostgreSQL versionado con Alembic e infraestructura como código completa en SAM.",
+            "Construí flujos de evaluación y optimización de modelos con MLflow 3.4, LLM-as-judge con DSPy, benchmarking de modelos de embeddings y ciclos de retroalimentación con humanos.",
+            "Responsable de la entrega de punta a punta: backend de ML, infraestructura serverless y frontend en React/TypeScript para pipelines empresariales con alto volumen de documentos."
+          ],
+          "reference": null,
+          "tags": [
+            "Python",
+            "AWS Lambda",
+            "Step Functions",
+            "SAM",
+            "Bedrock",
+            "SageMaker",
+            "Textract",
+            "S3",
+            "DynamoDB",
+            "PostgreSQL",
+            "pgvector",
+            "Alembic",
+            "MLflow",
+            "DSPy",
+            "LangGraph",
+            "Pydantic",
+            "React",
+            "TypeScript"
+          ]
+        },
+        {
+          "date": "Jul 2023 — Jun 2025",
+          "title": "Ingeniero de Growth y Desarrollo de Software, JustPaid.ai (YC-W23)",
+          "location": "San Francisco, CA · Remoto",
+          "summary": "Desarrollo de IA agéntica y full-stack a medio tiempo. Diseñé y lancé flujos agénticos que convierten PDFs no estructurados en registros estructurados y validados dentro del producto.",
+          "bullets": [
+            "Diseñé e implementé flujos de IA agéntica para extraer información de documentos no estructurados (PDFs): extracción de texto con NLP, parsing estructurado a modelos Pydantic y ciclos de autovalidación con supervisión de calidad basada en agentes.",
+            "Construí pipelines de datos de punta a punta que integran modelos de ML con bases de datos PostgreSQL: preprocesamiento, clasificación y almacenamiento estructurado de entidades extraídas (clientes, contratos, líneas de detalle)."
+          ],
+          "reference": "Referencia: Daniel Kivatinos · daniel@kivatinos.com",
+          "tags": [
+            "Python",
+            "LlamaIndex",
+            "LangGraph",
+            "Django",
+            "PostgreSQL",
+            "Pydantic"
+          ]
+        },
+        {
+          "date": "Ago 2023 — Jun 2025",
+          "title": "Asistente de docencia, Universidad de los Andes",
+          "location": "Bogotá, Colombia",
+          "summary": "Dirigí laboratorios de fundamentos de machine learning: técnicas de optimización, regresión lineal y logística, soluciones analíticas de OLS, ajuste de hiperparámetros y arquitecturas de redes neuronales.",
+          "bullets": [
+            "Gestioné ~70 estudiantes por semestre; creé material de laboratorio y evalué el trabajo de los estudiantes.",
+            "Calificación promedio de los estudiantes: 4.90 / 5.00."
+          ],
+          "reference": "Referencia: Luis Felipe Giraldo Trujillo · lf.giraldo404@uniandes.edu.co",
+          "tags": [
+            "Python",
+            "R",
+            "scikit-learn",
+            "TensorFlow",
+            "PyTorch"
+          ]
+        }
+      ],
+      "experienceToggle": {
+        "more": "Ver detalles +",
+        "less": "Ocultar detalles −"
+      },
+      "talks": {
+        "label": "Charlas",
+        "kind": "Speaker · con Mateo Rios Querubin",
+        "when": "Medellín · Jul 2026",
+        "event": "PyCon Colombia 2026",
+        "title": "From Expert Judgment to Autonomous Optimization: Encoding Human Expertise into LLM Judges with DSPy",
+        "summary": "Cómo evaluamos un pipeline de LLMs para contratos de reaseguro: las revisiones de cinco expertos del dominio, destiladas con DSPy en un panel de jueces LLM calibrados, a menos de 10% del consenso experto en cada dimensión, y luego usadas como función de aptitud para optimizar prompts de forma autónoma con MIPROv2 y GEPA.",
+        "tags": [
+          "DSPy",
+          "MLflow",
+          "LiteLLM",
+          "Pydantic"
+        ],
+        "link": "https://2026.pycon.co/talks/33/",
+        "linkLabel": "Ver charla"
+      },
+      "education": {
+        "label": "Educación",
+        "thesisButton": "Caso de la tesis",
+        "items": [
+          {
+            "date": "Ago 2023 — Dic 2025",
+            "degree": "MSc en Ingeniería Biomédica",
+            "school": "Universidad de los Andes · Bogotá, Colombia",
+            "thesis": "Tesis: Machine Learning Analysis of Colombian Sign Language: Recognition, Classification, and Biomechanical Characterization.",
+            "opensThesisCaseStudy": true,
+            "coursework": "Cursos: Machine Learning para Ingeniería · Aprendizaje por Refuerzo · Análisis y Procesamiento de Imágenes Médicas",
+            "gpa": "4.78 / 5.00"
+          },
+          {
+            "date": "2019 — 2023",
+            "degree": "Pregrado en Ingeniería Biomédica — Opción en Neurociencia",
+            "school": "Universidad de los Andes · Bogotá, Colombia",
+            "thesis": null,
+            "opensThesisCaseStudy": false,
+            "coursework": "Cursos: Estructuras de Datos y Algoritmos · Programación Científica · Procesamiento de Señales · Neurociencia · Neuroanatomía",
+            "gpa": "4.08 / 5.00"
+          }
+        ]
+      },
+      "credentialsVerifyLabel": "Verificar ↗",
+      "contactForm": {
+        "lead": "¿Buscas a alguien para un rol de ML o IA, necesitas ayuda llevando un sistema LLM a producción o quieres hablar de investigación? Escríbeme.",
+        "reply": "Suelo responder en 1–2 días hábiles",
+        "about": "¿Sobre qué es?",
+        "reasons": [
+          "Un rol",
+          "Un proyecto",
+          "Investigación",
+          "Solo saludar"
+        ],
+        "name": "Nombre",
+        "namePh": "Tu nombre",
+        "email": "Correo",
+        "msg": "Mensaje",
+        "msgPh": "Unas líneas sobre lo que tienes en mente",
+        "send": "Enviar mensaje",
+        "sending": "Enviando…",
+        "thanks": "Gracias",
+        "thanks2": "Recibí tu mensaje. Te respondo al correo que dejaste.",
+        "another": "Enviar otro",
+        "errName": "Escribe tu nombre",
+        "errEmail": "Revisa tu correo",
+        "errMsg": "Escribe un mensaje corto",
+        "hint": "Todos los campos son obligatorios",
+        "errSend": "No se pudo enviar. Inténtalo de nuevo o escríbeme por LinkedIn.",
+        "errRate": "Demasiados mensajes. Inténtalo de nuevo en unos minutos."
+      }
     }
   },
-  "experienceTags": [
-    [
-      "Python",
-      "LangGraph",
-      "Bedrock",
-      "SageMaker",
-      "Step Functions",
-      "AWS Lambda",
-      "Textract",
-      "PostgreSQL",
-      "MLflow",
-      "DSPy",
-      "React"
-    ],
-    [
-      "Python",
-      "LlamaIndex",
-      "LangGraph",
-      "Django",
-      "PostgreSQL"
-    ],
-    [
-      "Python",
-      "R",
-      "scikit-learn",
-      "TensorFlow",
-      "PyTorch"
-    ]
-  ],
   "projectTags": [
     [
       "Python",
@@ -329,6 +594,12 @@
       "Textract",
       "MLflow",
       "DSPy"
+    ],
+    [
+      "Next.js",
+      "React",
+      "TypeScript",
+      "Tailwind"
     ]
   ],
   "publications": [
@@ -340,57 +611,68 @@
     {
       "name": "Claude Certified Architect — Professional",
       "org": "Anthropic",
-      "date": "Sep 2026"
+      "date": "Sep 2026",
+      "url": null
     },
     {
       "name": "Claude Certified Architect — Foundations",
       "org": "Anthropic",
-      "date": "Jul 2026"
+      "date": "Jul 2026",
+      "url": null
     },
     {
       "name": "AWS Certified Machine Learning Engineer — Associate",
       "org": "AWS",
-      "date": "Jan 2026"
+      "date": "Jan 2026",
+      "url": "https://cp.certmetrics.com/amazon/en/public/verify/credential"
     },
     {
       "name": "AWS Cloud Practitioner Essentials",
       "org": "AWS",
-      "date": "Jul 2025"
+      "date": "Jul 2025",
+      "url": null
     },
     {
       "name": "Rapid Application Development with Large Language Models (LLMs)",
       "org": "NVIDIA",
-      "date": "May 2025"
+      "date": "May 2025",
+      "url": "https://learn.nvidia.com/certificates?id=D-o2oirlQz25AXCr9g9mcw"
     },
     {
       "name": "Efficient Large Language Model (LLM) Customization",
       "org": "NVIDIA",
-      "date": "May 2025"
+      "date": "May 2025",
+      "url": "https://learn.nvidia.com/certificates?id=nfV2qnetSD6sKrmFeM2GUA"
     },
     {
       "name": "Deep Learning with PyTorch: Generative Adversarial Networks (GANs)",
       "org": "Coursera",
-      "date": "May 2025"
+      "date": "May 2025",
+      "url": "https://www.coursera.org/account/accomplishments/certificate/JLBFEBA3Z44S"
     },
     {
       "name": "Building LLM Applications with Prompt Engineering",
       "org": "NVIDIA",
-      "date": "Apr 2025"
+      "date": "Apr 2025",
+      "url": "https://learn.nvidia.com/certificates?id=Pd9DuVAGTJKU6lImYx9R3w"
     },
     {
       "name": "Generative AI with Diffusion Models",
       "org": "NVIDIA",
-      "date": "Oct 2024"
+      "date": "Oct 2024",
+      "url": "https://learn.nvidia.com/certificates?id=d7xra-f0RfybbNSlcaaAsQ"
     },
     {
       "name": "Building Transformer-Based Natural Language Processing (NLP) Applications",
       "org": "NVIDIA",
-      "date": "Nov 2023"
+      "date": "Nov 2023",
+      "url": "https://learn.nvidia.com/certificates?id=unwxzmZ7SB-LIWr2qnYZFA"
     },
     {
       "name": "Django For Everybody Specialization",
       "org": "University of Michigan",
-      "date": "Apr 2023"
+      "date": "Apr 2023",
+      "url": "https://www.coursera.org/account/accomplishments/specialization/certificate/SP4FDTPSFER3"
     }
   ],
   "careerChartEvents": {

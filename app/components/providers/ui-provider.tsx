@@ -6,6 +6,9 @@ type UIContextValue = {
   /** Active Work tab: 0 Experience, 1 Projects, 2 Writing. */
   tab: number;
   setTab: (tab: number) => void;
+  /** Open case-study drawer: index into t.proj, or -1 when closed. */
+  openCase: number;
+  setOpenCase: (i: number) => void;
   /** Highlighted header nav item (-1 none). */
   navOn: number;
   setNavOn: (i: number) => void;
@@ -22,6 +25,7 @@ const UIContext = createContext<UIContextValue | null>(null);
 export function UIProvider({ children }: { children: React.ReactNode }) {
   const [tab, setTab] = useState(0);
   const [navOn, setNavOn] = useState(-1);
+  const [openCase, setOpenCase] = useState(-1);
   // Starts true so the server-rendered header mark is hidden until the intro decides.
   const [introActive, setIntroActive] = useState(true);
   const [replayToken, setReplayToken] = useState(0);
@@ -36,6 +40,8 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
       value={{
         tab,
         setTab,
+        openCase,
+        setOpenCase,
         navOn,
         setNavOn,
         introActive,

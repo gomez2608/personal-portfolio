@@ -7,6 +7,7 @@ import {
   useTransform,
 } from "framer-motion";
 import { NewTab, useLang } from "@/app/components/providers/lang-provider";
+import { scrollToId } from "@/app/components/providers/ui-provider";
 import { site } from "@/app/data/site";
 import { StatusPill } from "./status-pill";
 import { TypedRole } from "./typed-role";
@@ -26,10 +27,7 @@ export default function Hero() {
   );
 
   return (
-    <section
-      id="top"
-      className="overflow-hidden bg-s-bg text-s-fg"
-    >
+    <section id="top" className="overflow-hidden bg-s-bg text-s-fg">
       <div className="mx-auto flex max-w-[1280px] flex-col gap-[clamp(36px,5vw,56px)] px-[clamp(20px,4vw,40px)] pt-[clamp(128px,16vw,176px)] pb-14">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <span className="font-mono text-[13px] leading-none tracking-[.12em] text-s-2 uppercase">
@@ -55,11 +53,22 @@ export default function Hero() {
           <div className="flex flex-col gap-6">
             <TypedRole />
             <div className="flex flex-wrap gap-2.5">
+              <button
+                type="button"
+                onClick={() => scrollToId("contact-form")}
+                className={`${btn} flex items-center gap-2.5 bg-s-cta text-s-cta-fg hover:bg-s-cta-hover`}
+              >
+                {t.cta}
+                <span
+                  aria-hidden="true"
+                  className="size-2 rounded-full bg-tangerine"
+                />
+              </button>
               <a
                 href={site.resumeUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`${btn} bg-s-cta text-s-cta-fg hover:bg-s-cta-hover`}
+                className={`${btn} border border-s-line-strong hover:border-s-2`}
               >
                 {t.cv} ↗
                 <NewTab />
