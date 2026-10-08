@@ -1,13 +1,18 @@
 import {
   siAnthropic,
+  siClaude,
   siCoursera,
   siDjango,
+  siFastapi,
+  siGitlab,
   siHuggingface,
+  siKotlin,
   siLangchain,
   siMlflow,
   siNextdotjs,
   siNumpy,
   siNvidia,
+  siOpensearch,
   siPandas,
   siPostgresql,
   siPydantic,
@@ -17,6 +22,7 @@ import {
   siReact,
   siScikitlearn,
   siTailwindcss,
+  siTerraform,
   siTensorflow,
   siTypescript,
   type SimpleIcon,
@@ -46,6 +52,12 @@ const SIMPLE_ICONS: Record<string, SimpleIcon> = {
   "Next.js": siNextdotjs,
   Tailwind: siTailwindcss,
   Pydantic: siPydantic,
+  Claude: siClaude,
+  FastAPI: siFastapi,
+  "GitLab CI": siGitlab,
+  Kotlin: siKotlin,
+  OpenSearch: siOpensearch,
+  Terraform: siTerraform,
 };
 
 /** AWS services share the AWS wordmark (devicon), tinted to the theme like the others. */
@@ -59,6 +71,8 @@ const AWS_KEYS = new Set([
   "S3",
   "DynamoDB",
   "SAM",
+  "S3 Vectors",
+  "ECS Fargate",
   "AWS",
 ]);
 

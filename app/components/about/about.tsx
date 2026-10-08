@@ -25,6 +25,9 @@ export default function About() {
         <p className="m-0 text-[17px] leading-[1.7] text-pretty text-slate">
           {t.about2}
         </p>
+        <p className="m-0 text-[17px] leading-[1.7] text-pretty text-slate">
+          {t.about3}
+        </p>
       </div>
       <AccuracyChart />
     </Reveal>

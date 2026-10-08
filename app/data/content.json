@@ -54,9 +54,10 @@
       "about": "Machine Learning Engineer with hands-on experience shipping production LLM, RAG, and agentic systems on AWS for document-intensive enterprise pipelines. MSc in Biomedical Engineering with research on multimodal data collection, computer vision, and deep learning.",
       "about2": "Comfortable working end-to-end across ML backend, serverless infrastructure (AWS Lambda, Step Functions, SAM), and full-stack delivery. Focused on turning frontier AI methods — LLM evaluation, retrieval, and human-in-the-loop workflows — into reliable, observable, cost-aware production systems.",
       "roles": [
-        "RAG assistants on AWS Bedrock.",
-        "agentic workflows for messy PDFs.",
-        "LLM evaluation with DSPy and MLflow.",
+        "evaluation harnesses for LLM extraction.",
+        "agents that review actuarial reports.",
+        "LLM judges calibrated with DSPy.",
+        "retrieval over S3 Vectors and OpenSearch.",
         "sign-language models from EMG and video.",
         "clinical ML that helps doctors agree."
       ],
@@ -107,29 +108,43 @@
           "code": ""
         },
         {
-          "a": "03 · Production GenAI",
-          "tag": "Production · Provectus",
-          "title": "RAG assistants over extracted enterprise documents",
-          "k1": "E2E",
-          "k1l": "ML backend, serverless infra and React frontend",
+          "a": "03 · Evaluation",
+          "tag": "Production · LLM evaluation",
+          "title": "Evaluating LLM document extraction",
+          "k1": "F1",
+          "k1l": "per-field precision and recall, scored by an LLM judge",
           "b": [
-            "Conversational access to structured data extracted from document-intensive enterprise pipelines.",
-            "Built production RAG-powered conversational assistants using LangGraph, AWS Bedrock, and PostgreSQL with pgvector, on serverless extraction pipelines with Step Functions, Lambda, Textract, and S3.",
-            "Alembic-versioned PostgreSQL and full SAM-based infrastructure-as-code.",
-            "Model evaluation and optimization with MLflow 3.4, DSPy-based LLM-as-judge, embedding-model benchmarking, and human-in-the-loop feedback loops."
+            "Know, field by field, whether an LLM pipeline that extracts terms from reinsurance contracts is getting better or worse before a change ships.",
+            "LLM-as-judge for semantic fields and exact matching for structured ones, scored as precision, recall and F1; every run tracked in MLflow against golden fixtures, with DSPy for calibrating judges.",
+            "Reinsurance contract PDFs processed with Textract and Claude on Bedrock, compared against expert-reviewed reference values.",
+            "Packaged as a reusable evaluation library and written up as a team blueprint for document-extraction quality. The approach became our PyCon Colombia 2026 talk."
           ],
           "code": ""
         },
         {
-          "a": "04 · Web · Open source",
+          "a": "04 · Agents",
+          "tag": "Production · Agents",
+          "title": "Conversational agent over actuarial reports",
+          "k1": "52%",
+          "k1l": "less processing time on the largest reports",
+          "b": [
+            "Let reviewers query and correct tables extracted from long actuarial reports instead of re-reading hundreds of pages.",
+            "A tool-calling agent on Bedrock Converse (Claude Haiku and Opus) with retrieval over S3 Vectors and Titan embeddings, table edits with audit events and one-step restore, and async polling for long operations.",
+            "Long actuarial PDFs extracted with Textract through Step Functions (Distributed Map), Lambda and ECS Fargate; a client-aware mode reuses the prior-year report.",
+            "Built most of the agent’s features on an accelerated timeline as part of a small team, and cut processing time on the largest reports by 52%."
+          ],
+          "code": ""
+        },
+        {
+          "a": "05 · Web · Open source",
           "tag": "Web · Open source",
           "title": "Personal Portfolio",
           "k1": "OSS",
           "k1l": "Next.js 15, Tailwind v4 and Framer Motion on Vercel",
           "b": [
             "Build a fast, accessible single-page portfolio that reflects the work, not the template.",
-            "Next.js 15 App Router with Tailwind v4, shadcn/ui primitives, Framer Motion reveals, and a strict dark palette.",
-            "Résumé, projects, publications and credentials.",
+            "Next.js 15 App Router with Tailwind v4 and Framer Motion: a light and dark Ink & Tangerine theme, in English and Spanish.",
+            "Résumé, projects, talks, publications and credentials, with a contact form on Resend that sends a branded confirmation.",
             "Deployed on Vercel."
           ],
           "code": "https://github.com/gomez2608/personal-portfolio"
@@ -145,33 +160,37 @@
           "date": "Jul 2025 — Present",
           "title": "Machine Learning Engineer, Provectus",
           "location": "San Francisco, CA · Remote",
-          "summary": "Delivering LLM-powered features end-to-end across the stack — Python ML backend, AWS serverless infrastructure, and React/TypeScript frontend — for enterprise document-processing platforms.",
+          "summary": "Building LLM document-intelligence systems for enterprise insurance clients, end to end: extraction pipelines, agents, evaluation, and the web apps around them, on AWS.",
           "bullets": [
-            "Built production RAG-powered conversational assistants over structured extracted data using LangGraph, AWS Bedrock, and PostgreSQL with pgvector.",
-            "Designed scalable serverless extraction pipelines on AWS Step Functions, Lambda, Textract, and S3, with Alembic-versioned PostgreSQL and full SAM-based infrastructure-as-code.",
-            "Built model evaluation and optimization workflows with MLflow 3.4, DSPy-based LLM-as-judge, embedding-model benchmarking, and human-in-the-loop feedback loops.",
-            "Owned end-to-end delivery across ML backend, serverless infra, and React/TypeScript frontend for document-intensive enterprise pipelines."
+            "Built the evaluation system for an LLM contract-extraction platform: an LLM-as-judge evaluator with per-field precision, recall and F1, tracked in MLflow against golden fixtures, later packaged as a reusable library and written up as a team blueprint.",
+            "Built most of a production conversational agent over extracted actuarial tables on an accelerated timeline: tool calling through Bedrock Converse (Claude), retrieval over S3 Vectors, and table edits with an audit trail and one-step restore.",
+            "Scaled a Step Functions, Lambda and ECS Fargate extraction pipeline for very large PDFs, cutting processing time on the largest reports by 52%, and shipped client-aware extraction that reuses a client’s prior-year report.",
+            "Worked on agentic document review with LangGraph and hybrid retrieval (OpenSearch, BM25 plus dense) with page-level citations.",
+            "Delivered across the stack: FastAPI and React/TypeScript web apps, Playwright end-to-end tests, GitLab CI, and Terraform and SAM infrastructure."
           ],
           "reference": null,
           "tags": [
             "Python",
-            "AWS Lambda",
-            "Step Functions",
-            "SAM",
+            "Claude",
             "Bedrock",
-            "SageMaker",
             "Textract",
-            "S3",
+            "Step Functions",
+            "AWS Lambda",
+            "ECS Fargate",
+            "SAM",
+            "Terraform",
+            "S3 Vectors",
+            "OpenSearch",
             "DynamoDB",
-            "PostgreSQL",
-            "pgvector",
-            "Alembic",
             "MLflow",
             "DSPy",
             "LangGraph",
-            "Pydantic",
+            "FastAPI",
+            "PostgreSQL",
             "React",
-            "TypeScript"
+            "TypeScript",
+            "Playwright",
+            "GitLab CI"
           ]
         },
         {
@@ -243,7 +262,7 @@
             "thesis": "Thesis: Machine Learning Analysis of Colombian Sign Language: Recognition, Classification, and Biomechanical Characterization.",
             "opensThesisCaseStudy": true,
             "coursework": "Coursework: Machine Learning for Engineering · Reinforcement Learning · Analysis & Processing of Medical Images",
-            "gpa": "4.78 / 5.00"
+            "gpa": "4.74 / 5.00"
           },
           {
             "date": "2019 — 2023",
@@ -315,7 +334,8 @@
         "linkedinMeta": "LinkedIn",
         "role": "ML Engineer · Bogotá",
         "footnote": "You’re receiving this because this address was entered in the contact form at {site}. If that wasn’t you, you can ignore this email."
-      }
+      },
+      "about3": "Outside client work I build with Claude every day: a personal Android app in Kotlin and Jetpack Compose with a FastAPI assistant on Lambda that calls the Anthropic API behind spend caps, output checks and evals, and Next.js sites with Resend contact flows. Claude Code is how I work, with subagents, git worktrees, skills and MCP, and I’ve run internal workshops on it."
     },
     "es": {
       "kicker": "Ingeniero de ML · Bogotá, Colombia",
@@ -371,9 +391,10 @@
       "about": "Ingeniero de Machine Learning con experiencia llevando a producción sistemas LLM, RAG y agénticos sobre AWS para pipelines empresariales con alto volumen de documentos. MSc en Ingeniería Biomédica con investigación en captura de datos multimodales, visión por computador y deep learning.",
       "about2": "Trabajo de punta a punta: backend de ML, infraestructura serverless (AWS Lambda, Step Functions, SAM) y entrega full-stack. Me enfoco en convertir métodos de IA de frontera — evaluación de LLMs, retrieval y flujos con humano en el ciclo — en sistemas de producción confiables, observables y eficientes en costo.",
       "roles": [
-        "asistentes RAG sobre AWS Bedrock.",
-        "flujos agénticos para PDFs caóticos.",
-        "evaluación de LLMs con DSPy y MLflow.",
+        "arneses de evaluación para extracción con LLMs.",
+        "agentes que revisan reportes actuariales.",
+        "jueces LLM calibrados con DSPy.",
+        "retrieval sobre S3 Vectors y OpenSearch.",
         "modelos de lengua de señas con EMG y video.",
         "ML clínico que ayuda a los médicos a coincidir."
       ],
@@ -424,29 +445,43 @@
           "code": ""
         },
         {
-          "a": "03 · GenAI en producción",
-          "tag": "Producción · Provectus",
-          "title": "Asistentes RAG sobre documentos empresariales",
-          "k1": "E2E",
-          "k1l": "backend de ML, infraestructura serverless y frontend React",
+          "a": "03 · Evaluación",
+          "tag": "Producción · Evaluación de LLMs",
+          "title": "Evaluación de extracción documental con LLMs",
+          "k1": "F1",
+          "k1l": "precisión y recall por campo, calificados por un juez LLM",
           "b": [
-            "Acceso conversacional a datos estructurados extraídos de pipelines empresariales con alto volumen de documentos.",
-            "Asistentes conversacionales RAG en producción con LangGraph, AWS Bedrock y PostgreSQL con pgvector, sobre pipelines serverless con Step Functions, Lambda, Textract y S3.",
-            "PostgreSQL versionado con Alembic e infraestructura como código con SAM.",
-            "Evaluación y optimización con MLflow 3.4, LLM-as-judge con DSPy, benchmarking de modelos de embeddings y ciclos de retroalimentación con humanos."
+            "Saber, campo por campo, si un pipeline de LLMs que extrae términos de contratos de reaseguro mejora o empeora antes de lanzar un cambio.",
+            "LLM-as-judge para campos semánticos y coincidencia exacta para los estructurados, medidos con precisión, recall y F1; cada ejecución registrada en MLflow contra fixtures de referencia, con DSPy para calibrar los jueces.",
+            "PDFs de contratos de reaseguro procesados con Textract y Claude en Bedrock, comparados con valores de referencia revisados por expertos.",
+            "Empaquetado como librería de evaluación reutilizable y documentado como guía del equipo para la calidad de extracción. El enfoque se convirtió en nuestra charla en PyCon Colombia 2026."
           ],
           "code": ""
         },
         {
-          "a": "04 · Web · Código abierto",
+          "a": "04 · Agentes",
+          "tag": "Producción · Agentes",
+          "title": "Agente conversacional sobre reportes actuariales",
+          "k1": "52%",
+          "k1l": "menos tiempo de procesamiento en los reportes más extensos",
+          "b": [
+            "Permitir que los revisores consulten y corrijan tablas extraídas de reportes actuariales largos, en vez de releer cientos de páginas.",
+            "Un agente con herramientas sobre Bedrock Converse (Claude Haiku y Opus), con retrieval sobre S3 Vectors y embeddings Titan, edición de tablas con eventos de auditoría y restauración en un paso, y consultas asíncronas para operaciones largas.",
+            "PDFs actuariales extensos extraídos con Textract mediante Step Functions (Distributed Map), Lambda y ECS Fargate; un modo por cliente reutiliza el reporte del año anterior.",
+            "Construí la mayor parte de las funcionalidades del agente en un cronograma acelerado, como parte de un equipo pequeño, y reduje 52% el tiempo de procesamiento de los reportes más extensos."
+          ],
+          "code": ""
+        },
+        {
+          "a": "05 · Web · Código abierto",
           "tag": "Web · Código abierto",
           "title": "Portafolio personal",
           "k1": "OSS",
           "k1l": "Next.js 15, Tailwind v4 y Framer Motion en Vercel",
           "b": [
             "Construir un portafolio de una sola página, rápido y accesible, que refleje el trabajo y no la plantilla.",
-            "Next.js 15 App Router con Tailwind v4, primitivas de shadcn/ui, animaciones con Framer Motion y una paleta oscura estricta.",
-            "Hoja de vida, proyectos, publicaciones y certificaciones.",
+            "Next.js 15 App Router con Tailwind v4 y Framer Motion: un tema Ink & Tangerine claro y oscuro, en inglés y español.",
+            "Hoja de vida, proyectos, charlas, publicaciones y certificaciones, con un formulario de contacto en Resend que envía una confirmación con la marca.",
             "Desplegado en Vercel."
           ],
           "code": "https://github.com/gomez2608/personal-portfolio"
@@ -462,33 +497,37 @@
           "date": "Jul 2025 — Hoy",
           "title": "Ingeniero de Machine Learning, Provectus",
           "location": "San Francisco, CA · Remoto",
-          "summary": "Entrego funcionalidades con LLMs de punta a punta — backend de ML en Python, infraestructura serverless en AWS y frontend en React/TypeScript — para plataformas empresariales de procesamiento de documentos.",
+          "summary": "Construyo sistemas de inteligencia documental con LLMs para clientes empresariales de seguros, de punta a punta: pipelines de extracción, agentes, evaluación y las aplicaciones web alrededor, sobre AWS.",
           "bullets": [
-            "Construí asistentes conversacionales RAG en producción sobre datos estructurados extraídos, con LangGraph, AWS Bedrock y PostgreSQL con pgvector.",
-            "Diseñé pipelines serverless de extracción escalables sobre AWS Step Functions, Lambda, Textract y S3, con PostgreSQL versionado con Alembic e infraestructura como código completa en SAM.",
-            "Construí flujos de evaluación y optimización de modelos con MLflow 3.4, LLM-as-judge con DSPy, benchmarking de modelos de embeddings y ciclos de retroalimentación con humanos.",
-            "Responsable de la entrega de punta a punta: backend de ML, infraestructura serverless y frontend en React/TypeScript para pipelines empresariales con alto volumen de documentos."
+            "Construí el sistema de evaluación de una plataforma de extracción de contratos con LLMs: un evaluador LLM-as-judge con precisión, recall y F1 por campo, registrado en MLflow contra fixtures de referencia, luego empaquetado como librería reutilizable y documentado como guía para el equipo.",
+            "Construí la mayor parte de un agente conversacional en producción sobre tablas actuariales extraídas, en un cronograma acelerado: llamadas a herramientas con Bedrock Converse (Claude), retrieval sobre S3 Vectors y edición de tablas con auditoría y restauración en un paso.",
+            "Escalé un pipeline de extracción con Step Functions, Lambda y ECS Fargate para PDFs muy grandes, reduciendo 52% el tiempo de procesamiento de los reportes más extensos, y lancé una extracción que reutiliza el reporte del año anterior de cada cliente.",
+            "Trabajé en revisión agéntica de documentos con LangGraph y retrieval híbrido (OpenSearch, BM25 más denso) con citas a nivel de página.",
+            "Entregas en todo el stack: aplicaciones web con FastAPI y React/TypeScript, pruebas end-to-end con Playwright, GitLab CI e infraestructura con Terraform y SAM."
           ],
           "reference": null,
           "tags": [
             "Python",
-            "AWS Lambda",
-            "Step Functions",
-            "SAM",
+            "Claude",
             "Bedrock",
-            "SageMaker",
             "Textract",
-            "S3",
+            "Step Functions",
+            "AWS Lambda",
+            "ECS Fargate",
+            "SAM",
+            "Terraform",
+            "S3 Vectors",
+            "OpenSearch",
             "DynamoDB",
-            "PostgreSQL",
-            "pgvector",
-            "Alembic",
             "MLflow",
             "DSPy",
             "LangGraph",
-            "Pydantic",
+            "FastAPI",
+            "PostgreSQL",
             "React",
-            "TypeScript"
+            "TypeScript",
+            "Playwright",
+            "GitLab CI"
           ]
         },
         {
@@ -560,7 +599,7 @@
             "thesis": "Tesis: Machine Learning Analysis of Colombian Sign Language: Recognition, Classification, and Biomechanical Characterization.",
             "opensThesisCaseStudy": true,
             "coursework": "Cursos: Machine Learning para Ingeniería · Aprendizaje por Refuerzo · Análisis y Procesamiento de Imágenes Médicas",
-            "gpa": "4.78 / 5.00"
+            "gpa": "4.74 / 5.00"
           },
           {
             "date": "2019 — 2023",
@@ -632,7 +671,8 @@
         "linkedinMeta": "LinkedIn",
         "role": "Ingeniero de ML · Bogotá",
         "footnote": "Recibes este correo porque esta dirección se ingresó en el formulario de contacto de {site}. Si no fuiste tú, puedes ignorarlo."
-      }
+      },
+      "about3": "Fuera del trabajo con clientes construyo con Claude todos los días: una app Android personal en Kotlin y Jetpack Compose con un asistente en FastAPI sobre Lambda que llama a la API de Anthropic con límites de gasto, validación de salidas y evals, y sitios en Next.js con formularios de contacto en Resend. Claude Code es mi forma de trabajar, con subagentes, git worktrees, skills y MCP, y he dado talleres internos sobre él."
     }
   },
   "projectTags": [
@@ -651,13 +691,23 @@
       "NumPy"
     ],
     [
-      "LangGraph",
+      "Python",
+      "Claude",
       "Bedrock",
-      "pgvector",
-      "Step Functions",
       "Textract",
       "MLflow",
       "DSPy"
+    ],
+    [
+      "Claude",
+      "Bedrock",
+      "S3 Vectors",
+      "Step Functions",
+      "ECS Fargate",
+      "Textract",
+      "DynamoDB",
+      "Terraform",
+      "React"
     ],
     [
       "Next.js",
@@ -681,7 +731,7 @@
     {
       "name": "Claude Certified Architect — Foundations",
       "org": "Anthropic",
-      "date": "Jul 2026",
+      "date": "Jun 2026",
       "url": null
     },
     {
@@ -787,15 +837,18 @@
   },
   "marqueeStack": [
     "Python",
-    "PyTorch",
-    "LangGraph",
+    "Claude",
     "AWS Bedrock",
-    "SageMaker",
     "Step Functions",
-    "PostgreSQL + pgvector",
+    "S3 Vectors",
+    "OpenSearch",
     "MLflow",
     "DSPy",
-    "TypeScript"
+    "LangGraph",
+    "Terraform",
+    "PyTorch",
+    "TypeScript",
+    "Kotlin"
   ],
   "logoSources": {
     "Python": "https://cdn.simpleicons.org/python/1B2238",
