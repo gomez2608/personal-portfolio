@@ -25,7 +25,8 @@ Single-page personal portfolio built with **Next.js 15** (App Router), **React 1
 - `app/components/providers/` — `ThemeProvider` (next-themes, `data-theme`, key `sg-theme`), `LangProvider` (`useLang()`, key `sga-lang`), `UIProvider` (`useUI()`: work tab, nav highlight, open case study, intro state/replay; `scrollToId()`)
 - `app/components/shared/` — `TechLogo` (bundled simple-icons + AWS wordmark, `currentColor`), `LogoTag`/`LogoTagList`, `Reveal`
 - `app/data/content.json` — **all copy (EN/ES)**, tags, certifications, publications, chart milestones. Typed via `app/data/content.ts`. Edit copy here, not in components.
-- `app/data/site.ts` — name, socials, résumé URL
+- `app/data/site.ts` — name, URL, socials, résumé URL
+- `public/resume.pdf` — **generated, don't edit**: the private `gomez2608/curriculum-vitae` repo's CI compiles `main.tex` and commits it here (deploy key `cv-publisher`). Served at `/resume.pdf` (noindex); `/cv` redirects to it
 - `src/lib/utils.ts` — `cn()` helper (clsx + tailwind-merge)
 - `src/lib/contact.ts` — contact form constants shared by client and server (no zod, so it stays out of the client bundle)
 
