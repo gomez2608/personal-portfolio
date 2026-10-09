@@ -8,8 +8,7 @@ export const site = {
     linkedin: "https://www.linkedin.com/in/sebastiangahumada/",
     github: "https://github.com/gomez2608",
   },
-  // To switch to a local PDF: replace this URL with "/resume.pdf" and drop the file in public/resume.pdf.
-  // The current Drive link is preferable if you want to update the resume without a redeploy
-  // (just upload a new version to the same Drive file).
-  resumeUrl: "https://drive.google.com/file/d/1sa3znVpfnh6B6RhEkn6MJzLnO1rcfGlH/view?usp=sharing",
+  // Built from the LaTeX source in gomez2608/curriculum-vitae: its CI compiles main.tex and
+  // commits public/resume.pdf here on every push. Don't edit the PDF by hand.
+  resumeUrl: "/resume.pdf",
 } as const;
