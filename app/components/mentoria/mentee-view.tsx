@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { saveNote } from "@/app/mentoria/[slug]/actions";
 import type { MenteePlan, MenteeState } from "@/app/data/mentoria/types";
 import { cn } from "@/lib/utils";
@@ -71,7 +72,17 @@ export function MenteeView({
             <span className="font-mono text-xs leading-none tracking-[.12em] text-s-2 uppercase">
               Mentoría con {plan.mentor.firstName} · {plan.period}
             </span>
-            <LogoutButton slug={plan.slug} />
+            <div className="flex items-center gap-2">
+              {isMentor && (
+                <Link
+                  href={`/mentoria/${plan.slug}/panel`}
+                  className="rounded-lg border border-s-line-strong px-3 py-2 font-mono text-xs leading-none tracking-[.06em] text-s-2 uppercase hover:border-current"
+                >
+                  ← Volver al panel
+                </Link>
+              )}
+              <LogoutButton slug={plan.slug} />
+            </div>
           </div>
           <h1 className="m-0 text-[clamp(2.4rem,6vw,4rem)] leading-[1.02] font-bold tracking-[-.04em] text-s-fg">
             Hola, {plan.mentee.firstName}

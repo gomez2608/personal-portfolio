@@ -72,7 +72,7 @@ export function MentorView({
                 href={`/mentoria/${plan.slug}`}
                 className="rounded-lg border border-s-line-strong px-3 py-2 font-mono text-xs leading-none tracking-[.06em] text-s-2 uppercase hover:border-current"
               >
-                Ver como {menteeName} ↗
+                Ver como {menteeName} →
               </Link>
               <LogoutButton slug={plan.slug} />
             </div>
