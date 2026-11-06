@@ -26,6 +26,7 @@ Single-page personal portfolio built with **Next.js 15** (App Router), **React 1
 - `app/components/shared/` — `TechLogo` (bundled simple-icons + AWS wordmark, `currentColor`), `LogoTag`/`LogoTagList`, `Reveal`
 - `app/data/content.json` — **all copy (EN/ES)**, tags, certifications, publications, chart milestones. Typed via `app/data/content.ts`. Edit copy here, not in components.
 - `app/data/site.ts` — name, URL, socials, résumé URL
+- `app/mentoria/[slug]/` — private mentorship dashboards (Spanish, noindex): `/mentoria/<slug>` is the mentee view, `/mentoria/<slug>/panel` the mentor panel. Plans live in `app/data/mentoria/<slug>.ts` (registered in `index.ts`, server only); progress, session status, agreements and notes live in Neon (project `personal-portfolio`, table `mentoria_state`, one row per slug). Access codes are checked on the server (`src/lib/mentoria/auth.ts`, signed httpOnly cookie scoped to the slug's path); every server action in `actions.ts` re-checks the role. Mentor notes, the profile and mentor prep must never be passed to the mentee view (`toMenteePlan()` strips them). UI in `app/components/mentoria/`
 - `public/resume.pdf` — **generated, don't edit**: the private `gomez2608/curriculum-vitae` repo's CI compiles `main.tex` and commits it here (deploy key `cv-publisher`). Served at `/resume.pdf` (noindex); `/cv` redirects to it
 - `src/lib/utils.ts` — `cn()` helper (clsx + tailwind-merge)
 - `src/lib/contact.ts` — contact form constants shared by client and server (no zod, so it stays out of the client bundle)
@@ -33,6 +34,7 @@ Single-page personal portfolio built with **Next.js 15** (App Router), **React 1
 ### Environment
 
 - `RESEND_API_KEY`, `CONTACT_TO_EMAIL` — required for the contact form (Vercel + `.env.local`)
+- `DATABASE_URL`, `MENTORIA_SECRET` (≥32 chars, signs the cookies), `MENTORIA_MENTOR_CODE`, and one `MENTORIA_<SLUG>_CODE` per mentee — required for `/mentoria`
 - `CONTACT_FROM_EMAIL` — optional sender override; use `onboarding@resend.dev` until `sebastiangomezahumada.com` is verified in Resend
 
 ### Styling

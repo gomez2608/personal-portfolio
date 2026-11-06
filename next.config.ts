@@ -15,6 +15,15 @@ const nextConfig: NextConfig = {
         source: "/resume.pdf",
         headers: [{ key: "X-Robots-Tag", value: "noindex" }],
       },
+      {
+        // Private mentorship dashboards: never index, never cache.
+        source: "/mentoria/:path*",
+        headers: [
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+          { key: "Cache-Control", value: "private, no-store" },
+          { key: "Referrer-Policy", value: "no-referrer" },
+        ],
+      },
     ];
   },
 };
