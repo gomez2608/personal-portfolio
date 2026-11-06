@@ -85,6 +85,12 @@ export function MenteeView({
             <Meter label="Ruta de estudio" done={courseIds.filter((id) => statusOf(id) === "hecho").length} total={courseIds.length} />
           </div>
           <SyncNote state={sync} />
+          {isMentor && (
+            <p className="m-0 rounded-lg border border-s-line-strong px-4 py-3 text-sm leading-[1.5] text-s-2">
+              Estás viendo la página de {plan.mentee.firstName} con tu código de mentor. Sus notas para cada sesión
+              son de solo lectura aquí; para escribirlas, {plan.mentee.firstName} entra con su propio código.
+            </p>
+          )}
         </div>
       </header>
 
@@ -128,7 +134,9 @@ export function MenteeView({
               <label className="flex flex-col gap-2 text-sm font-semibold text-navy">
                 Tus notas para esta sesión
                 <span className="font-normal text-graphite">
-                  Preguntas, avances o bloqueos. {plan.mentor.firstName} las lee antes de la sesión.
+                  {isMentor
+                    ? `Aquí ${plan.mentee.firstName} escribe sus preguntas antes de la sesión. Las ves también en tu panel.`
+                    : `Preguntas, avances o bloqueos. ${plan.mentor.firstName} las lee antes de la sesión.`}
                 </span>
                 <textarea
                   className={fieldClass}
