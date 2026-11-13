@@ -8,7 +8,11 @@
     "start": "next start",
     "lint": "next lint",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "blog:registry": "tsx scripts/blog/registry.ts",
+    "blog:check": "tsx scripts/blog/check.ts",
+    "predev": "npm run blog:registry",
+    "prebuild": "npm run blog:registry"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",
