@@ -91,35 +91,42 @@ Sebastian picked **A**.
 
 ### 6.1 The cycle
 ```
-Every 2 weeks (Monday morning, America/Bogota)
+1st and 15th of each month, 9:00 America/Bogota
  1. RESEARCH   agent scans the last ~2 weeks of research sources
  2. SHORTLIST  6–8 candidates → a GitHub issue "Edición NN — candidatos"
                each: title, link, 2-line summary (ES), why it matters,
                "¿lo entiende un curioso sin formación?" score, proposed angle
-               → GitHub notifies Sebastian by email
- 3. PICK       Sebastian ticks 3–4 checkboxes and comments "aprobar"
+               → the agent emails Sebastian (Gmail connector)
+ 3. PICK       Sebastian ticks 3–4 checkboxes and adds the label `aprobado`
  4. DRAFT      agent writes posts + clips on branch `edicion-NN`,
-               runs quality checks, opens a PR linked to the issue
+               runs quality checks, opens a PR linked to the issue,
+               emails Sebastian "Borradores listos"
  5. PREVIEW    Vercel builds a protected preview deployment of the PR
- 6. REVIEW     Sebastian reads the preview (desktop or phone), asks for changes
-               in PR comments, the agent revises in the same branch;
-               Sebastian writes "Mi opinión" for each post
+ 6. REVIEW     Sebastian reads the preview (desktop or phone), leaves change
+               requests as PR comments, then adds the label `revisar`; the agent
+               revises in the same branch and removes the label;
+               Sebastian writes "Mi opinión" for each post via `/opinion`
  7. PUBLISH    Sebastian merges → Vercel deploys /blog posts
  8. SEND       CI on master sends the issue's newsletter via Resend, exactly once
 ```
 
 ### 6.2 Decisions made
-- **Runtime:** GitHub Actions in `gomez2608/personal-portfolio`, using the official Claude Code GitHub Action (`anthropics/claude-code-action`). It natively handles "respond to comments on issues/PRs", which covers steps 3–6. One workflow runs on a schedule for steps 1–2; one on issue comments for step 4; one on PR comments for revisions; one on push to `master` for step 8. *(My call; the scheduling detail is the builder's.)*
-- **Auth/cost: support both paths, chosen by one workflow setting.**
-  - **Subscription token** (`CLAUDE_CODE_OAUTH_TOKEN` from `claude setup-token`). The official action documents this for Pro/Max/Ultra/Team/Enterprise, and runs use the subscription instead of API billing. Use it **only if the plan is Sebastian's personal plan, never a work-provided seat.** Known caveats: it shares the plan's usage limits with his interactive use, and the terms ("ordinary, individual use of Claude Code") don't explicitly address scheduled personal automation.
-  - **API key** from a personal Claude Console account, with a monthly spend limit (~$40), running **Claude Opus 5.5** (~$10–15 per cycle). Use this if the plan is a work seat, if runs hit plan limits, or if Anthropic's guidance changes.
-  - Which one is used is confirmed with Sebastian during setup. Switching later must be a one-line change.
+- **Runtime (decided by Sebastian): Claude Code scheduled tasks** ([docs](https://code.claude.com/docs/en/web-scheduled-tasks), research preview). They run in Anthropic's cloud on Sebastian's subscription ("draw down subscription usage the same way interactive sessions do"), so there's no API key and no terms ambiguity. **Only on a personal plan, never a work-provided seat.** Three tasks:
+  1. **Candidatos:** schedule trigger, cron `CRON_TZ=America/Bogota 0 9 1,15 * *` (cron can't express "every 14 days", so twice a month is used). Steps 1–2.
+  2. **Borradores:** GitHub trigger, *Issue labeled* `aprobado` (issues also labeled `newsletter`). Step 4.
+  3. **Revisión:** GitHub trigger, *Pull request labeled* `revisar` (head branch `edicion-*`). It reads the PR's comments since the last revision, applies them, and removes the label.
+  - Comments can't trigger tasks (only issue, PR and release events can), hence labels.
+  - Use `gh api` (REST): the environment's proxy rejects GraphQL-based `gh issue` / `gh pr`.
+  - The tasks' cloud environment needs network access to the research sources (arXiv, Hugging Face, lab blogs) via Allowed domains or Full access. Playwright uses the preinstalled Chrome (`CHROME_PATH`). The Claude GitHub App must be installed on the repo.
+  - **Notifications:** runs act as Sebastian's GitHub user, so GitHub won't notify him about them. Each task ends by emailing him through the Gmail connector, with a link to the issue or PR.
+  - **Fallback:** if scheduled tasks change or break, the same three steps run in GitHub Actions with `anthropics/claude-code-action` (API key with a spend limit). The prompts and repo files are the same, so only the trigger layer changes.
+- **Non-AI steps run as plain GitHub Actions** (no Claude, free minutes): copying `/opinion` comments into posts, the PR checks, and sending the newsletter on merge.
 - **Approval gates are enforced by mechanics, not prompts:**
-  - Step 4 only runs when the comment author is `gomez2608` and the comment is `aprobar` on an issue labeled `newsletter`.
-  - Revision runs only respond to `gomez2608`.
+  - Drafting starts only from the `aprobado` label. Only users with write access can add labels, and Sebastian is the only one.
+  - Revisions start only from the `revisar` label (same restriction).
   - The agent never pushes to `master` and never merges. Branch protection on `master` requires a PR.
   - The send job only runs on `master` after a merge that adds or changes an issue's content.
-- **Content in the repo:** each post is an MDX file plus clip components, in a per-issue folder (exact layout is the builder's call, e.g. `content/blog/<slug>/`). Each issue also has a small metadata file: issue number, date, post order, intro text, sent status.
+- **Content in the repo:** each post is a route folder `app/blog/<slug>/` with `page.mdx`, `post.json` and `clips/` (fixed in Plan 1). Each issue also has a small metadata file: issue number, date, post order, intro text, sent status.
 - **Clips:** Remotion compositions played in the page with `@remotion/player`, so nothing is rendered to video for the site. They're built from a **small library of brand diagram primitives** written once by hand (labeled box/node, arrow/connector with draw-on, flow dot along a path, highlight/glow, dim others, counter/number, caption track, grouping). The agent composes clips from these primitives and may add custom pieces only when needed. The license is free for individuals (≤3 people), which fits.
 - **Quality checks the agent must pass before opening or updating the PR:**
   1. `npm run build` and `npm run lint` pass.
@@ -155,7 +162,7 @@ Every 2 weeks (Monday morning, America/Bogota)
 
 | Item | Per month |
 |---|---|
-| Claude (API path, Opus 5.5 + web search) | ~$20–30 (~$0 extra if the subscription path works) |
+| Claude (scheduled tasks on the personal subscription) | $0 extra; uses plan limits (fallback API path: ~$20–30) |
 | Resend | $0 up to 1,000 subscribers, then $40/mo up to 5,000 |
 | Remotion, Vercel, Neon, GitHub Actions | $0 (free tiers / existing) |
 | Sebastian's time | ~3–5 h (5 min picking + 1.5–2.5 h review per cycle) |
