@@ -7,6 +7,8 @@ import {
   useEffect,
   useState,
 } from "react";
+import { usePathname } from "next/navigation";
+import { documentLang } from "@/src/lib/lang";
 import { copy, type Copy, type Lang } from "@/app/data/content";
 
 const STORAGE_KEY = "sga-lang";
@@ -30,9 +32,10 @@ export function LangProvider({ children }: { children: React.ReactNode }) {
     } catch {}
   }, []);
 
+  const pathname = usePathname();
   useEffect(() => {
-    document.documentElement.lang = lang;
-  }, [lang]);
+    document.documentElement.lang = documentLang(pathname, lang);
+  }, [lang, pathname]);
 
   const setLang = useCallback((next: Lang) => {
     try {

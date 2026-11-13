@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useTransition } from "react";
 import Link from "next/link";
-import { useTheme } from "next-themes";
 import { logout } from "@/app/mentoria/[slug]/actions";
 import { site } from "@/app/data/site";
+import { ThemeToggle } from "@/app/components/shared/theme-toggle";
 
 /** Slim top bar: the portfolio mark (links home) and the theme toggle. */
 export function MentoriaTopBar() {
@@ -25,28 +25,6 @@ export function MentoriaTopBar() {
         <ThemeToggle />
       </div>
     </div>
-  );
-}
-
-function ThemeToggle() {
-  const { resolvedTheme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-  const dark = mounted && resolvedTheme === "dark";
-  const label = dark ? "claro" : "oscuro";
-  return (
-    <button
-      type="button"
-      onClick={() => setTheme(dark ? "light" : "dark")}
-      title={`Tema ${label}`}
-      aria-label={`Cambiar a tema ${label}`}
-      className="flex size-8 shrink-0 items-center justify-center rounded-lg border border-s-line-strong hover:border-current"
-    >
-      <span
-        aria-hidden="true"
-        className={`size-3 rounded-full border-[1.5px] border-current ${dark ? "bg-transparent" : "bg-current"}`}
-      />
-    </button>
   );
 }
 
