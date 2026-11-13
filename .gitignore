@@ -43,3 +43,6 @@ next-env.d.ts
 # claude code transient state
 .claude/scheduled_tasks.lock
 .superpowers/
+
+# blog snapshot output
+.blog-snaps/
