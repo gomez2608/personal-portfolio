@@ -11,6 +11,7 @@
     "test:watch": "vitest",
     "blog:registry": "tsx scripts/blog/registry.ts",
     "blog:check": "tsx scripts/blog/check.ts",
+    "blog:snap": "tsx scripts/blog/snap.ts",
     "predev": "npm run blog:registry",
     "prebuild": "npm run blog:registry"
   },
@@ -43,6 +44,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
+    "playwright": "^1.65.1",
     "tailwindcss": "^4",
     "tsx": "^4.23.15",
     "typescript": "^5",

@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { defineClip, validateClipDef, type ClipDef } from "./clip-def";
+import { defineClip } from "./clip-def";
+import { validateClipDef, type ClipDef } from "./clip-types";
 import { sec } from "./timing";
 
 // A valid 12 s clip with captions [0,180) and [180,360).

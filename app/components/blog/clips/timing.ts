@@ -1,4 +1,4 @@
-import type { Caption } from "./clip-def";
+import type { Caption } from "./clip-types";
 
 /** Every clip is a 1280×720 composition at 30 fps. */
 export const FPS = 30;

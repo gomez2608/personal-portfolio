@@ -1,5 +1,5 @@
 import { AbsoluteFill, useCurrentFrame } from "remotion";
-import type { ClipDef } from "./clip-def";
+import type { ClipDef } from "./clip-types";
 import { C, FONT_SANS } from "./palette";
 import { activeCaption, HEIGHT, WIDTH } from "./timing";
 

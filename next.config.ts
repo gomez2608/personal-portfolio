@@ -18,6 +18,11 @@ const nextConfig: NextConfig = {
         headers: [{ key: "X-Robots-Tag", value: "noindex" }],
       },
       {
+        // Dev-only clip preview frames (404 in production anyway).
+        source: "/blog/clip-preview/:path*",
+        headers: [{ key: "X-Robots-Tag", value: "noindex" }],
+      },
+      {
         // Private mentorship dashboards: never index, never cache.
         source: "/mentoria/:path*",
         headers: [

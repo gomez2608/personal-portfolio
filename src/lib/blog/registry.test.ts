@@ -19,3 +19,9 @@ test("renders sorted lazy imports per slug", () => {
 test("renders an empty registry for zero posts", () => {
   expect(renderRegistrySource([])).toContain("export const clipRegistry: ClipRegistry = {};");
 });
+
+test("imports the real ClipComponent type without pulling in the player", () => {
+  const src = renderRegistrySource([]);
+  expect(src).toContain('import type { ClipComponent } from "@/app/components/blog/clips/clip-types";');
+  expect(src).not.toContain("clip-def");
+});

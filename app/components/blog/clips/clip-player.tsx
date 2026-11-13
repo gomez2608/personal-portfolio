@@ -2,7 +2,7 @@
 
 import { Player, type PlayerRef } from "@remotion/player";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
-import type { ClipDef } from "./clip-def";
+import type { ClipDef } from "./clip-types";
 import { ClipFrame } from "./clip-frame";
 import { playbackPolicy } from "./playback";
 import { FPS, HEIGHT, WIDTH } from "./timing";

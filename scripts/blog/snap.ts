@@ -1,0 +1,104 @@
+/**
+ * Screenshots every clip of a post at fixed frames, for spotting layout glitches.
+ *   npm run blog:snap -- <slug> [--base http://localhost:3000]
+ * Needs a running dev server (npm run dev) and Chromium (npx playwright install chromium).
+ */
+import fs from "node:fs";
+import path from "node:path";
+import { chromium } from "playwright";
+import { readPostEntries } from "../../src/lib/blog/entries";
+
+const args = process.argv.slice(2);
+const baseIdx = args.indexOf("--base");
+const base = (baseIdx >= 0 ? args[baseIdx + 1] : "http://localhost:3000").replace(/\/$/, "");
+const slug = args.find((a, i) => !a.startsWith("--") && (baseIdx < 0 || i !== baseIdx + 1));
+
+if (!slug) {
+  console.error("Usage: npm run blog:snap -- <slug> [--base http://localhost:3000]");
+  process.exit(1);
+}
+
+const entry = readPostEntries().find((e) => e.dir === slug);
+if (!entry) {
+  console.error(`No post folder app/blog/${slug}`);
+  process.exit(1);
+}
+if (entry.clipFiles.length === 0) {
+  console.error(`app/blog/${slug} has no clips`);
+  process.exit(1);
+}
+
+async function main() {
+  try {
+    await fetch(base, { method: "HEAD" });
+  } catch {
+    console.error(`Cannot reach ${base}. Start the dev server first: npm run dev`);
+    process.exit(1);
+  }
+
+  let browser;
+  try {
+    browser = await chromium.launch();
+  } catch (e) {
+    console.error(`Could not launch Chromium (${(e as Error).message.split("\n")[0]}).\nInstall it once with: npx playwright install chromium`);
+    process.exit(1);
+  }
+
+  const outDir = path.join(".blog-snaps", slug as string);
+  fs.mkdirSync(outDir, { recursive: true });
+  const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
+  // Hide the Next.js dev indicator so it doesn't end up in the screenshots.
+  await page.addInitScript(() => {
+    document.addEventListener("DOMContentLoaded", () => {
+      const style = document.createElement("style");
+      style.textContent = "nextjs-portal { display: none !important; }";
+      document.head.appendChild(style);
+    });
+  });
+  const files: string[] = [];
+  const failures: string[] = [];
+
+  for (const clip of entry!.clipFiles) {
+    const url = (frame: number) => `${base}/blog/clip-preview/${slug}/${clip}?frame=${frame}`;
+    const open = async (frame: number) => {
+      const res = await page.goto(url(frame), { waitUntil: "load" });
+      if (!res || res.status() === 404) {
+        failures.push(`${clip}: 404 at ${url(frame)}`);
+        return null;
+      }
+      try {
+        await page.waitForSelector('[data-ready="true"]', { timeout: 30_000 });
+      } catch {
+        failures.push(`${clip}: timed out waiting for data-ready at ${url(frame)}`);
+        return null;
+      }
+      if (await page.locator('[data-missing="true"]').count()) {
+        failures.push(`${clip}: not in the clip registry (run npm run blog:registry)`);
+        return null;
+      }
+      return page.locator("[data-stage]");
+    };
+
+    const first = await open(0);
+    if (!first) continue;
+    const duration = Number(await page.locator("[data-duration]").getAttribute("data-duration"));
+    const frames = [...new Set([0, 0.25, 0.5, 0.75].map((f) => Math.round(duration * f)).concat(duration - 1))];
+
+    for (const frame of frames) {
+      const stage = frame === 0 ? first : await open(frame);
+      if (!stage) break;
+      const file = path.join(outDir, `${clip}-${frame}.png`);
+      await stage.screenshot({ path: file });
+      files.push(file);
+    }
+  }
+
+  await browser.close();
+  console.log(files.join("\n"));
+  if (failures.length > 0) {
+    console.error(failures.map((f) => `FAIL ${f}`).join("\n"));
+    process.exit(1);
+  }
+}
+
+main();
