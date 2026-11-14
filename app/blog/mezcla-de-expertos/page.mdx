@@ -1,0 +1,47 @@
+import post from "./post.json";
+import { PostShell, postMetadata } from "@/app/components/blog/post-shell";
+export const metadata = postMetadata(post);
+export default function Layout({ children }) { return <PostShell post={post}>{children}</PostShell>; }
+
+import Clip1 from "./clips/clip-1";
+import Clip2 from "./clips/clip-2";
+
+Un modelo de lenguaje, como el que usas cuando chateas con una IA, está hecho de miles de millones de **parámetros**: números que el modelo ajustó mientras aprendía. Más parámetros suelen significar más capacidad para aprender cosas. El problema es que, en un modelo común, todos esos números trabajan cada vez que el modelo lee o escribe una palabra. Si lo haces diez veces más grande, usarlo también cuesta unas diez veces más.
+
+En 2017, un grupo de investigadores entre los que estaban Noam Shazeer, Geoffrey Hinton y Jeff Dean propuso una salida. En lugar de un solo bloque gigante, dividir una parte del modelo en muchos **expertos** (pequeñas redes independientes) y poner delante un **router (enrutador)** que decide qué expertos atienden cada palabra. La idea se llama *mixture of experts*: mezcla de expertos.
+
+<Destacado>
+Piensa en la recepción de un hospital con 8 especialistas. Llega alguien con dolor de rodilla. La recepcionista no lo manda a los 8 consultorios: lo escucha un momento y lo envía a los 2 que más sentido tienen, por ejemplo traumatología y fisioterapia. Los otros 6 quedan libres. El hospital sabe muchísimo en total, pero cada paciente solo ocupa una parte.
+</Destacado>
+
+<Clip1 />
+
+Eso es lo que pasa dentro de una capa de mezcla de expertos. Cada palabra pasa primero por el router, que elige a unos pocos expertos, y solo esos hacen cálculos. En el ejemplo son 2 de 8: en cada palabra trabaja una cuarta parte de esa capa, aunque el modelo tenga guardado lo que saben los 8. El resto del modelo, fuera de esa capa, sí trabaja completo.
+
+Dos aclaraciones. Los nombres de los expertos son inventados para el ejemplo: nadie le dice a un experto "tú te encargas de la gramática". Cada uno se va especializando solo durante el entrenamiento, y lo que aprende no siempre corresponde a un tema que podamos nombrar. Además, los modelos no leen palabras completas sino pedacitos de palabras, llamados *tokens*, pero la idea es la misma.
+
+¿Cómo elige el router? Es, a su vez, una red pequeña que mira la palabra y le pone un puntaje a cada experto. Se queda con los dos más altos y reparte el peso entre ellos. En el siguiente clip, Lugares saca 45 y Gramática 30. Entre los dos suman 75, así que Lugares pesa 45 de 75 (un 60 %) y Gramática 30 de 75 (un 40 %). La respuesta final mezcla lo que dice cada uno en esa proporción.
+
+<Clip2 />
+
+## Por qué importa
+
+Esta idea separa dos cosas que antes iban juntas: cuánto puede aprender un modelo y cuánto cuesta usarlo. Agregar expertos le da más capacidad, pero cada palabra sigue visitando solo a unos pocos, así que el costo por palabra casi no crece. En el artículo, los autores probaron capas con miles de expertos y modelos de hasta 137.000 millones de parámetros, y reportaron mejores resultados que los mejores modelos de ese momento en traducción y en predicción de texto, con menos cómputo. Desde entonces, variantes de esta idea aparecen en varios de los modelos de lenguaje grandes.
+
+<Profundizar title="Los detalles técnicos">
+
+**Gating network (red de compuerta).** Es el nombre técnico del router. Recibe la representación numérica de la palabra y produce un puntaje por experto. Se entrena junto con los expertos, así que aprende a repartir el trabajo a la vez que ellos se especializan.
+
+**Top-k (quedarse con los k mejores).** De todos los puntajes se conservan solo los k más altos, el resto queda en cero y los pesos se reparten entre los elegidos para que sumen 1. En los clips, k = 2. El artículo además le suma un poco de ruido aleatorio a los puntajes antes de elegir (lo llama *noisy top-k gating*), lo que ayuda a repartir mejor el trabajo.
+
+**Load balancing (balanceo de carga).** Hay un riesgo: el router puede preferir siempre a los mismos pocos expertos. Esos mejoran más rápido porque practican más, el router los prefiere todavía más, y el resto queda casi sin usar. Para evitarlo, durante el entrenamiento se suma una penalización cuando el uso de los expertos está muy desparejo.
+
+**Sparse (disperso) vs. dense (denso).** Un modelo denso usa todos sus parámetros en cada palabra. Uno disperso, como este, tiene muchos parámetros pero activa solo una parte en cada paso. La pregunta clave deja de ser "cuántos parámetros tiene" y pasa a ser "cuántos usa por palabra". Lo que no desaparece: todos los expertos tienen que estar guardados en memoria, aunque descansen la mayor parte del tiempo.
+
+En el artículo, la capa de expertos va entre capas LSTM, un tipo de red para texto muy común antes de los Transformers, y se prueba en modelado de lenguaje (predecir la siguiente palabra) y en traducción automática.
+
+Artículo: [Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer](https://arxiv.org/abs/1701.06538), de Noam Shazeer, Azalia Mirhoseini, Krzysztof Maziarz, Andy Davis, Quoc Le, Geoffrey Hinton y Jeff Dean. Publicado en arXiv el 23 de enero de 2017.
+
+</Profundizar>
+
+<MiOpinion pending />

@@ -1,0 +1,22 @@
+{
+  "slug": "mezcla-de-expertos",
+  "title": "Mezcla de expertos: modelos enormes que solo usan una parte a la vez",
+  "hook": "Cómo un modelo de IA puede saber muchísimo sin volverse lento: para cada palabra, solo despierta a unos pocos especialistas.",
+  "date": "2026-11-13",
+  "issue": 1,
+  "status": "draft",
+  "paper": {
+    "title": "Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer",
+    "url": "https://arxiv.org/abs/1701.06538",
+    "authors": [
+      "Noam Shazeer",
+      "Azalia Mirhoseini",
+      "Krzysztof Maziarz",
+      "Andy Davis",
+      "Quoc Le",
+      "Geoffrey Hinton",
+      "Jeff Dean"
+    ],
+    "published": "2017-01-23"
+  }
+}

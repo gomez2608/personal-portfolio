@@ -2,4 +2,9 @@
 import type { ClipComponent } from "@/app/components/blog/clips/clip-types";
 type ClipRegistry = Record<string, Record<string, () => Promise<{ default: ClipComponent }>>>;
 
-export const clipRegistry: ClipRegistry = {};
+export const clipRegistry: ClipRegistry = {
+  "mezcla-de-expertos": {
+    "clip-1": () => import("@/app/blog/mezcla-de-expertos/clips/clip-1"),
+    "clip-2": () => import("@/app/blog/mezcla-de-expertos/clips/clip-2"),
+  },
+};
