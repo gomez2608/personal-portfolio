@@ -12,8 +12,9 @@ export type SubscribeDeps = {
     source: string;
     ipHash: string;
     policyVersion: string;
-    now: Date;
+    consentAt: Date;
   }): Promise<void>;
+  /** Stamps last_link_at; called only after the confirmation email was sent. */
   touchLink(email: string, now: Date): Promise<void>;
   sendConfirmEmail(email: string, confirmUrl: string): Promise<void>;
   secret: string;
@@ -46,10 +47,8 @@ export async function handleSubscribe(
       source,
       ipHash: hashIp(ip, deps.secret),
       policyVersion: POLICY_VERSION,
-      now: new Date(now),
+      consentAt: new Date(now),
     });
-  } else {
-    await deps.touchLink(email, new Date(now));
   }
 
   const token = signConfirmToken(email, now, deps.secret);
@@ -57,4 +56,6 @@ export async function handleSubscribe(
     email,
     `${deps.siteUrl}/api/newsletter/confirm?token=${encodeURIComponent(token)}`,
   );
+  // Only a link that actually went out starts the cooldown; a failed send can be retried at once.
+  await deps.touchLink(email, new Date(now));
 }

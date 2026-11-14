@@ -19,27 +19,30 @@ export async function getSubscriber(email: string): Promise<SubscriberRow | null
   return { status: r.status, lastLinkAt: new Date(r.last_link_at).getTime() };
 }
 
+// Creates the pending row, or turns an unsubscribed row back into a pending one. Never touches a
+// confirmed row (a confirm may land between the read and this write). last_link_at starts at the
+// epoch and is only stamped by touchLink once the confirmation email has been sent.
 export async function upsertPending(r: {
   email: string;
   source: string;
   ipHash: string;
   policyVersion: string;
-  now: Date;
+  consentAt: Date;
 }): Promise<void> {
-  const at = r.now.toISOString();
+  const at = r.consentAt.toISOString();
   await db()`
     INSERT INTO newsletter_subscribers
       (email, status, source, consent_at, policy_version, ip_hash, last_link_at, confirmed_at)
-    VALUES (${r.email}, 'pending', ${r.source}, ${at}, ${r.policyVersion}, ${r.ipHash}, ${at}, NULL)
+    VALUES (${r.email}, 'pending', ${r.source}, ${at}, ${r.policyVersion}, ${r.ipHash}, to_timestamp(0), NULL)
     ON CONFLICT (email) DO UPDATE SET
       status = 'pending',
       source = EXCLUDED.source,
       consent_at = EXCLUDED.consent_at,
       policy_version = EXCLUDED.policy_version,
       ip_hash = EXCLUDED.ip_hash,
-      last_link_at = EXCLUDED.last_link_at,
       confirmed_at = NULL,
       updated_at = now()
+    WHERE newsletter_subscribers.status <> 'confirmed'
   `;
 }
 

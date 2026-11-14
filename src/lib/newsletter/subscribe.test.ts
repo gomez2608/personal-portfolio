@@ -77,3 +77,66 @@ test("raw IP never reaches storage", async () => {
   await handleSubscribe(input, "9.9.9.9", d);
   expect(JSON.stringify(d.calls)).not.toContain("9.9.9.9");
 });
+
+// Stateful fake: rows change as the deps write, like the real table.
+function statefulDeps(opts: { failSend?: number } = {}) {
+  const rows: Record<string, SubscriberRow> = {};
+  let failures = opts.failSend ?? 0;
+  let t = NOW;
+  const sent: string[] = [];
+  const deps: SubscribeDeps = {
+    secret: "s".repeat(32),
+    siteUrl: "https://example.com",
+    now: () => t,
+    getSubscriber: async (e) => rows[e] ?? null,
+    upsertPending: async (r) => {
+      const prev = rows[r.email];
+      if (prev?.status === "confirmed") return;
+      // Like the SQL: last_link_at is only ever stamped by touchLink.
+      rows[r.email] = { status: "pending", lastLinkAt: prev?.lastLinkAt ?? 0 };
+    },
+    touchLink: async (e, now) => {
+      if (rows[e]) rows[e] = { ...rows[e], lastLinkAt: now.getTime() };
+    },
+    sendConfirmEmail: async (e) => {
+      if (failures > 0) {
+        failures--;
+        throw new Error("resend down");
+      }
+      sent.push(e);
+    },
+  };
+  return { deps, rows, sent, tick: (ms: number) => (t += ms) };
+}
+
+test("failed confirmation email does not start the cooldown: an immediate retry sends", async () => {
+  const s = statefulDeps({ failSend: 1 });
+  await expect(handleSubscribe(input, "ip", s.deps)).rejects.toThrow("resend down");
+  s.tick(1000);
+  await handleSubscribe(input, "ip", s.deps);
+  expect(s.sent).toEqual(["a@b.co"]);
+});
+
+test("failed resend of a link to a pending address does not start the cooldown", async () => {
+  const s = statefulDeps();
+  await handleSubscribe(input, "ip", s.deps);
+  s.tick(11 * 60_000);
+  s.deps.sendConfirmEmail = async () => {
+    throw new Error("resend down");
+  };
+  await expect(handleSubscribe(input, "ip", s.deps)).rejects.toThrow();
+  s.deps.sendConfirmEmail = async (e) => void s.sent.push(e);
+  s.tick(1000);
+  await handleSubscribe(input, "ip", s.deps);
+  expect(s.sent).toEqual(["a@b.co", "a@b.co"]);
+});
+
+test("successful send stamps the link time after sending", async () => {
+  const d = fakeDeps();
+  const order: string[] = [];
+  d.sendConfirmEmail = async () => void order.push("send");
+  d.touchLink = async () => void order.push("touch");
+  d.upsertPending = async () => void order.push("upsert");
+  await handleSubscribe(input, "ip", d);
+  expect(order).toEqual(["upsert", "send", "touch"]);
+});
