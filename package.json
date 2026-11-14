@@ -13,7 +13,8 @@
     "blog:check": "tsx scripts/blog/check.ts",
     "blog:snap": "tsx scripts/blog/snap.ts",
     "predev": "npm run blog:registry",
-    "prebuild": "npm run blog:registry"
+    "prebuild": "npm run blog:registry",
+    "newsletter:send": "tsx --conditions=react-server scripts/newsletter/send.ts"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.1",
