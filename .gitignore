@@ -46,3 +46,6 @@ next-env.d.ts
 
 # blog snapshot output
 .blog-snaps/
+
+# newsletter email previews
+.newsletter-preview/

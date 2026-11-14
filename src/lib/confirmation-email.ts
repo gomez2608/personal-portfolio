@@ -2,16 +2,16 @@ import { copy, type Lang } from "@/app/data/content";
 import { site } from "@/app/data/site";
 
 // Brand colors, inlined because email clients ignore stylesheets and CSS variables.
-const FOG = "#ECE8DF";
-const PAPER = "#F7F5F0";
-const LINE = "#E4E0D6";
-const INK = "#0F1220";
-const NAVY = "#1B2238";
-const SLATE = "#43465A";
-const GRAPHITE = "#5E6070";
-const TANGERINE = "#F07A2E";
-const SANS = "Manrope,Helvetica,Arial,sans-serif";
-const MONO = "'Courier New',Courier,monospace";
+export const FOG = "#ECE8DF";
+export const PAPER = "#F7F5F0";
+export const LINE = "#E4E0D6";
+export const INK = "#0F1220";
+export const NAVY = "#1B2238";
+export const SLATE = "#43465A";
+export const GRAPHITE = "#5E6070";
+export const TANGERINE = "#F07A2E";
+export const SANS = "Manrope,Helvetica,Arial,sans-serif";
+export const MONO = "'Courier New',Courier,monospace";
 
 /**
  * First name to greet the visitor with, or null. Only plain names are used
@@ -23,7 +23,7 @@ export function safeFirstName(name: string): string | null {
   return /^[\p{L}\p{M}'’-]{1,30}$/u.test(first) ? first : null;
 }
 
-function esc(s: string) {
+export function esc(s: string) {
   return s
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -46,7 +46,7 @@ function receiptId(now: Date) {
 }
 
 /** The "sg" brand mark as nested tables, so it survives Outlook and Gmail. */
-const MARK = `<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td width="36" height="36" valign="top" style="width:36px;height:36px;background:${NAVY};border-radius:8px;"><table role="presentation" width="36" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding:5px 0 0 6px;font-family:${SANS};font-size:13px;line-height:13px;mso-line-height-rule:exactly;font-weight:700;color:#FFFFFF;letter-spacing:-0.5px;">sg</td></tr><tr><td align="right" style="padding:2px 5px 5px 0;line-height:9px;font-size:0;"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${TANGERINE};"></span></td></tr></table></td></tr></table>`;
+export const MARK = `<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td width="36" height="36" valign="top" style="width:36px;height:36px;background:${NAVY};border-radius:8px;"><table role="presentation" width="36" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding:5px 0 0 6px;font-family:${SANS};font-size:13px;line-height:13px;mso-line-height-rule:exactly;font-weight:700;color:#FFFFFF;letter-spacing:-0.5px;">sg</td></tr><tr><td align="right" style="padding:2px 5px 5px 0;line-height:9px;font-size:0;"><span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:${TANGERINE};"></span></td></tr></table></td></tr></table>`;
 
 /** Dashed "tear line" with notches, between receipt sections. */
 const TEAR = `<tr><td style="background:${PAPER};padding:0;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td width="14" style="width:14px;background:${FOG};border-radius:0 14px 14px 0;font-size:0;line-height:28px;">&nbsp;</td><td style="padding:0 12px;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="border-top:2px dashed ${LINE};font-size:0;line-height:0;">&nbsp;</td></tr></table></td><td width="14" style="width:14px;background:${FOG};border-radius:14px 0 0 14px;font-size:0;line-height:28px;">&nbsp;</td></tr></table></td></tr>`;
