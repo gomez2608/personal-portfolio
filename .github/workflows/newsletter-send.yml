@@ -32,11 +32,6 @@ jobs:
   send:
     runs-on: ubuntu-latest
     timeout-minutes: 45
-    env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
-      RESEND_NEWSLETTER_SEGMENT_ID: ${{ secrets.RESEND_NEWSLETTER_SEGMENT_ID }}
-      NEWSLETTER_FROM_EMAIL: ${{ secrets.NEWSLETTER_FROM_EMAIL }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -52,6 +47,10 @@ jobs:
       - name: Send issue (manual run)
         if: github.event_name == 'workflow_dispatch'
         env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RESEND_NEWSLETTER_SEGMENT_ID: ${{ secrets.RESEND_NEWSLETTER_SEGMENT_ID }}
+          NEWSLETTER_FROM_EMAIL: ${{ secrets.NEWSLETTER_FROM_EMAIL }}
           ISSUE: ${{ inputs.issue }}
           DRY_RUN: ${{ inputs.dry_run }}
           TEST_TO: ${{ inputs.test_to }}
@@ -68,6 +67,10 @@ jobs:
       - name: Send added issues (push)
         if: github.event_name == 'push'
         env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          RESEND_NEWSLETTER_SEGMENT_ID: ${{ secrets.RESEND_NEWSLETTER_SEGMENT_ID }}
+          NEWSLETTER_FROM_EMAIL: ${{ secrets.NEWSLETTER_FROM_EMAIL }}
           BEFORE: ${{ github.event.before }}
           SHA: ${{ github.sha }}
         run: |
