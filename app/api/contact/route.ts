@@ -4,6 +4,7 @@ import type { ContactResponse } from "@/lib/contact";
 import { contactSchema } from "@/lib/contact-schema";
 import { renderConfirmationEmail } from "@/lib/confirmation-email";
 import { site } from "@/app/data/site";
+import { createRateLimiter } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -13,25 +14,8 @@ const FROM =
   process.env.CONTACT_FROM_EMAIL ??
   `${site.name} <contact@${new URL(site.url).host.replace(/^www\./, "")}>`;
 
-// Simple in-memory rate limit: 5 requests per IP per 10 minutes. It resets on cold
-// starts and isn't shared across instances; swap in Upstash if that matters.
-const WINDOW_MS = 10 * 60 * 1000;
-const MAX_REQUESTS = 5;
-const hits = new Map<string, number[]>();
-
-function rateLimited(ip: string) {
-  const now = Date.now();
-  const recent = (hits.get(ip) ?? []).filter((t) => now - t < WINDOW_MS);
-  recent.push(now);
-  hits.set(ip, recent);
-  // Keep the map from growing without bound on a long-lived instance.
-  if (hits.size > 5000) {
-    for (const [key, times] of hits) {
-      if (times.every((t) => now - t >= WINDOW_MS)) hits.delete(key);
-    }
-  }
-  return recent.length > MAX_REQUESTS;
-}
+// 5 requests per IP per 10 minutes (in memory, see src/lib/rate-limit.ts).
+const rateLimited = createRateLimiter({ windowMs: 10 * 60 * 1000, max: 5 });
 
 function reply(body: ContactResponse, status = 200) {
   return NextResponse.json(body, { status });
