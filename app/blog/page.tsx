@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { listPosts } from "@/lib/blog/posts";
 import { formatDateEs } from "@/lib/blog/format";
-import { blogOpenGraph } from "@/lib/blog/metadata";
+import { blogSocialMetadata } from "@/lib/blog/metadata";
 import { deploymentEnv, isPostVisible } from "@/lib/blog/visibility";
 
 const description = "Investigación reciente en IA, explicada en simple.";
@@ -11,8 +11,7 @@ const description = "Investigación reciente en IA, explicada en simple.";
 export const metadata: Metadata = {
   title: "Blog",
   description,
-  alternates: { canonical: "/blog" },
-  openGraph: blogOpenGraph({ title: "Blog", description, url: "/blog" }),
+  ...blogSocialMetadata({ title: "Blog", description, path: "/blog" }),
 };
 
 export default function BlogPage() {

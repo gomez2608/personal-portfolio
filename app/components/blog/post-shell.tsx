@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { PostMetaSchema, type PostMeta } from "@/lib/blog/schema";
 import { formatDateEs } from "@/lib/blog/format";
 import { deploymentEnv, isPostVisible } from "@/lib/blog/visibility";
-import { blogOpenGraph } from "@/lib/blog/metadata";
+import { blogSocialMetadata } from "@/lib/blog/metadata";
 
 /** Parses the raw post.json import; a broken file throws and fails the build. */
 function parsePost(post: unknown): PostMeta {
@@ -16,12 +16,13 @@ export function postMetadata(post: unknown): Metadata {
   return {
     title: meta.title,
     description: meta.hook,
-    openGraph: blogOpenGraph({
-      type: "article",
+    ...blogSocialMetadata({
       title: meta.title,
       description: meta.hook,
-      publishedTime: meta.date,
+      path: `/blog/${meta.slug}`,
       image: `/blog/og/${meta.slug}`,
+      imageAlt: meta.title,
+      publishedTime: meta.date,
     }),
     ...(meta.status === "draft" ? { robots: { index: false, follow: false } } : {}),
   };

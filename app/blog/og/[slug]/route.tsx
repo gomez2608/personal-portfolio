@@ -1,6 +1,18 @@
 import { ImageResponse } from "next/og";
-import { getPost } from "@/lib/blog/posts";
+import { getPost, listPosts } from "@/lib/blog/posts";
 import { deploymentEnv, isPostVisible } from "@/lib/blog/visibility";
+
+// post.json files are read from disk, and they aren't traced into a serverless function, so
+// every card is rendered at build time and any other slug is a 404.
+export const dynamic = "force-static";
+export const dynamicParams = false;
+
+export function generateStaticParams() {
+  const env = deploymentEnv();
+  return listPosts()
+    .filter((p) => isPostVisible(p, env))
+    .map((p) => ({ slug: p.slug }));
+}
 
 export async function GET(_req: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
