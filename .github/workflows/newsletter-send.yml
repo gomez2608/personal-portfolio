@@ -1,0 +1,95 @@
+name: Newsletter send
+
+on:
+  push:
+    branches: [master]
+    paths: ["newsletter/issues/*.json"]
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: "Issue number (e.g. 3 for newsletter/issues/0003.json)"
+        required: true
+        type: string
+      dry_run:
+        description: "Validate and render only; nothing is sent"
+        required: true
+        type: boolean
+        default: true
+      test_to:
+        description: "Send one [Prueba] email to this address instead (overrides dry run; no claim)"
+        required: false
+        type: string
+
+# One send at a time; a running send is never cancelled.
+concurrency:
+  group: newsletter-send
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      RESEND_NEWSLETTER_SEGMENT_ID: ${{ secrets.RESEND_NEWSLETTER_SEGMENT_ID }}
+      NEWSLETTER_FROM_EMAIL: ${{ secrets.NEWSLETTER_FROM_EMAIL }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Send issue (manual run)
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          ISSUE: ${{ inputs.issue }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          TEST_TO: ${{ inputs.test_to }}
+        run: |
+          set -euo pipefail
+          if [ -n "$TEST_TO" ]; then
+            npm run newsletter:send -- --issue "$ISSUE" --test-to "$TEST_TO"
+          elif [ "$DRY_RUN" = "true" ]; then
+            npm run newsletter:send -- --issue "$ISSUE" --dry-run
+          else
+            npm run newsletter:send -- --issue "$ISSUE" --wait-min 15
+          fi
+
+      - name: Send added issues (push)
+        if: github.event_name == 'push'
+        env:
+          BEFORE: ${{ github.event.before }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          # Only files ADDED in this push are sent; edits to existing issues never trigger a send.
+          # `before` is all zeros on a branch's first push and may be unreachable after a force-push:
+          # fall back to the last commit alone.
+          if [[ "$BEFORE" =~ ^0+$ ]] || ! git cat-file -e "${BEFORE}^{commit}" 2>/dev/null; then
+            echo "No usable base commit; comparing HEAD~1 with HEAD"
+            files=$(git diff --diff-filter=A --name-only HEAD~1 HEAD -- newsletter/issues/ || true)
+          else
+            files=$(git diff --diff-filter=A --name-only "$BEFORE" "$SHA" -- newsletter/issues/)
+          fi
+          files=$(printf '%s\n' "$files" | grep -E '^newsletter/issues/[0-9]{4}\.json$' | sort || true)
+          if [ -z "$files" ]; then
+            echo "No newly added issue files; nothing to send."
+            exit 0
+          fi
+          # Ascending order; stop at the first failure (set -e).
+          for f in $files; do
+            n=$((10#$(basename "$f" .json)))
+            echo "::group::Issue $n ($f)"
+            npm run newsletter:send -- --issue "$n" --wait-min 15
+            echo "::endgroup::"
+          done
