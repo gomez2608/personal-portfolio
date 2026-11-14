@@ -28,6 +28,20 @@ export type IssueMeta = {
   intro: string;
 };
 
+/** Returns the URL only if it is http(s); throws otherwise so a bad send fails loudly. */
+export function safeUrl(u: string): string {
+  let parsed: URL;
+  try {
+    parsed = new URL(u);
+  } catch {
+    throw new Error(`Invalid URL in email: ${u}`);
+  }
+  if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
+    throw new Error(`Unsafe URL scheme in email: ${parsed.protocol}`);
+  }
+  return u;
+}
+
 type Rendered = { subject: string; html: string; text: string };
 
 const UNSUB = "{{{RESEND_UNSUBSCRIBE_URL}}}";
@@ -70,7 +84,7 @@ const para = (s: string, extra = "") =>
 export function renderConfirmEmail(confirmUrl: string): Rendered {
   const subject = "Confirma tu suscripción al boletín";
   const preheader = "Un clic para confirmar y empezar a recibir el boletín.";
-  const url = esc(confirmUrl);
+  const url = esc(safeUrl(confirmUrl));
 
   const rows = `${brandRow("Boletín")}
 <tr><td class="pad" style="background:${PAPER};border-radius:0 0 12px 12px;padding:28px 40px 36px;">
@@ -102,7 +116,7 @@ export function renderIssueEmail(
   posts: IssuePost[],
   siteUrl: string,
 ): Rendered {
-  const base = siteUrl.replace(/\/+$/, "");
+  const base = safeUrl(siteUrl).replace(/\/+$/, "");
   const privacyUrl = `${base}/privacidad`;
   const paragraphs = issue.intro
     .split(/\n\s*\n/)
@@ -111,6 +125,8 @@ export function renderIssueEmail(
 
   const postBlocks = posts
     .map((p, i) => {
+      safeUrl(p.url);
+      safeUrl(p.imageUrl);
       const top = i === 0 ? `2px solid ${NAVY}` : `1px solid ${LINE}`;
       return `<tr><td class="pad" style="background:${PAPER};padding:${i === 0 ? "8px" : "0"} 40px 0;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="border-top:${top};padding:28px 0 32px;">

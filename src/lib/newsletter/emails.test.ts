@@ -36,3 +36,9 @@ test("tangerine is never a text color", () => {
   expect(renderIssueEmail(issue, [post("a")], "https://x.co").html).not.toMatch(/(?<!background-)color:\s*#F07A2E/i);
   expect(renderConfirmEmail("https://x.co/c").html).not.toMatch(/(?<!background-)color:\s*#F07A2E/i);
 });
+test("rejects non-http(s) URLs", () => {
+  expect(() => renderConfirmEmail("javascript:alert(1)")).toThrow();
+  expect(() => renderIssueEmail(issue, [{ ...post("a"), url: "javascript:alert(1)" }], "https://x.co")).toThrow();
+  expect(() => renderIssueEmail(issue, [{ ...post("a"), imageUrl: "data:text/html,x" }], "https://x.co")).toThrow();
+  expect(() => renderIssueEmail(issue, [post("a")], "javascript:alert(1)")).toThrow();
+});
