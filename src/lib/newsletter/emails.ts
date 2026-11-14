@@ -11,7 +11,7 @@ import {
   SLATE,
   TANGERINE,
   esc,
-} from "@/src/lib/confirmation-email";
+} from "@/lib/confirmation-email";
 
 export type IssuePost = {
   slug: string;

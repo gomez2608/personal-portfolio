@@ -1,6 +1,6 @@
 import path from "node:path";
 import { z } from "zod";
-import type { PostMeta } from "@/src/lib/blog/schema";
+import type { PostMeta } from "@/lib/blog/schema";
 
 // Kept free of `server-only` so the send script (tsx) can import it.
 
@@ -70,10 +70,15 @@ export function validateIssue(
     }
     seen.add(slug);
     const meta = posts.get(slug);
-    if (!meta) errors.push(`Unknown post slug "${slug}" (no app/blog/${slug}/post.json)`);
-    else if (meta.status !== "published") {
+    if (!meta) {
+      errors.push(`Unknown post slug "${slug}" (no app/blog/${slug}/post.json)`);
+      continue;
+    }
+    if (meta.status !== "published") {
       errors.push(`Post "${slug}" is a ${meta.status}; set "status": "published" before sending`);
     }
+    // The post title is copied into the email, so it must be placeholder-free too.
+    if (!noPlaceholders(meta.title)) errors.push(`Post "${slug}" title: ${PLACEHOLDER_MSG}`);
   }
 
   return errors.length ? { ok: false, errors } : { ok: true, issue: data };

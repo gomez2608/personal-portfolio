@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import type { PostMeta } from "@/src/lib/blog/schema";
+import type { PostMeta } from "@/lib/blog/schema";
 import { validateIssue } from "./issue";
 
 const meta = (slug: string, status: "draft" | "published"): PostMeta => ({
@@ -13,6 +13,8 @@ const meta = (slug: string, status: "draft" | "published"): PostMeta => ({
 });
 const posts = new Map<string, PostMeta>([
   ["a", meta("a", "published")],
+  ["brace", { ...meta("brace", "published"), title: "Un título con {{{FIRST_NAME}}}" }],
+  ["close", { ...meta("close", "published"), title: "Cierra }}} aquí" }],
   ["b", meta("b", "published")],
   ["d", meta("d", "draft")],
 ]);
@@ -75,3 +77,5 @@ test("date must be a real YYYY-MM-DD day", () => {
 });
 test("unknown keys fail", () => expect(validateIssue(issue({ extra: 1 }), "0001.json", posts).ok).toBe(false));
 test("non-object input fails with a message", () => expect(errs(null).length).toBeGreaterThan(0));
+test.each(["brace", "close"])("a referenced post whose title has Resend braces fails (%s)", (slug) =>
+  expect(errs(issue({ posts: [{ slug, blurb: "x" }] }))).toContainEqual(expect.stringContaining(slug)));

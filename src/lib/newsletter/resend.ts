@@ -1,6 +1,6 @@
 import "server-only";
 import { Resend } from "resend";
-import { syncContact } from "@/lib/newsletter/contact-sync";
+import { syncContact } from "./contact-sync";
 
 const DEFAULT_FROM = "Sebastián Gómez <boletin@news.sebastiangomezahumada.com>";
 const REPLY_TO = "contact@sebastiangomezahumada.com";

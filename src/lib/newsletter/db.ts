@@ -1,7 +1,7 @@
 import "server-only";
 import { neon } from "@neondatabase/serverless";
-import { decideConfirm, type ConfirmOutcome, type ConsentEvidence } from "@/lib/newsletter/confirm";
-import type { SubscriberRow, SubscriberStatus } from "@/lib/newsletter/subscribe";
+import { decideConfirm, type ConfirmOutcome, type ConsentEvidence } from "./confirm";
+import type { SubscriberRow, SubscriberStatus } from "./subscribe";
 
 // Tables are defined in db/newsletter.sql (Neon project "personal-portfolio").
 
