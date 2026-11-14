@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { activeCaption, connectorPoint, formatNumberEs, progress, sec } from "./timing";
+import { activeCaption, activeCaptionIndex, connectorPoint, formatNumberEs, progress, sec } from "./timing";
 
 describe("timing", () => {
   test("sec converts at 30fps", () => expect(sec(1.5)).toBe(45));
@@ -22,6 +22,16 @@ describe("timing", () => {
     expect(activeCaption(caps, 29)?.text).toBe("a");
     expect(activeCaption(caps, 30)?.text).toBe("b");
     expect(activeCaption(caps, 60)).toBeNull();
+  });
+  test("activeCaptionIndex returns the index, or -1 between and after captions", () => {
+    const caps = [
+      { from: 0, to: 30, text: "a" },
+      { from: 40, to: 60, text: "b" },
+    ];
+    expect(activeCaptionIndex(caps, 0)).toBe(0);
+    expect(activeCaptionIndex(caps, 35)).toBe(-1);
+    expect(activeCaptionIndex(caps, 59)).toBe(1);
+    expect(activeCaptionIndex(caps, 60)).toBe(-1);
   });
   test("Spanish number format", () => expect(formatNumberEs(1000000)).toBe("1.000.000"));
 });

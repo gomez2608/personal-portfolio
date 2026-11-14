@@ -4,12 +4,13 @@ import { defineClip } from "@/app/components/blog/clips/clip-def";
 import { Connector, Counter, Dim, FlowDot, Highlight, Node, Text } from "@/app/components/blog/clips/primitives";
 import { sec, type Point } from "@/app/components/blog/clips/timing";
 
-// Layout (1280×720 stage; keep everything above y≈570, the caption band sits below).
-const ROUTER = { x: 120, y: 288, w: 170 };
-const NAME_X = 330;
-const BAR = { x: 490, h: 34, min: 30, perPoint: 7 };
-const ROW = { top: 85, gap: 58 };
-const RESULT = { x: 1140, y: 288, w: 200 };
+// Layout (1280×720 stage). Snapshots burn captions into the bottom ~140px, so everything
+// sits above y≈570. Text uses the primitives' 34px default, the readable floor on phones.
+const ROUTER = { x: 110, y: 274, w: 190 };
+const NAME_X = 300;
+const BAR = { x: 530, h: 44, min: 30, perPoint: 6 };
+const ROW = { top: 60, gap: 64 };
+const RESULT = { x: 1100, y: 274, w: 200 };
 
 /** Router scores for «París»; they add up to 100. */
 const EXPERTS = [
@@ -25,14 +26,15 @@ const EXPERTS = [
 /** The top 2 scores. */
 const CHOSEN = [0, 1];
 /** Bulge of each winner's link to the result, by expert index. */
-const LINK_CURVE: Record<number, number> = { 0: 60, 1: 30 };
+const LINK_CURVE: Record<number, number> = { 0: 50, 1: 10 };
 
 const rowY = (i: number) => ROW.top + i * ROW.gap;
 const barW = (score: number) => BAR.min + score * BAR.perPoint;
 /** Centre of the percentage to the right of a bar. */
-const scoreX = (score: number) => BAR.x + barW(score) + 42;
+const scoreX = (score: number) => BAR.x + barW(score) + 56;
 const routerOut: Point = [ROUTER.x + ROUTER.w / 2, ROUTER.y];
-const resultIn: Point = [RESULT.x - RESULT.w / 2, RESULT.y];
+/** Links enter the result from the top, so they don't cross the rows below. */
+const resultIn: Point = [RESULT.x, RESULT.y - 50];
 
 // Timeline.
 const T = {
@@ -62,7 +64,7 @@ function Row({ i }: { i: number }) {
         from={0}
         to={score}
         suffix=" %"
-        size={22}
+        size={34}
         tone="navy"
         start={barAt(i)}
         end={barAt(i) + sec(0.8)}
@@ -102,7 +104,7 @@ function Scene() {
 
       <Node x={RESULT.x} y={RESULT.y} w={RESULT.w} label="Resultado" tone="ink" appearAt={T.result} />
       {CHOSEN.map((i) => {
-        const from: Point = [scoreX(EXPERTS[i].score) + 42, rowY(i)];
+        const from: Point = [scoreX(EXPERTS[i].score) + 56, rowY(i)];
         // Bend up so the upper link clears the longer bar's percentage below it.
         const curve = LINK_CURVE[i];
         return (
@@ -114,10 +116,8 @@ function Scene() {
       })}
       <Text
         x={RESULT.x}
-        y={370}
-        text={"0,6 × Lugares\n+ 0,4 × Gramática"}
-        mono
-        size={20}
+        y={RESULT.y + 95}
+        text={"60 % Lugares\n40 % Gramática"}
         tone="navy"
         align="center"
         appearAt={T.weights}

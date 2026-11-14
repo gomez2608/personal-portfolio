@@ -4,12 +4,14 @@ import { C, FONT_SANS } from "./palette";
 import { activeCaption, HEIGHT, WIDTH } from "./timing";
 
 /**
- * The Remotion composition for a clip: a Paper stage (in both themes), the Scene drawn
- * into one shared 1280×720 SVG, and the burned-in caption band.
+ * The Remotion composition for a clip: a Paper stage (in both themes) and the Scene drawn
+ * into one shared 1280×720 SVG. In the page, `ClipPlayer` shows captions as HTML under the
+ * stage (legible on phones); `burnCaptions` draws them into the bottom ~140px of the stage
+ * instead, for snapshots and stills.
  */
-export function ClipFrame({ def }: { def: ClipDef }) {
+export function ClipFrame({ def, burnCaptions = false }: { def: ClipDef; burnCaptions?: boolean }) {
   const frame = useCurrentFrame();
-  const caption = activeCaption(def.captions, frame);
+  const caption = burnCaptions ? activeCaption(def.captions, frame) : null;
   const { Scene } = def;
 
   return (

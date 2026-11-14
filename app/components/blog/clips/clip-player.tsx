@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "
 import type { ClipDef } from "./clip-types";
 import { ClipFrame } from "./clip-frame";
 import { playbackPolicy } from "./playback";
-import { FPS, HEIGHT, WIDTH } from "./timing";
+import { activeCaptionIndex, FPS, HEIGHT, WIDTH } from "./timing";
 
 const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
 
@@ -26,7 +26,8 @@ function usePrefersReducedMotion(): boolean {
 /**
  * Plays a clip in the page like a silent video: muted, looping, only while at least half of
  * it is on screen. With reduced motion it rests on the final frame until the visitor
- * presses play. The stage is always Paper; the frame and controls follow the theme.
+ * presses play. The stage is always Paper; the frame, caption bar and controls follow the
+ * theme. Captions are HTML under the stage, so they stay legible when the stage is scaled down.
  */
 export function ClipPlayer({ def }: { def: ClipDef }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -38,6 +39,7 @@ export function ClipPlayer({ def }: { def: ClipDef }) {
   const [userPaused, setUserPaused] = useState(false);
   const [userStarted, setUserStarted] = useState(false);
   const [playing, setPlaying] = useState(false);
+  const [captionIndex, setCaptionIndex] = useState(() => activeCaptionIndex(def.captions, 0));
 
   const { autoplay, showFinalFrame } = playbackPolicy({ reducedMotion, inView, userPaused, userStarted });
   const lastFrame = def.durationInFrames - 1;
@@ -53,29 +55,32 @@ export function ClipPlayer({ def }: { def: ClipDef }) {
     return () => io.disconnect();
   }, []);
 
-  // Mirror the player's state into the button label and the progress bar. The bar is
-  // updated through a ref so frame updates don't re-render the component 30 times a second.
+  // Mirror the player's state into the button label, the caption bar and the progress bar.
+  // The bar is updated through a ref, and the caption index only changes a few times per
+  // clip (React skips same-value updates), so frames don't re-render the component.
+  const { captions } = def;
   useEffect(() => {
     const player = playerRef.current;
     if (!player) return;
-    const setBar = (frame: number) => {
+    const sync = (frame: number) => {
       if (progressRef.current) progressRef.current.style.transform = `scaleX(${frame / lastFrame})`;
+      setCaptionIndex(activeCaptionIndex(captions, frame));
     };
-    const onFrame = (e: { detail: { frame: number } }) => setBar(e.detail.frame);
+    const onFrame = (e: { detail: { frame: number } }) => sync(e.detail.frame);
     const onPlay = () => setPlaying(true);
     const onPause = () => setPlaying(false);
     player.addEventListener("frameupdate", onFrame);
     player.addEventListener("seeked", onFrame);
     player.addEventListener("play", onPlay);
     player.addEventListener("pause", onPause);
-    setBar(player.getCurrentFrame());
+    sync(player.getCurrentFrame());
     return () => {
       player.removeEventListener("frameupdate", onFrame);
       player.removeEventListener("seeked", onFrame);
       player.removeEventListener("play", onPlay);
       player.removeEventListener("pause", onPause);
     };
-  }, [lastFrame]);
+  }, [lastFrame, captions]);
 
   // The single place playbackPolicy is applied.
   useEffect(() => {
@@ -132,6 +137,9 @@ export function ClipPlayer({ def }: { def: ClipDef }) {
         acknowledgeRemotionLicense
         style={{ width: "100%" }}
       />
+      <p className="m-0 flex min-h-[calc(2*1.4em+1rem)] items-center justify-center border-t border-line bg-card px-4 py-2 text-center font-sans text-[15px] leading-[1.4] font-semibold text-ink sm:text-base">
+        {def.captions[captionIndex]?.text ?? ""}
+      </p>
       <div className="flex items-center gap-3 border-t border-line px-3 py-2">
         <button
           type="button"

@@ -2,6 +2,9 @@ import { spring, useCurrentFrame, useVideoConfig } from "remotion";
 import { C, FONT_MONO, FONT_SANS } from "../palette";
 import { sec } from "../timing";
 
+const LABEL_SIZE = 34;
+const SUB_SIZE = 26;
+
 export type NodeTone = "ink" | "navy" | "accent" | "muted";
 
 const TONES: Record<NodeTone, { fill: string; stroke: string; strokeWidth: number; label: string; sub: string }> = {
@@ -17,9 +20,9 @@ export type NodeProps = {
   y: number;
   w?: number;
   h?: number;
-  /** One short line (Manrope 700, 22px). */
+  /** One short line (Manrope 700, 34px). */
   label: string;
-  /** Optional second line (DM Mono, 15px). */
+  /** Optional second line (DM Mono, 26px). */
   sub?: string;
   /** Frame the box starts springing in (scale 0.7→1 and fade over `sec(0.5)`). */
   appearAt?: number;
@@ -28,7 +31,7 @@ export type NodeProps = {
 };
 
 /** A rounded box with a label: the basic unit of every diagram. */
-export function Node({ x, y, w = 180, h = 72, label, sub, appearAt = 0, tone = "ink" }: NodeProps) {
+export function Node({ x, y, w = 240, h = 100, label, sub, appearAt = 0, tone = "ink" }: NodeProps) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
   const t = spring({ frame: frame - appearAt, fps, durationInFrames: sec(0.5) });
@@ -49,21 +52,21 @@ export function Node({ x, y, w = 180, h = 72, label, sub, appearAt = 0, tone = "
         strokeWidth={s.strokeWidth}
       />
       <text
-        y={sub ? -9 : 0}
+        y={sub ? -18 : 0}
         textAnchor="middle"
         dominantBaseline="central"
         fill={s.label}
-        style={{ fontFamily: FONT_SANS, fontWeight: 700, fontSize: 22 }}
+        style={{ fontFamily: FONT_SANS, fontWeight: 700, fontSize: LABEL_SIZE }}
       >
         {label}
       </text>
       {sub ? (
         <text
-          y={15}
+          y={22}
           textAnchor="middle"
           dominantBaseline="central"
           fill={s.sub}
-          style={{ fontFamily: FONT_MONO, fontSize: 15 }}
+          style={{ fontFamily: FONT_MONO, fontSize: SUB_SIZE }}
         >
           {sub}
         </text>

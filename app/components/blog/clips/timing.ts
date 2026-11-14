@@ -74,9 +74,14 @@ export function connectorPoint(from: Point, to: Point, curve: number, t: number)
   ];
 }
 
-/** The caption on screen at `frame` (`from` inclusive, `to` exclusive), or null. */
+/** Index of the caption on screen at `frame` (`from` inclusive, `to` exclusive), or -1. */
+export function activeCaptionIndex(captions: Caption[], frame: number): number {
+  return captions.findIndex((c) => frame >= c.from && frame < c.to);
+}
+
+/** The caption on screen at `frame`, or null. */
 export function activeCaption(captions: Caption[], frame: number): Caption | null {
-  return captions.find((c) => frame >= c.from && frame < c.to) ?? null;
+  return captions[activeCaptionIndex(captions, frame)] ?? null;
 }
 
 const numberFormat = new Intl.NumberFormat("es-CO");

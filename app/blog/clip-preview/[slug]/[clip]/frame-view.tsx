@@ -57,7 +57,7 @@ export function FrameView({ slug, clip, frame }: { slug: string; clip: string; f
       <div data-stage style={{ width: WIDTH, height: HEIGHT }}>
         <Thumbnail
           component={ClipFrame}
-          inputProps={{ def }}
+          inputProps={{ def, burnCaptions: true }}
           compositionWidth={WIDTH}
           compositionHeight={HEIGHT}
           durationInFrames={def.durationInFrames}

@@ -14,6 +14,7 @@ export type CounterProps = {
   to: number;
   start: number;
   end: number;
+  /** Font size of the number and suffix, in stage px; keep it ≥ 34 (the readable floor). */
   size?: number;
   /** Appended as is, e.g. `" %"` or `" ms"`. */
   suffix?: string;
