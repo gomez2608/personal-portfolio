@@ -1,7 +1,7 @@
 import { expect, test } from "vitest";
 import { POLICY_VERSION } from "./constants";
 import { handleSubscribe, planSubscribe, type SubscribeDeps, type SubscriberRow } from "./subscribe";
-import { hashIp } from "./token";
+import { hashIp, verifyConfirmToken } from "./token";
 
 const NOW = 1_800_000_000_000;
 
@@ -139,4 +139,27 @@ test("successful send stamps the link time after sending", async () => {
   d.upsertPending = async () => void order.push("upsert");
   await handleSubscribe(input, "ip", d);
   expect(order).toEqual(["upsert", "send", "touch"]);
+});
+
+const linkClaims = (url: string) =>
+  verifyConfirmToken(decodeURIComponent(url.split("token=")[1]), NOW, "s".repeat(32));
+
+test("the confirm link carries this request's consent evidence", async () => {
+  const d = fakeDeps();
+  await handleSubscribe({ ...(input as object), source: "mi-post" } as never, "1.2.3.4", d);
+  expect(linkClaims(d.calls.sendConfirmEmail[0][1])).toEqual({
+    ok: true,
+    email: "a@b.co",
+    issuedAt: NOW,
+    policyVersion: POLICY_VERSION,
+    source: "mi-post",
+    ipHash: hashIp("1.2.3.4", d.secret),
+  });
+});
+
+test("confirmed address: writes no consent evidence; it only travels in the new link", async () => {
+  const d = fakeDeps({ "a@b.co": { status: "confirmed", lastLinkAt: 0 } });
+  await handleSubscribe(input, "5.6.7.8", d);
+  expect(d.calls.upsertPending).toHaveLength(0);
+  expect(linkClaims(d.calls.sendConfirmEmail[0][1])).toMatchObject({ ok: true, ipHash: hashIp("5.6.7.8", d.secret) });
 });

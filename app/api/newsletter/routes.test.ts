@@ -15,7 +15,8 @@ vi.mock("@/lib/newsletter/resend", () => ({
 
 import { GET } from "./confirm/route";
 import { POST } from "./subscribe/route";
-import { signConfirmToken } from "@/lib/newsletter/token";
+import { POLICY_VERSION } from "@/lib/newsletter/constants";
+import { hashIp, signConfirmToken } from "@/lib/newsletter/token";
 
 const S = "x".repeat(32);
 
@@ -38,11 +39,25 @@ const post = (body: unknown, ip = "9.9.9.9") =>
 describe("GET /api/newsletter/confirm", () => {
   it("redirects 303 with no-referrer on success", async () => {
     markConfirmed.mockResolvedValue("confirmed");
-    const t = signConfirmToken("a@b.co", Date.now(), S);
+    const t = signConfirmToken(
+      { email: "a@b.co", issuedAt: Date.now(), policyVersion: POLICY_VERSION, source: "blog", ipHash: hashIp("1.2.3.4", S) },
+      S,
+    );
     const res = await GET(new Request(`http://x/api/newsletter/confirm?token=${encodeURIComponent(t)}`));
     expect(res.status).toBe(303);
     expect(res.headers.get("location")).toBe("http://x/blog/suscripcion?estado=confirmada");
     expect(res.headers.get("referrer-policy")).toBe("no-referrer");
+    expect(addToSegment).toHaveBeenCalledWith("a@b.co", { resubscribe: true });
+  });
+  it("stale link redirects to ya-confirmada without resubscribing", async () => {
+    markConfirmed.mockResolvedValue("already");
+    const t = signConfirmToken(
+      { email: "a@b.co", issuedAt: Date.now(), policyVersion: POLICY_VERSION, source: "blog", ipHash: hashIp("1.2.3.4", S) },
+      S,
+    );
+    const res = await GET(new Request(`http://x/api/newsletter/confirm?token=${encodeURIComponent(t)}`));
+    expect(res.headers.get("location")).toContain("estado=ya-confirmada");
+    expect(addToSegment).toHaveBeenCalledWith("a@b.co", { resubscribe: false });
   });
   it("missing token is invalida", async () => {
     const res = await GET(new Request("http://x/api/newsletter/confirm"));

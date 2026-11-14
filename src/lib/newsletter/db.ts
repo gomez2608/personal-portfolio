@@ -1,6 +1,7 @@
 import "server-only";
 import { neon } from "@neondatabase/serverless";
-import type { SubscriberRow, SubscriberStatus } from "./subscribe";
+import { decideConfirm, type ConfirmOutcome, type ConsentEvidence } from "@/lib/newsletter/confirm";
+import type { SubscriberRow, SubscriberStatus } from "@/lib/newsletter/subscribe";
 
 // Tables are defined in db/newsletter.sql (Neon project "personal-portfolio").
 
@@ -54,25 +55,52 @@ export async function touchLink(email: string, now: Date): Promise<void> {
   `;
 }
 
+/**
+ * Applies a valid confirmation link. The decision is decideConfirm (pure, tested); the UPDATEs repeat
+ * its condition in their WHERE so a concurrent change is never overwritten. If one loses that race the
+ * row is read again and decided afresh.
+ */
 export async function markConfirmed(
   email: string,
+  ev: ConsentEvidence,
   now: Date,
-): Promise<"confirmed" | "already" | "missing"> {
+): Promise<ConfirmOutcome> {
   const sql = db();
-  const updated = (await sql`
-    UPDATE newsletter_subscribers
-    SET status = 'confirmed', confirmed_at = ${now.toISOString()}, updated_at = now()
-    WHERE email = ${email} AND status = 'pending'
-    RETURNING email
-  `) as unknown[];
-  if (updated.length > 0) return "confirmed";
-  const rows = (await sql`
-    SELECT status FROM newsletter_subscribers WHERE email = ${email}
-  `) as { status: SubscriberStatus }[];
-  if (!rows[0]) return "missing";
-  // Already confirmed: the caller still re-adds to the segment so a Resend
-  // unsubscriber can rejoin. An unsubscribed row (set by hand) stays out.
-  return rows[0].status === "confirmed" ? "already" : "missing";
+  const at = now.toISOString();
+  const issued = new Date(ev.issuedAt).toISOString();
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const rows = (await sql`
+      SELECT status, confirmed_at FROM newsletter_subscribers WHERE email = ${email}
+    `) as { status: SubscriberStatus; confirmed_at: string | Date | null }[];
+    const r = rows[0];
+    const outcome = decideConfirm(
+      r ? { status: r.status, confirmedAt: r.confirmed_at === null ? null : new Date(r.confirmed_at).getTime() } : null,
+      ev.issuedAt,
+    );
+    if (outcome === "missing" || outcome === "already") return outcome;
+
+    // Each WHERE re-checks the state decideConfirm saw.
+    const updated = (outcome === "confirmed"
+      ? await sql`
+          UPDATE newsletter_subscribers
+          SET status = 'confirmed', confirmed_at = ${at}, consent_at = ${issued},
+              policy_version = ${ev.policyVersion}, source = ${ev.source}, ip_hash = ${ev.ipHash},
+              updated_at = now()
+          WHERE email = ${email} AND status = 'pending'
+          RETURNING email
+        `
+      : await sql`
+          UPDATE newsletter_subscribers
+          SET confirmed_at = ${at}, consent_at = ${issued},
+              policy_version = ${ev.policyVersion}, source = ${ev.source}, ip_hash = ${ev.ipHash},
+              updated_at = now()
+          WHERE email = ${email} AND status = 'confirmed'
+            AND (confirmed_at IS NULL OR confirmed_at < ${issued})
+          RETURNING email
+        `) as unknown[];
+    if (updated.length > 0) return outcome;
+  }
+  throw new Error("markConfirmed: row kept changing");
 }
 
 export async function claimSend(issue: number): Promise<"claimed" | "sending" | "sent"> {

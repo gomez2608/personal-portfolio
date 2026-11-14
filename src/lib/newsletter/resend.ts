@@ -1,5 +1,6 @@
 import "server-only";
 import { Resend } from "resend";
+import { syncContact } from "@/lib/newsletter/contact-sync";
 
 const DEFAULT_FROM = "Sebastián Gómez <boletin@news.sebastiangomezahumada.com>";
 const REPLY_TO = "contact@sebastiangomezahumada.com";
@@ -20,24 +21,9 @@ export function newsletterFrom(): string {
   return process.env.NEWSLETTER_FROM_EMAIL || DEFAULT_FROM;
 }
 
-// Creates the contact in the segment; if it already exists, makes sure it is
-// subscribed again and in the segment.
-export async function addToSegment(email: string): Promise<void> {
-  const resend = client();
-  const segment = segmentId();
-  const created = await resend.contacts.create({
-    email,
-    unsubscribed: false,
-    segments: [{ id: segment }],
-  });
-  if (!created.error) return;
-
-  const updated = await resend.contacts.update({ email, unsubscribed: false });
-  if (updated.error) {
-    throw new Error(`Resend: could not add contact (${created.error.message}; ${updated.error.message})`);
-  }
-  const added = await resend.contacts.segments.add({ email, segmentId: segment });
-  if (added.error) throw new Error(`Resend: could not add to segment (${added.error.message})`);
+/** See syncContact: `resubscribe` is true only for fresh consent (a newly confirmed link). */
+export async function addToSegment(email: string, opts: { resubscribe: boolean }): Promise<void> {
+  await syncContact(client().contacts, segmentId(), email, opts);
 }
 
 export async function sendEmail(m: {

@@ -41,17 +41,24 @@ export async function handleSubscribe(
   const plan = planSubscribe(await deps.getSubscriber(email), now);
   if (plan === "noop") return;
 
+  const ipHash = hashIp(ip, deps.secret);
+  // A new or unsubscribed address gets a pending row holding this request's evidence. A pending or
+  // confirmed row is not written: the evidence travels in the signed link and reaches Neon only if
+  // that link is confirmed.
   if (plan === "create" || plan === "reconsent") {
     await deps.upsertPending({
       email,
       source,
-      ipHash: hashIp(ip, deps.secret),
+      ipHash,
       policyVersion: POLICY_VERSION,
       consentAt: new Date(now),
     });
   }
 
-  const token = signConfirmToken(email, now, deps.secret);
+  const token = signConfirmToken(
+    { email, issuedAt: now, policyVersion: POLICY_VERSION, source, ipHash },
+    deps.secret,
+  );
   await deps.sendConfirmEmail(
     email,
     `${deps.siteUrl}/api/newsletter/confirm?token=${encodeURIComponent(token)}`,
