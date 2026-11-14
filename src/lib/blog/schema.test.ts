@@ -11,3 +11,8 @@ test("rejects title over 90 chars", () => expect(PostMetaSchema.safeParse({ ...v
 test("rejects bad date", () => expect(PostMetaSchema.safeParse({ ...valid, date: "13/11/2026" }).success).toBe(false));
 test("rejects missing authors", () => expect(PostMetaSchema.safeParse({ ...valid, paper: { ...valid.paper, authors: [] } }).success).toBe(false));
 test("rejects non-URL paper link", () => expect(PostMetaSchema.safeParse({ ...valid, paper: { ...valid.paper, url: "arxiv 1701.06538" } }).success).toBe(false));
+test.each(["2026-13-45", "2026-02-30", "2026-00-10"])("rejects calendar-invalid date %s", (date) => {
+  expect(PostMetaSchema.safeParse({ ...valid, date }).success).toBe(false);
+  expect(PostMetaSchema.safeParse({ ...valid, paper: { ...valid.paper, published: date } }).success).toBe(false);
+});
+test("accepts a leap day", () => expect(PostMetaSchema.safeParse({ ...valid, date: "2028-02-29" }).success).toBe(true));

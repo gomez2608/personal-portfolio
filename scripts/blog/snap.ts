@@ -46,54 +46,73 @@ async function main() {
 
   const outDir = path.join(".blog-snaps", slug as string);
   fs.mkdirSync(outDir, { recursive: true });
-  const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
-  // Hide the Next.js dev indicator so it doesn't end up in the screenshots.
-  await page.addInitScript(() => {
-    document.addEventListener("DOMContentLoaded", () => {
-      const style = document.createElement("style");
-      style.textContent = "nextjs-portal { display: none !important; }";
-      document.head.appendChild(style);
-    });
-  });
   const files: string[] = [];
   const failures: string[] = [];
 
-  for (const clip of entry!.clipFiles) {
-    const url = (frame: number) => `${base}/blog/clip-preview/${slug}/${clip}?frame=${frame}`;
-    const open = async (frame: number) => {
-      const res = await page.goto(url(frame), { waitUntil: "load" });
-      if (!res || res.status() === 404) {
-        failures.push(`${clip}: 404 at ${url(frame)}`);
-        return null;
-      }
+  try {
+    const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
+    // Hide the Next.js dev indicator so it doesn't end up in the screenshots.
+    await page.addInitScript(() => {
+      document.addEventListener("DOMContentLoaded", () => {
+        const style = document.createElement("style");
+        style.textContent = "nextjs-portal { display: none !important; }";
+        document.head.appendChild(style);
+      });
+    });
+
+    for (const clip of entry!.clipFiles) {
+      const url = (frame: number) => `${base}/blog/clip-preview/${slug}/${clip}?frame=${frame}`;
+      const open = async (frame: number) => {
+        let res;
+        try {
+          res = await page.goto(url(frame), { waitUntil: "load" });
+        } catch (e) {
+          failures.push(`${clip}: could not open ${url(frame)} (${(e as Error).message.split("\n")[0]})`);
+          return null;
+        }
+        if (!res || res.status() === 404) {
+          failures.push(`${clip}: 404 at ${url(frame)}`);
+          return null;
+        }
+        try {
+          await page.waitForSelector('[data-ready="true"]', { timeout: 30_000 });
+        } catch {
+          failures.push(`${clip}: timed out waiting for data-ready at ${url(frame)}`);
+          return null;
+        }
+        if (await page.locator('[data-missing="true"]').count()) {
+          failures.push(`${clip}: not in the clip registry (run npm run blog:registry)`);
+          return null;
+        }
+        if (await page.locator('[data-error="true"]').count()) {
+          const message = await page.locator("[data-error-message]").innerText();
+          failures.push(`${clip}: failed to load: ${message}`);
+          return null;
+        }
+        return page.locator("[data-stage]");
+      };
+
       try {
-        await page.waitForSelector('[data-ready="true"]', { timeout: 30_000 });
-      } catch {
-        failures.push(`${clip}: timed out waiting for data-ready at ${url(frame)}`);
-        return null;
-      }
-      if (await page.locator('[data-missing="true"]').count()) {
-        failures.push(`${clip}: not in the clip registry (run npm run blog:registry)`);
-        return null;
-      }
-      return page.locator("[data-stage]");
-    };
+        const first = await open(0);
+        if (!first) continue;
+        const duration = Number(await page.locator("[data-duration]").getAttribute("data-duration"));
+        const frames = [...new Set([0, 0.25, 0.5, 0.75].map((f) => Math.round(duration * f)).concat(duration - 1))];
 
-    const first = await open(0);
-    if (!first) continue;
-    const duration = Number(await page.locator("[data-duration]").getAttribute("data-duration"));
-    const frames = [...new Set([0, 0.25, 0.5, 0.75].map((f) => Math.round(duration * f)).concat(duration - 1))];
-
-    for (const frame of frames) {
-      const stage = frame === 0 ? first : await open(frame);
-      if (!stage) break;
-      const file = path.join(outDir, `${clip}-${frame}.png`);
-      await stage.screenshot({ path: file });
-      files.push(file);
+        for (const frame of frames) {
+          const stage = frame === 0 ? first : await open(frame);
+          if (!stage) break;
+          const file = path.join(outDir, `${clip}-${frame}.png`);
+          await stage.screenshot({ path: file });
+          files.push(file);
+        }
+      } catch (e) {
+        failures.push(`${clip}: ${(e as Error).message.split("\n")[0]}`);
+      }
     }
+  } finally {
+    await browser.close();
   }
 
-  await browser.close();
   console.log(files.join("\n"));
   if (failures.length > 0) {
     console.error(failures.map((f) => `FAIL ${f}`).join("\n"));

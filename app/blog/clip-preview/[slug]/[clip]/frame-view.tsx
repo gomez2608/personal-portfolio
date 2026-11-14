@@ -7,7 +7,11 @@ import type { ClipDef } from "@/app/components/blog/clips/clip-types";
 import { FPS, HEIGHT, WIDTH } from "@/app/components/blog/clips/timing";
 import { clipRegistry } from "@/lib/blog/clip-registry.generated";
 
-type State = { status: "loading" } | { status: "missing" } | { status: "ready"; def: ClipDef };
+type State =
+  | { status: "loading" }
+  | { status: "missing" }
+  | { status: "error"; message: string }
+  | { status: "ready"; def: ClipDef };
 
 const OVERLAY = { position: "fixed", inset: 0, zIndex: 100, background: "#f7f5f0" } as const;
 
@@ -30,9 +34,13 @@ export function FrameView({ slug, clip, frame }: { slug: string; clip: string; f
     if (!load || !Object.hasOwn(clipRegistry[slug], clip)) {
       done({ status: "missing" });
     } else {
+      // Registered but broken (a syntax error, or defineClip rejecting the definition).
       load().then(
-        (mod) => done({ status: "ready", def: mod.default.def }),
-        () => done({ status: "missing" }),
+        (mod) =>
+          mod?.default?.def
+            ? done({ status: "ready", def: mod.default.def })
+            : done({ status: "error", message: "the module does not default-export defineClip({...})" }),
+        (e: unknown) => done({ status: "error", message: e instanceof Error ? e.message : String(e) }),
       );
     }
     return () => {
@@ -44,6 +52,15 @@ export function FrameView({ slug, clip, frame }: { slug: string; clip: string; f
     return (
       <div style={{ ...OVERLAY, padding: 24, fontFamily: "monospace", color: "#0f1220" }} data-ready={ready ? "true" : undefined} data-missing="true">
         No se encontró el clip &quot;{slug}/{clip}&quot; en el registro. Ejecuta npm run blog:registry.
+      </div>
+    );
+  }
+
+  if (state.status === "error") {
+    return (
+      <div style={{ ...OVERLAY, padding: 24, fontFamily: "monospace", color: "#0f1220", whiteSpace: "pre-wrap" }} data-ready={ready ? "true" : undefined} data-error="true">
+        No se pudo cargar el clip &quot;{slug}/{clip}&quot;:{"\n"}
+        <span data-error-message>{state.message}</span>
       </div>
     );
   }

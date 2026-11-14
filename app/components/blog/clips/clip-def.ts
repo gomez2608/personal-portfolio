@@ -16,13 +16,12 @@ export {
 /**
  * Turns a clip definition into the component a clip module default-exports. Clip modules
  * are `"use client"` modules; server components (MDX pages) only render `<Clip1 />`.
- * In development an invalid definition throws, listing every problem.
+ * An invalid definition throws in every environment, listing every problem, so a broken
+ * clip fails the build at prerender (and `npm run blog:check`) instead of reaching visitors.
  */
 export function defineClip(def: ClipDef): ClipComponent {
-  if (process.env.NODE_ENV !== "production") {
-    const errors = validateClipDef(def);
-    if (errors.length > 0) throw new Error(`Invalid clip definition:\n- ${errors.join("\n- ")}`);
-  }
+  const errors = validateClipDef(def);
+  if (errors.length > 0) throw new Error(`Invalid clip definition:\n- ${errors.join("\n- ")}`);
   const Clip: FC = () => createElement(ClipPlayer, { def });
   Clip.displayName = `Clip(${def.id})`;
   return Object.assign(Clip, { def });

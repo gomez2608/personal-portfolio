@@ -1,7 +1,7 @@
 import type { FC } from "react";
 import { sec } from "./timing";
 
-/** A burned-in caption, in frames. `from` is inclusive, `to` exclusive. */
+/** A caption, in frames. `from` is inclusive, `to` exclusive. Shown in the HTML caption bar under the stage (burned in only for snapshots). */
 export type Caption = { from: number; to: number; text: string };
 
 export type ClipDef = {
@@ -11,7 +11,8 @@ export type ClipDef = {
   title: string;
   /** Between `sec(8)` and `sec(25)`. */
   durationInFrames: number;
-  /** Sorted, non-overlapping, the first one starting at frame 0, each 1–90 characters. */
+  /** Sorted, non-overlapping, the first one starting at frame 0, each 1–70 characters
+   *  (fits 3 lines of the caption bar on a 375 px phone). */
   captions: Caption[];
   /** The animation: `() => <>...primitives...</>`, drawn inside the 1280×720 SVG stage. */
   Scene: FC;
@@ -22,7 +23,7 @@ export type ClipComponent = FC & { def: ClipDef };
 
 export const MIN_DURATION = sec(8);
 export const MAX_DURATION = sec(25);
-export const MAX_CAPTION_LENGTH = 90;
+export const MAX_CAPTION_LENGTH = 70;
 
 /** Returns one message per problem; an empty array means the clip is valid. */
 export function validateClipDef(def: ClipDef): string[] {

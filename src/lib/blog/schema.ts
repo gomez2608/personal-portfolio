@@ -6,7 +6,16 @@ export const RESERVED_SLUGS = ["og", "clip-preview"] as const;
 const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
-const isoDate = z.string().regex(ISO_DATE_RE, "Expected YYYY-MM-DD");
+/** True when `s` names a real calendar day (rejects 2026-02-30, 2026-13-45). */
+function isCalendarDate(s: string): boolean {
+  const d = new Date(`${s}T00:00:00Z`);
+  return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === s;
+}
+
+const isoDate = z
+  .string()
+  .regex(ISO_DATE_RE, "Expected YYYY-MM-DD")
+  .refine(isCalendarDate, { message: "Not a real calendar date" });
 
 export const PostMetaSchema = z
   .object({

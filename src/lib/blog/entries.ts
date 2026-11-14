@@ -11,7 +11,8 @@ export type PostEntry = {
   clipFiles: string[];
 };
 
-const CLIP_EXT = /\.tsx$/;
+/** Only `clips/clip-<n>.tsx` are clips; helpers and tests in the folder are not registered. */
+const CLIP_FILE = /^clip-\d+\.tsx$/;
 
 /**
  * Reads every post folder under `root`. Skips reserved slugs, plain files and
@@ -42,8 +43,8 @@ export function readPostEntries(root = "app/blog"): PostEntry[] {
       clipFiles: fs.existsSync(clipsDir)
         ? fs
             .readdirSync(clipsDir)
-            .filter((f) => CLIP_EXT.test(f))
-            .map((f) => f.replace(CLIP_EXT, ""))
+            .filter((f) => CLIP_FILE.test(f))
+            .map((f) => f.replace(/\.tsx$/, ""))
             .sort()
         : [],
     });
