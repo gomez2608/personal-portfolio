@@ -151,6 +151,7 @@
         }
       ],
       "cta": "Get in touch",
+      "blog": "Blog",
       "menu": [
         "Menu",
         "Close"
@@ -488,6 +489,7 @@
         }
       ],
       "cta": "Contáctame",
+      "blog": "Blog",
       "menu": [
         "Menú",
         "Cerrar"

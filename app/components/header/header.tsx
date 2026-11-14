@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { useTheme } from "next-themes";
@@ -212,6 +213,12 @@ export default function Header() {
               {label}
             </button>
           ))}
+          <Link
+            href="/blog"
+            className="py-1.5 text-sm leading-none font-medium whitespace-nowrap opacity-[.62] hover:opacity-100 focus-visible:opacity-100"
+          >
+            {t.blog}
+          </Link>
         </nav>
 
         <div className="flex items-center gap-2">
@@ -300,6 +307,13 @@ export default function Header() {
                 {label}
               </button>
             ))}
+            <Link
+              href="/blog"
+              onClick={() => setMenuOpen(false)}
+              className="rounded-lg px-3 py-3.5 text-left text-base leading-none font-semibold text-navy hover:bg-fog"
+            >
+              {t.blog}
+            </Link>
             {/* On phones the header CTA doesn't fit in the bar, so it lives here. */}
             <button
               type="button"
