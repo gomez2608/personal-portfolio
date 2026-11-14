@@ -26,7 +26,7 @@ Dos aclaraciones. Los nombres de los expertos son inventados para el ejemplo: na
 
 ## Por qué importa
 
-Esta idea separa dos cosas que antes iban juntas: cuánto puede aprender un modelo y cuánto cuesta usarlo. Agregar expertos le da más capacidad, pero cada palabra sigue visitando solo a unos pocos, así que el costo por palabra casi no crece. En el artículo, los autores probaron capas con miles de expertos y modelos de hasta 137.000 millones de parámetros, y reportaron mejores resultados que los mejores modelos de ese momento en traducción y en predicción de texto, con menos cómputo. Desde entonces, variantes de esta idea aparecen en varios de los modelos de lenguaje grandes.
+Esta idea separa dos cosas que antes iban juntas: cuánto puede aprender un modelo y cuánto cuesta usarlo. Agregar expertos le da más capacidad, pero cada palabra sigue visitando solo a unos pocos, así que el costo por palabra casi no crece. En el artículo, los autores probaron capas con miles de expertos, que llegaban a sumar 137.000 millones de parámetros, y reportaron mejores resultados que los mejores modelos de ese momento en traducción y en predicción de texto, con menos cómputo. Desde entonces, variantes de esta idea aparecen en varios de los modelos de lenguaje grandes.
 
 <Profundizar title="Los detalles técnicos">
 
@@ -34,11 +34,11 @@ Esta idea separa dos cosas que antes iban juntas: cuánto puede aprender un mode
 
 **Top-k (quedarse con los k mejores).** De todos los puntajes se conservan solo los k más altos, el resto queda en cero y los pesos se reparten entre los elegidos para que sumen 1. En los clips, k = 2. El artículo además le suma un poco de ruido aleatorio a los puntajes antes de elegir (lo llama *noisy top-k gating*), lo que ayuda a repartir mejor el trabajo.
 
-**Load balancing (balanceo de carga).** Hay un riesgo: el router puede preferir siempre a los mismos pocos expertos. Esos mejoran más rápido porque practican más, el router los prefiere todavía más, y el resto queda casi sin usar. Para evitarlo, durante el entrenamiento se suma una penalización cuando el uso de los expertos está muy desparejo.
+**Load balancing (balanceo de carga).** Hay un riesgo: el router puede preferir siempre a los mismos pocos expertos. Esos mejoran más rápido porque practican más, el router los prefiere todavía más, y el resto queda casi sin usar. Para evitarlo, durante el entrenamiento se suma una penalización cuando el uso de los expertos está muy disparejo.
 
 **Sparse (disperso) vs. dense (denso).** Un modelo denso usa todos sus parámetros en cada palabra. Uno disperso, como este, tiene muchos parámetros pero activa solo una parte en cada paso. La pregunta clave deja de ser "cuántos parámetros tiene" y pasa a ser "cuántos usa por palabra". Lo que no desaparece: todos los expertos tienen que estar guardados en memoria, aunque descansen la mayor parte del tiempo.
 
-En el artículo, la capa de expertos va entre capas LSTM, un tipo de red para texto muy común antes de los Transformers, y se prueba en modelado de lenguaje (predecir la siguiente palabra) y en traducción automática.
+En el artículo, la capa de expertos va entre capas LSTM, un tipo de red para texto muy común antes de los Transformers (la arquitectura de los modelos de lenguaje actuales), y se prueba en modelado de lenguaje (predecir la siguiente palabra) y en traducción automática.
 
 Artículo: [Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer](https://arxiv.org/abs/1701.06538), de Noam Shazeer, Azalia Mirhoseini, Krzysztof Maziarz, Andy Davis, Quoc Le, Geoffrey Hinton y Jeff Dean. Publicado en arXiv el 23 de enero de 2017.
 

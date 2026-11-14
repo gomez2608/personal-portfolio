@@ -123,7 +123,7 @@ export default defineClip({
   durationInFrames: sec(13),
   captions: [
     { from: 0, to: sec(2.6), text: "Llega una palabra: «París»." },
-    { from: sec(2.6), to: sec(5.6), text: "El router conoce a 8 expertos, cada uno con su tema." },
+    { from: sec(2.6), to: sec(5.6), text: "El router puede enviarla a 8 expertos distintos." },
     { from: sec(5.6), to: sec(8.6), text: "Elige solo a los 2 que mejor encajan con «París»." },
     { from: sec(8.6), to: sec(13), text: "2 de 8 expertos: trabaja una cuarta parte." },
   ],

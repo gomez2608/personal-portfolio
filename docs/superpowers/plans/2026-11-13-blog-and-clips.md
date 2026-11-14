@@ -4,7 +4,7 @@
 
 **Goal:** A Spanish `/blog` on the portfolio where each post is an MDX file with self-playing animated diagram clips built from a small brand primitive library, plus the tooling (validator, clip registry, frame snapshots) the agent pipeline in Plan 3 will rely on.
 
-**Architecture:** Each post is a route folder `app/blog/<slug>/` holding `page.mdx`, `post.json` (validated metadata) and `clips/*.tsx`. MDX is compiled by `@next/mdx`. A post's `page.mdx` default-exports a `PostShell` layout that renders header, source and draft gating. Clips are Remotion compositions played in-page by `@remotion/player`. They autoplay muted when in view and are built from shared primitives on a fixed Paper stage with burned-in captions. A generated clip registry feeds a dev-only preview route that a Playwright script screenshots at fixed moments.
+**Architecture:** Each post is a route folder `app/blog/<slug>/` holding `page.mdx`, `post.json` (validated metadata) and `clips/*.tsx`. MDX is compiled by `@next/mdx`. A post's `page.mdx` default-exports a `PostShell` layout that renders header, source and draft gating. Clips are Remotion compositions played in-page by `@remotion/player`. They autoplay muted when in view and are built from shared primitives on a fixed Paper stage, with captions in an HTML caption bar under the stage (burned in only for snapshots). A generated clip registry feeds a dev-only preview route that a Playwright script screenshots at fixed moments.
 
 **Tech Stack:** Next.js 15 App Router, React 19, Tailwind v4, `@next/mdx`, `remotion` + `@remotion/player` (4.x, identical pinned versions), zod 4, Vitest, Playwright, tsx.
 
@@ -14,7 +14,7 @@
 
 - Blog content and UI are **Spanish only**. Everything under `/blog` renders inside `lang="es"`, regardless of the site's EN/ES toggle.
 - Brand: Paper `#f7f5f0`, ink `#0f1220`, navy `#1b2238`, slate `#43465a`, line `#e4e0d6`, fog `#ece8df`, tangerine `#f07a2e`. Fonts are Manrope (`font-sans`) and DM Mono (`font-mono`). **Tangerine is signal only: never text on Paper/Fog.** Use `muted-text`, never `muted`, for text.
-- Clips: 16:9, `1280×720` composition, `30` fps, 10–20 s each. They always sit on a fixed Paper stage in both light and dark mode, autoplay **muted, looping, only while in view**, and have burned-in Spanish captions plus a play/pause control and a progress bar.
+- Clips: 16:9, `1280×720` composition, `30` fps, 10–20 s each. They always sit on a fixed Paper stage in both light and dark mode, autoplay **muted, looping, only while in view**, and have Spanish captions (at most 70 characters each) shown as an HTML caption bar under the stage, burned into the frame only for snapshots (ruling R8), plus a play/pause control and a progress bar.
 - `prefers-reduced-motion: reduce` → clips do not autoplay; they show the final frame with a play button.
 - `/blog` is indexable. Draft posts are visible in dev and Vercel previews but **404 in production** and are excluded from the index and the sitemap.
 - Never name the employer's clients or confidential work in any content.
@@ -26,7 +26,7 @@
 2. **A post with 3 clips, scrolled fast:** only clips in view play, and a clip scrolled out of view pauses. → `playbackPolicy` test, Task 5.
 3. **Draft post in production:** `/blog/<slug>` returns 404 and the post appears in neither `/blog` nor `sitemap.xml`. → `isPostVisible` test, Task 4.
 4. **Visitor who selected English on the homepage, then opens `/blog`:** `<html lang>` becomes `es` and the "Este blog está en español" note shows. → `documentLang` test, Task 3.
-5. **Phone at 375 px:** the clip scales to the column width with readable captions and no horizontal page scroll, and long Spanish titles wrap. A caption longer than 90 characters is rejected. → `validateClipDef` test, Task 5. 375 px screenshot check, Task 7.
+5. **Phone at 375 px:** the clip scales to the column width with readable captions and no horizontal page scroll, and long Spanish titles wrap. A caption longer than 70 characters is rejected. → `validateClipDef` test, Task 5. 375 px screenshot check, Task 7.
 
 ---
 
@@ -232,7 +232,7 @@ test("deploymentEnv prefers VERCEL_ENV", () => { vi.stubEnv("VERCEL_ENV", "previ
 - Produces:
   - `timing.ts`: `FPS = 30`, `WIDTH = 1280`, `HEIGHT = 720`. `sec(s: number): number` (frames, rounded). `progress(frame: number, start: number, end: number, ease?: (t:number)=>number): number` (clamped 0–1, default ease-in-out cubic). `connectorPoint(from: [number,number], to: [number,number], curve: number, t: number): [number,number]` (point on the cubic Bézier `connectorPath` uses; `curve` 0 = straight, positive bends toward −y). `connectorPath(from, to, curve): string` (SVG `d`). `activeCaption(captions: Caption[], frame: number): Caption | null`. `formatNumberEs(n: number): string` (`es-CO`, e.g. `1.000.000`).
   - `clip-def.ts`: `type Caption = { from: number; to: number; text: string }` (frames, `to` exclusive). `type ClipDef = { id: string; title: string; durationInFrames: number; captions: Caption[]; Scene: React.FC }`. `validateClipDef(def: ClipDef): string[]`. `defineClip(def: ClipDef): ClipComponent`, where `type ClipComponent = React.FC & { def: ClipDef }`. The component renders `<ClipPlayer def={def} />`. In development, `defineClip` throws if `validateClipDef` returns errors.
-  - Validation rules: duration between `sec(8)` and `sec(25)`; captions sorted, non-overlapping, within duration, each `text` 1–90 chars, first caption starts at 0; `id` matches `^clip-\d+$`; `title` non-empty (used as the player's accessible label).
+  - Validation rules: duration between `sec(8)` and `sec(25)`; captions sorted, non-overlapping, within duration, each `text` 1–70 chars, first caption starts at 0; `id` matches `^clip-\d+$`; `title` non-empty (used as the player's accessible label).
   - `playback.ts`: `playbackPolicy(s: { reducedMotion: boolean; inView: boolean; userPaused: boolean; userStarted: boolean }): { autoplay: boolean; showFinalFrame: boolean }`. `autoplay = inView && !userPaused && (!reducedMotion || userStarted)`; `showFinalFrame = reducedMotion && !userStarted`. `userStarted` becomes true the first time the visitor presses play; `userPaused` is true while they have paused it themselves.
   - `<ClipFrame def>` (Remotion composition component): Paper stage `#f7f5f0` full-bleed, renders `def.Scene`, then a caption band at the bottom (Manrope 30px, ink on a translucent Paper pill, centered, max 2 lines) from `activeCaption`.
   - `<ClipPlayer def>` (`"use client"`): `@remotion/player` `Player` at `compositionWidth/Height = 1280/720`, `fps = 30`, `loop`, no built-in controls, `style={{ width: "100%" }}`, wrapped in a rounded container with a 1px `line` border. It has custom controls: a play/pause button (`aria-label` "Reproducir"/"Pausar") and a 3px progress bar (tangerine fill on fog track). An `IntersectionObserver` (threshold 0.5) plays and pauses per `playbackPolicy`, and `matchMedia("(prefers-reduced-motion: reduce)")` drives `reducedMotion`. The container has `role="group"` and `aria-label={def.title}`.
@@ -263,7 +263,7 @@ test("Spanish number format", () => expect(formatNumberEs(1000000)).toBe("1.000.
 
 // clip-def.test.ts — `def(overrides)` builds a valid 12s clip with captions [0,180),[180,360)
 test("valid def has no errors", () => expect(validateClipDef(def())).toEqual([]));
-test("caption over 90 chars rejected", () => expect(validateClipDef(def({ captions: [{ from: 0, to: 360, text: "x".repeat(91) }] }))).toHaveLength(1));
+test("caption over 70 chars rejected", () => expect(validateClipDef(def({ captions: [{ from: 0, to: 360, text: "x".repeat(71) }] }))).toHaveLength(1));
 test("overlapping captions rejected", () => expect(validateClipDef(def({ captions: [{ from: 0, to: 200, text: "a" }, { from: 180, to: 360, text: "b" }] })).length).toBeGreaterThan(0));
 test("too long clip rejected", () => expect(validateClipDef(def({ durationInFrames: sec(26) })).length).toBeGreaterThan(0));
 test("first caption must start at 0", () => expect(validateClipDef(def({ captions: [{ from: 10, to: 360, text: "a" }] })).length).toBeGreaterThan(0));
@@ -317,7 +317,7 @@ test.each([
 - [ ] **Step 2: Clips.**
   - `clip-1` "La idea general" (~13 s): the word "París" → router → 8 expert nodes (Gramática, Lugares, Matemáticas, Código, Fechas, Nombres, Tono, Lógica). Two light up (Lugares, Gramática), the rest dim, and a counter ends on "25 %" with the text "del modelo trabaja en cada palabra".
   - `clip-2` "Cómo decide el router" (~15 s): the router scores all 8 experts (bars as `Node` widths or `Text` percentages), the top 2 are selected, their outputs combine into one result node weighted by score.
-  - Spanish captions under 90 chars, per the Global Constraints.
+  - Spanish captions of at most 70 chars, per the Global Constraints.
 - [ ] **Step 3: `page.mdx`** in Spanish, in this order: intro with a `<Destacado>` metaphor (hospital front desk sending a patient to 2 of 8 specialists), `<Clip1 />`, a short explanation, `<Clip2 />`, `## Por qué importa`, `<Profundizar>` (gating network, top-k, load balancing, sparse vs. dense, in plain words), `<MiOpinion pending />`. Technical terms stay in English with a Spanish gloss on first use, e.g. "router (enrutador)".
 - [ ] **Step 4: Visual check.** `npm run blog:registry`, `npm run dev`, `npm run blog:snap -- mezcla-de-expertos`. Look at every PNG and fix any overlap, clipping, text outside the stage, or tangerine text under 48px. Repeat until clean. Then screenshot `/blog/mezcla-de-expertos` with Playwright at 375×812 and 1280×800 (save to `.blog-snaps/`). Confirm there's no horizontal scroll (`document.documentElement.scrollWidth <= innerWidth`), the clips scale, the captions are legible and the title wraps.
 - [ ] **Step 5: Run** `npm test`, `npm run lint`, `npm run build`, `npm run blog:check` → pass. (The draft with a pending opinion is allowed.)

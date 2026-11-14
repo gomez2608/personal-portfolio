@@ -64,7 +64,7 @@ Newsletter signup
 
 ### 4.3 Clips
 - Style: **the real mechanism as a diagram** in the editorial brand look (Paper background, ink, navy, tangerine as signal only, Manrope + DM Mono), like the "B" mockup approved during brainstorming.
-- Each clip is ~10–20 s, plays like a video (no interaction needed), and **autoplays muted and loops when scrolled into view**. It has burned-in Spanish captions and a minimal play/pause control plus a progress bar.
+- Each clip is ~10–20 s, plays like a video (no interaction needed), and **autoplays muted and loops when scrolled into view**. It has Spanish captions, shown as an HTML caption bar under the stage so they stay legible on phones (burned into the frame only for snapshots and stills), each at most 70 characters, and a minimal play/pause control plus a progress bar.
 - `prefers-reduced-motion`: don't autoplay. Show the final frame with a play button (consistent with the site's existing reduced-motion rule).
 - Clips must follow the site's theme rules: they sit on a fixed Paper-style surface in both light and dark mode, like the project preview card stays fixed dark. Builder decides which, provided contrast holds.
 
