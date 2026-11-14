@@ -4,6 +4,7 @@ import Link from "next/link";
 import { listPosts } from "@/lib/blog/posts";
 import { formatDateEs } from "@/lib/blog/format";
 import { blogSocialMetadata } from "@/lib/blog/metadata";
+import { NewsletterSignup } from "@/app/components/blog/newsletter-signup";
 import { deploymentEnv, isPostVisible } from "@/lib/blog/visibility";
 
 const description = "Investigación reciente en IA, explicada en simple.";
@@ -28,6 +29,10 @@ export default function BlogPage() {
         Blog
       </h1>
       <p className="mt-4 text-lg text-slate">{description}</p>
+
+      <div className="mt-10 max-w-[640px]">
+        <NewsletterSignup source="blog" />
+      </div>
 
       {posts.length === 0 ? (
         <p className="mt-14 text-graphite">Pronto: la primera edición está en camino.</p>
