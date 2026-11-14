@@ -61,6 +61,11 @@ jobs:
           elif [ "$DRY_RUN" = "true" ]; then
             npm run newsletter:send -- --issue "$ISSUE" --dry-run
           else
+            # A real broadcast only from master; dry runs and test sends work on any ref.
+            if [ "$GITHUB_REF" != "refs/heads/master" ]; then
+              echo "::error::A real send must run on master (this run is on $GITHUB_REF). Use dry run or test_to on other refs."
+              exit 1
+            fi
             npm run newsletter:send -- --issue "$ISSUE" --wait-min 15
           fi
 
@@ -76,13 +81,15 @@ jobs:
         run: |
           set -euo pipefail
           # Only files ADDED in this push are sent; edits to existing issues never trigger a send.
+          # --no-renames: a renamed file counts as deleted + added, so renaming an issue file to a new
+          # number shows up as an addition instead of being hidden as a rename.
           # `before` is all zeros on a branch's first push and may be unreachable after a force-push:
           # fall back to the last commit alone.
           if [[ "$BEFORE" =~ ^0+$ ]] || ! git cat-file -e "${BEFORE}^{commit}" 2>/dev/null; then
             echo "No usable base commit; comparing HEAD~1 with HEAD"
-            files=$(git diff --diff-filter=A --name-only HEAD~1 HEAD -- newsletter/issues/ || true)
+            files=$(git diff --no-renames --diff-filter=A --name-only HEAD~1 HEAD -- newsletter/issues/ || true)
           else
-            files=$(git diff --diff-filter=A --name-only "$BEFORE" "$SHA" -- newsletter/issues/)
+            files=$(git diff --no-renames --diff-filter=A --name-only "$BEFORE" "$SHA" -- newsletter/issues/)
           fi
           files=$(printf '%s\n' "$files" | grep -E '^newsletter/issues/[0-9]{4}\.json$' | sort || true)
           if [ -z "$files" ]; then
