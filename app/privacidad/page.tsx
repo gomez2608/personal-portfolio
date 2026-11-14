@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { blogSocialMetadata } from "@/lib/blog/metadata";
 import { formatDateEs } from "@/lib/blog/format";
 import { deploymentEnv } from "@/lib/blog/visibility";
+import { isNewsletterConfigured } from "@/lib/newsletter/config";
 import { POLICY_VERSION } from "@/lib/newsletter/constants";
 
 const title = "Política de tratamiento de datos";
@@ -10,11 +11,15 @@ const description =
   "Cómo se tratan los datos de quienes se suscriben al boletín de Sebastián Gómez Ahumada.";
 const CONTACT = "contact@sebastiangomezahumada.com";
 
-export const metadata: Metadata = {
-  title,
-  description,
-  ...blogSocialMetadata({ title, description, path: "/privacidad" }),
-};
+// noindex (and out of the sitemap) until the newsletter is configured; evaluated at build.
+export function generateMetadata(): Metadata {
+  return {
+    title,
+    description,
+    ...blogSocialMetadata({ title, description, path: "/privacidad" }),
+    ...(isNewsletterConfigured() ? {} : { robots: { index: false, follow: false } }),
+  };
+}
 
 function Section({ id, heading, children }: { id: string; heading: string; children: ReactNode }) {
   return (
@@ -110,7 +115,7 @@ export default function PrivacidadPage() {
         </p>
       </Section>
 
-      <Section id="encargados" heading="Encargados y transferencia internacional">
+      <Section id="encargados" heading="Encargados y transmisión internacional">
         <p>Para operar el boletín usamos dos proveedores que tratan los datos por nuestra cuenta:</p>
         <ul className="grid list-disc gap-2 pl-6">
           <li>
@@ -144,7 +149,7 @@ export default function PrivacidadPage() {
         <ul className="grid list-disc gap-2 pl-6">
           <li>
             Usar el enlace <strong className="font-semibold text-ink">“Darte de baja”</strong> que
-            aparece al final de cada envío. Dejas de recibir el boletín de inmediato.
+            aparece al final de cada boletín. Dejas de recibir el boletín de inmediato.
           </li>
           <li>
             Escribir a <Mail /> desde el correo suscrito, indicando qué necesitas.
@@ -159,11 +164,18 @@ export default function PrivacidadPage() {
       <Section id="conservacion" heading="Cuánto tiempo los conservamos">
         <p>
           Conservamos tus datos mientras estés suscrito. Si te registras pero no confirmas, no recibes el
-          boletín, y el registro pendiente se guarda hasta que lo confirmes o nos pidas eliminarlo. Si te
-          das de baja, dejamos de enviarte el
-          boletín; tu correo y la evidencia de consentimiento se guardan solo para respetar tu baja y
-          poder demostrar la autorización que diste. Si quieres que los eliminemos por completo,
-          escríbenos a <Mail /> y los borraremos.
+          boletín, y el registro pendiente se guarda hasta que lo confirmes o nos pidas eliminarlo.
+        </p>
+        <p>
+          Si te das de baja, dejamos de enviarte el boletín de inmediato. Resend conserva tu correo
+          marcado como dado de baja, para que no vuelva a recibir envíos, y en Neon guardamos el
+          registro de la última autorización que confirmaste (fecha, versión de la política, página de
+          origen y hash de la IP), para poder demostrarla. Un enlace de confirmación antiguo no te
+          vuelve a suscribir: para volver, tienes que suscribirte de nuevo y confirmar el enlace nuevo.
+        </p>
+        <p>
+          Si quieres que eliminemos tus datos por completo, escríbenos a <Mail /> y los borraremos de
+          ambos proveedores.
         </p>
       </Section>
 

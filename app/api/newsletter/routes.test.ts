@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const markConfirmed = vi.fn();
 const addToSegment = vi.fn();
+const sendEmail = vi.fn();
 vi.mock("@/lib/newsletter/db", () => ({
   markConfirmed: (...a: unknown[]) => markConfirmed(...a),
   getSubscriber: vi.fn().mockResolvedValue(null),
@@ -10,7 +11,7 @@ vi.mock("@/lib/newsletter/db", () => ({
 }));
 vi.mock("@/lib/newsletter/resend", () => ({
   addToSegment: (...a: unknown[]) => addToSegment(...a),
-  sendEmail: vi.fn(),
+  sendEmail: (...a: unknown[]) => sendEmail(...a),
 }));
 
 import { GET } from "./confirm/route";
@@ -24,6 +25,7 @@ beforeEach(() => {
   vi.spyOn(console, "error").mockImplementation(() => {});
   markConfirmed.mockReset();
   addToSegment.mockReset();
+  sendEmail.mockReset();
   process.env.NEWSLETTER_SECRET = S;
 });
 
@@ -72,9 +74,15 @@ describe("GET /api/newsletter/confirm", () => {
 });
 
 describe("POST /api/newsletter/subscribe", () => {
-  it("honeypot returns ok", async () => {
-    const res = await post({ email: "a@b.co", consent: true, company: "x" }, "1.1.1.1");
+  it("filled honeypot returns ok and sends nothing", async () => {
+    const res = await post({ email: "a@b.co", consent: true, nl_hp_field: "x" }, "1.1.1.1");
     expect(await res.json()).toEqual({ ok: true });
+    expect(sendEmail).not.toHaveBeenCalled();
+  });
+  it("a company value (e.g. browser autofill) is not the honeypot: the signup goes through", async () => {
+    const res = await post({ email: "a@b.co", consent: true, company: "Acme" }, "1.1.1.2");
+    expect(await res.json()).toEqual({ ok: true });
+    expect(sendEmail).toHaveBeenCalledTimes(1);
   });
   it("invalid input is 400", async () => {
     const res = await post({ email: "nope", consent: true }, "2.2.2.2");

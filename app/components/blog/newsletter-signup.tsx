@@ -2,7 +2,7 @@
 
 import { useId, useState } from "react";
 import Link from "next/link";
-import type { NewsletterResponse } from "@/lib/newsletter/constants";
+import { HONEYPOT_FIELD, type NewsletterResponse } from "@/lib/newsletter/constants";
 import { cn } from "@/lib/utils";
 
 type Result = "ok" | "invalid" | "rate_limited" | "server";
@@ -28,7 +28,7 @@ export function NewsletterSignup({ source }: { source: string }) {
 
   const [email, setEmail] = useState("");
   const [consent, setConsent] = useState(false);
-  const [company, setCompany] = useState(""); // honeypot
+  const [trap, setTrap] = useState(""); // honeypot
   const [status, setStatus] = useState<Status>("idle");
 
   const sending = status === "sending";
@@ -43,7 +43,7 @@ export function NewsletterSignup({ source }: { source: string }) {
       const res = await fetch("/api/newsletter/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), consent, source, company }),
+        body: JSON.stringify({ email: email.trim(), consent, source, [HONEYPOT_FIELD]: trap }),
       });
       const data = (await res.json().catch(() => null)) as NewsletterResponse | null;
       if (data?.ok) next = "ok";
@@ -149,16 +149,18 @@ export function NewsletterSignup({ source }: { source: string }) {
           </button>
         </div>
 
-        {/* Honeypot: off-screen and skipped by keyboard and assistive tech; bots fill it in. */}
+        {/* Honeypot: off-screen and skipped by keyboard and assistive tech; bots fill it in. Its name
+            and label match nothing browser autofill knows, so real readers never fill it. */}
         <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
           <label>
-            Empresa
+            No completes este campo
             <input
-              name="company"
+              type="text"
+              name={HONEYPOT_FIELD}
               tabIndex={-1}
               autoComplete="off"
-              value={company}
-              onChange={(e) => setCompany(e.target.value)}
+              value={trap}
+              onChange={(e) => setTrap(e.target.value)}
             />
           </label>
         </div>

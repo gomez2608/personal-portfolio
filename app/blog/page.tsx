@@ -6,6 +6,7 @@ import { formatDateEs } from "@/lib/blog/format";
 import { blogSocialMetadata } from "@/lib/blog/metadata";
 import { NewsletterSignup } from "@/app/components/blog/newsletter-signup";
 import { deploymentEnv, isPostVisible } from "@/lib/blog/visibility";
+import { isNewsletterConfigured } from "@/lib/newsletter/config";
 
 const description = "Investigación reciente en IA, explicada en simple.";
 
@@ -30,9 +31,12 @@ export default function BlogPage() {
       </h1>
       <p className="mt-4 text-lg text-slate">{description}</p>
 
-      <div className="mt-10 max-w-[640px]">
-        <NewsletterSignup source="blog" />
-      </div>
+      {/* Hidden until the newsletter env is set (evaluated at build; redeploy to turn it on). */}
+      {isNewsletterConfigured() ? (
+        <div className="mt-10 max-w-[640px]">
+          <NewsletterSignup source="blog" />
+        </div>
+      ) : null}
 
       {posts.length === 0 ? (
         <p className="mt-14 text-graphite">Pronto: la primera edición está en camino.</p>

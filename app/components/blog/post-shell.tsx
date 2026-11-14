@@ -5,6 +5,7 @@ import { PostMetaSchema, type PostMeta } from "@/lib/blog/schema";
 import { formatDateEs } from "@/lib/blog/format";
 import { deploymentEnv, isPostVisible } from "@/lib/blog/visibility";
 import { blogSocialMetadata } from "@/lib/blog/metadata";
+import { isNewsletterConfigured } from "@/lib/newsletter/config";
 import { NewsletterSignup } from "./newsletter-signup";
 
 /** Parses the raw post.json import; a broken file throws and fails the build. */
@@ -82,9 +83,11 @@ export function PostShell({ post, children }: { post: unknown; children: ReactNo
           </p>
         </aside>
       </article>
-      <div className="mt-10">
-        <NewsletterSignup source={meta.slug} />
-      </div>
+      {isNewsletterConfigured() ? (
+        <div className="mt-10">
+          <NewsletterSignup source={meta.slug} />
+        </div>
+      ) : null}
     </main>
   );
 }

@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { site } from "@/app/data/site";
 import { listPosts } from "@/lib/blog/posts";
+import { isNewsletterConfigured } from "@/lib/newsletter/config";
 import { POLICY_VERSION } from "@/lib/newsletter/constants";
 import { deploymentEnv, isPostVisible } from "@/lib/blog/visibility";
 
@@ -24,11 +25,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${site.url}/blog/${p.slug}`,
       lastModified: new Date(p.date),
     })),
-    {
-      url: `${site.url}/privacidad`,
-      lastModified: new Date(POLICY_VERSION),
-      changeFrequency: "yearly",
-      priority: 0.2,
-    },
+    // The policy is only public once the newsletter is live.
+    ...(isNewsletterConfigured()
+      ? [
+          {
+            url: `${site.url}/privacidad`,
+            lastModified: new Date(POLICY_VERSION),
+            changeFrequency: "yearly" as const,
+            priority: 0.2,
+          },
+        ]
+      : []),
   ];
 }

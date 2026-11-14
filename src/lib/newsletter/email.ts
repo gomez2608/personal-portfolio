@@ -18,7 +18,6 @@ export const SubscribeSchema = z.object({
     .string()
     .regex(/^[a-z0-9-]{1,80}$/)
     .catch("blog"),
-  company: z.string().optional(),
 });
 
 export type SubscribeInput = z.infer<typeof SubscribeSchema>;

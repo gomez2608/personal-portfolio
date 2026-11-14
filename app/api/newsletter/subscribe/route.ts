@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { site } from "@/app/data/site";
-import type { NewsletterResponse } from "@/lib/newsletter/constants";
+import { HONEYPOT_FIELD, type NewsletterResponse } from "@/lib/newsletter/constants";
 import { getSubscriber, touchLink, upsertPending } from "@/lib/newsletter/db";
 import { SubscribeSchema } from "@/lib/newsletter/email";
 import { renderConfirmEmail } from "@/lib/newsletter/emails";
@@ -32,13 +32,14 @@ export async function POST(req: Request) {
     return reply({ ok: false, error: "invalid" }, 400);
   }
 
-  // Honeypot filled: pretend it worked and store nothing.
+  // Honeypot filled: pretend it worked and store nothing. The field name is one that browser
+  // autofill ignores, so a real reader never trips it.
   if (
     typeof json === "object" &&
     json !== null &&
-    "company" in json &&
-    typeof json.company === "string" &&
-    json.company.trim()
+    HONEYPOT_FIELD in json &&
+    typeof json[HONEYPOT_FIELD] === "string" &&
+    json[HONEYPOT_FIELD].trim()
   ) {
     return reply({ ok: true });
   }
