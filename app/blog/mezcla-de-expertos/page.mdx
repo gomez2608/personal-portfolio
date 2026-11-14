@@ -8,7 +8,7 @@ import Clip2 from "./clips/clip-2";
 
 Un modelo de lenguaje, como el que usas cuando chateas con una IA, está hecho de miles de millones de **parámetros**: números que el modelo ajustó mientras aprendía. Más parámetros suelen significar más capacidad para aprender cosas. El problema es que, en un modelo común, todos esos números trabajan cada vez que el modelo lee o escribe una palabra. Si lo haces diez veces más grande, usarlo también cuesta unas diez veces más.
 
-En 2017, un grupo de investigadores entre los que estaban Noam Shazeer, Geoffrey Hinton y Jeff Dean propuso una salida. En lugar de un solo bloque gigante, dividir una parte del modelo en muchos **expertos** (pequeñas redes independientes) y poner delante un **router (enrutador)** que decide qué expertos atienden cada palabra. La idea se llama *mixture of experts*: mezcla de expertos.
+La salida viene de una idea de los años noventa llamada *mixture of experts* (mezcla de expertos). En lugar de un solo bloque gigante, una parte del modelo se divide en muchos **expertos** (pequeñas redes independientes), y delante se pone un **router (enrutador)** que decide qué expertos atienden cada palabra. En 2017, un grupo de investigadores entre los que estaban Noam Shazeer, Geoffrey Hinton y Jeff Dean retomó esa idea y la hizo funcionar a una escala enorme, con un router que activa solo unos pocos expertos a la vez.
 
 <Destacado>
 Piensa en la recepción de un hospital con 8 especialistas. Llega alguien con dolor de rodilla. La recepcionista no lo manda a los 8 consultorios: lo escucha un momento y lo envía a los 2 que más sentido tienen, por ejemplo traumatología y fisioterapia. Los otros 6 quedan libres. El hospital sabe muchísimo en total, pero cada paciente solo ocupa una parte.
