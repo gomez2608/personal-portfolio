@@ -19,7 +19,11 @@ export default function BlogPage() {
   const posts = listPosts().filter((p) => isPostVisible(p, env));
 
   return (
-    <main className="mx-auto w-full max-w-[1120px] px-[clamp(16px,4vw,40px)] pt-14 pb-24">
+    <main
+      id="contenido"
+      tabIndex={-1}
+      className="mx-auto w-full max-w-[1120px] px-[clamp(16px,4vw,40px)] pt-14 pb-24 focus:outline-none"
+    >
       <h1 className="text-[clamp(2.25rem,6vw,3.5rem)] leading-none font-extrabold tracking-[-.03em] text-ink">
         Blog
       </h1>
@@ -44,11 +48,11 @@ export default function BlogPage() {
                   className="w-full rounded-xl border border-line"
                 />
                 <div>
-                  <h2 className="text-2xl leading-tight font-bold text-ink group-hover:underline">
+                  <h2 className="text-2xl leading-tight font-bold text-ink group-hover:underline group-focus-visible:underline">
                     {post.title}
                   </h2>
                   <p className="mt-2 text-graphite">{post.hook}</p>
-                  <p className="mt-3 font-mono text-xs tracking-[.06em] text-muted-text uppercase">
+                  <p className="mt-3 font-mono text-xs tracking-[.06em] text-graphite uppercase">
                     {formatDateEs(post.date)} · Edición {post.issue}
                   </p>
                 </div>

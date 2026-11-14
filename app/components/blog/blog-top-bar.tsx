@@ -5,7 +5,7 @@ import { ThemeToggle } from "@/app/components/shared/theme-toggle";
 /** Slim top bar: the portfolio mark (links home), the Blog link and the theme toggle. */
 export function BlogTopBar() {
   return (
-    <div className="border-b border-s-line bg-s-bg text-s-fg">
+    <header className="border-b border-s-line bg-s-bg text-s-fg">
       <div className="mx-auto flex max-w-[1120px] items-center justify-between gap-4 px-[clamp(16px,4vw,40px)] py-4">
         <Link href="/" className="flex items-center gap-3" aria-label={`${site.name} — inicio`}>
           <span aria-hidden="true" className="relative size-9 shrink-0 rounded-lg bg-emph">
@@ -19,15 +19,17 @@ export function BlogTopBar() {
           </span>
         </Link>
         <div className="flex items-center gap-4">
-          <Link
-            href="/blog"
-            className="font-mono text-xs leading-none tracking-[.06em] uppercase hover:underline"
-          >
-            Blog
-          </Link>
+          <nav aria-label="Principal">
+            <Link
+              href="/blog"
+              className="inline-block py-2 font-mono text-xs leading-none tracking-[.06em] uppercase hover:underline"
+            >
+              Blog
+            </Link>
+          </nav>
           <ThemeToggle />
         </div>
       </div>
-    </div>
+    </header>
   );
 }

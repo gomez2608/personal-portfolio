@@ -10,12 +10,12 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     p: (p) => <p className="my-5 text-[1.0625rem] leading-[1.75] text-graphite" {...p} />,
     a: (p) => (
       <a
-        className="font-medium text-ink underline decoration-line decoration-2 underline-offset-4 hover:decoration-ink"
+        className="font-medium text-ink underline decoration-current/60 decoration-2 underline-offset-4 hover:decoration-current"
         {...p}
       />
     ),
-    ul: (p) => <ul className="my-5 list-disc space-y-2 pl-6 text-graphite marker:text-muted-text" {...p} />,
-    ol: (p) => <ol className="my-5 list-decimal space-y-2 pl-6 text-graphite marker:text-muted-text" {...p} />,
+    ul: (p) => <ul className="my-5 list-disc space-y-2 pl-6 text-graphite marker:text-graphite" {...p} />,
+    ol: (p) => <ol className="my-5 list-decimal space-y-2 pl-6 text-graphite marker:text-graphite" {...p} />,
     li: (p) => <li className="text-[1.0625rem] leading-[1.7]" {...p} />,
     strong: (p) => <strong className="font-semibold text-ink" {...p} />,
     code: (p) => <code className="rounded bg-fog px-1.5 py-0.5 font-mono text-[0.9em] text-ink" {...p} />,

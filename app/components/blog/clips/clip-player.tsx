@@ -1,7 +1,7 @@
 "use client";
 
 import { Player, type PlayerRef } from "@remotion/player";
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
 import type { ClipDef } from "./clip-types";
 import { ClipFrame } from "./clip-frame";
 import { playbackPolicy } from "./playback";
@@ -33,6 +33,7 @@ export function ClipPlayer({ def }: { def: ClipDef }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<PlayerRef>(null);
   const progressRef = useRef<HTMLDivElement>(null);
+  const transcriptId = useId();
 
   const reducedMotion = usePrefersReducedMotion();
   const [inView, setInView] = useState(false);
@@ -47,9 +48,11 @@ export function ClipPlayer({ def }: { def: ClipDef }) {
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
+    // Two thresholds: crossing 0.5 starts or stops playback, and crossing 0 catches a clip
+    // that was under half visible (started with the button) and then leaves the screen.
     const io = new IntersectionObserver(
       ([entry]) => setInView(entry.isIntersecting && entry.intersectionRatio >= 0.5),
-      { threshold: 0.5 },
+      { threshold: [0, 0.5] },
     );
     io.observe(el);
     return () => io.disconnect();
@@ -117,6 +120,7 @@ export function ClipPlayer({ def }: { def: ClipDef }) {
       ref={containerRef}
       role="group"
       aria-label={def.title}
+      aria-describedby={transcriptId}
       className="my-8 overflow-hidden rounded-xl border border-line bg-card"
     >
       <Player
@@ -137,7 +141,17 @@ export function ClipPlayer({ def }: { def: ClipDef }) {
         acknowledgeRemotionLicense
         style={{ width: "100%" }}
       />
-      <p className="m-0 flex min-h-[calc(2*1.4em+1rem)] items-center justify-center border-t border-line bg-card px-4 py-2 text-center font-sans text-[15px] leading-[1.4] font-semibold text-ink sm:text-base">
+      {/* Screen readers get the whole transcript at once; the visible bar is decorative for them. */}
+      <ol id={transcriptId} className="sr-only">
+        {def.captions.map((c) => (
+          <li key={c.from}>{c.text}</li>
+        ))}
+      </ol>
+      {/* Up to 70 characters: 3 lines are reserved on phones, 2 from sm up, so the bar never jumps. */}
+      <p
+        aria-hidden="true"
+        className="m-0 flex min-h-[calc(3*1.4em+1rem)] items-center justify-center border-t border-line bg-card px-4 py-2 text-center font-sans text-[15px] leading-[1.4] font-semibold text-ink sm:min-h-[calc(2*1.4em+1rem)] sm:text-base"
+      >
         {def.captions[captionIndex]?.text ?? ""}
       </p>
       <div className="flex items-center gap-3 border-t border-line px-3 py-2">
@@ -145,7 +159,7 @@ export function ClipPlayer({ def }: { def: ClipDef }) {
           type="button"
           onClick={toggle}
           aria-label={playing ? "Pausar" : "Reproducir"}
-          className="inline-flex size-8 shrink-0 items-center justify-center rounded-full border border-line text-ink transition-colors hover:bg-fog"
+          className="inline-flex size-8 shrink-0 items-center justify-center rounded-full border border-graphite text-ink transition-colors hover:bg-fog"
         >
           <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" fill="currentColor">
             {playing ? (

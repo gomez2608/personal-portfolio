@@ -11,7 +11,8 @@ import { usePathname } from "next/navigation";
 import { documentLang } from "@/src/lib/lang";
 import { copy, type Copy, type Lang } from "@/app/data/content";
 
-const STORAGE_KEY = "sga-lang";
+export const LANG_STORAGE_KEY = "sga-lang";
+const STORAGE_KEY = LANG_STORAGE_KEY;
 
 type LangContextValue = {
   lang: Lang;
