@@ -82,9 +82,10 @@ jobs:
           HEAD_SHA: ${{ steps.head.outputs.sha }}
         run: npx tsx scripts/blog/opinion-guard.ts
 
-      # always(): a crash or cancel in any earlier step ends as failure, never stuck on pending.
+      # !cancelled(): a crash in any earlier step still ends as failure, never stuck on pending. A run
+      # cancelled because a newer one started posts nothing, so it can't overwrite the newer result.
       - name: Report the status
-        if: always() && steps.head.outputs.sha != ''
+        if: ${{ !cancelled() && steps.head.outputs.sha != '' }}
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}

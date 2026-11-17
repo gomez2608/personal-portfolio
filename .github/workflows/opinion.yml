@@ -3,6 +3,7 @@ name: Opinion
 # `/opinion <slug>` + newline + text, commented on a PR by gomez2608 (not via a GitHub App), is
 # copied verbatim into app/blog/<slug>/post.json → opinion. No AI runs here: this workflow is the
 # only writer an opinion has; opinion-guard.yml rejects any opinion that doesn't match such a comment.
+# Only `created` triggers it: editing a comment does nothing here, and the guard rejects edited ones.
 #
 # issue_comment always runs this file from the default branch. The PR branch is checked out into
 # ./pr and only its post.json is touched: no code or dependencies from the PR run with this token.
@@ -11,9 +12,9 @@ on:
   issue_comment:
     types: [created]
 
-concurrency:
-  group: opinion-${{ github.event.issue.number }}
-  cancel-in-progress: false
+# No concurrency group: a queued group keeps only one pending run, so a third quick /opinion would
+# be dropped. Runs go in parallel instead; each commit touches a different post.json, and the push
+# step rebases and retries when another run pushed first.
 
 permissions:
   contents: write
@@ -117,6 +118,7 @@ jobs:
           printf 'La opinión de `%s` ya tenía exactamente ese texto; no hay nada que commitear.\n' "$SLUG" | gh pr comment "$PR" --body-file -
 
       - name: Commit and push
+        id: push
         if: steps.apply.outputs.status == 'ok'
         working-directory: pr
         env:
@@ -134,10 +136,50 @@ jobs:
             exit 1
           fi
           git commit -m "opinion: $SLUG"
-          git push origin "HEAD:refs/heads/$BRANCH"
+          # First push plus up to 3 retries. Another /opinion run (or the agent) may have pushed in
+          # between; rebasing our one-file commit on top is safe, and the guard re-checks the result.
+          err="$RUNNER_TEMP/push.err"
+          reason=""
+          for attempt in 1 2 3 4; do
+            if git push origin "HEAD:refs/heads/$BRANCH" 2>"$err"; then
+              echo "pushed=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            cat "$err" >&2
+            [ "$attempt" -lt 4 ] || break
+            sleep $((attempt * 5))
+            if ! git pull --rebase origin "$BRANCH" 2>"$err"; then
+              cat "$err" >&2
+              git rebase --abort 2>/dev/null || true
+              reason="otro commit cambió el mismo post.json mientras lo guardaba"
+              break
+            fi
+          done
+          [ -n "$reason" ] || reason=$(grep -v '^[[:space:]]*$' "$err" | tail -n 1 | cut -c1-200 || true)
+          delim="EOF_$(openssl rand -hex 16)"
+          {
+            echo "pushed=false"
+            echo "error<<$delim"
+            echo "${reason:-git push falló}"
+            echo "$delim"
+          } >> "$GITHUB_OUTPUT"
+          echo "::warning::Push failed after retries: ${reason:-unknown}"
+
+      - name: Reply that the push failed
+        if: steps.push.outputs.pushed == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR: ${{ github.event.issue.number }}
+          SLUG: ${{ steps.apply.outputs.slug }}
+          ERROR: ${{ steps.push.outputs.error }}
+        run: |
+          set -euo pipefail
+          printf 'No pude guardar tu /opinion para `%s`: %s; vuelve a comentarlo.\n' "$SLUG" "$ERROR" | gh pr comment "$PR" --body-file -
+          exit 0
 
       - name: React and re-run the PR checks
-        if: steps.apply.outputs.status == 'ok'
+        if: steps.push.outputs.pushed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
@@ -147,6 +189,8 @@ jobs:
           PR: ${{ github.event.issue.number }}
         run: |
           set -euo pipefail
+          # Assumption: a reaction doesn't change the comment's updated_at on GitHub, so this 👍
+          # doesn't make opinion-guard treat the comment as edited.
           gh api --method POST "repos/$GH_REPO/issues/comments/$COMMENT_ID/reactions" -f content=+1 > /dev/null
           # A push made with GITHUB_TOKEN doesn't trigger pull_request(_target) workflows; workflow_dispatch does.
           gh workflow run blog-pr-checks.yml --ref "$BRANCH"
