@@ -25,7 +25,7 @@ Single-page personal portfolio built with **Next.js 15** (App Router), **React 1
 
 - `app/layout.tsx` — fonts, metadata/OG (`public/og-image.png`), JSON-LD, the pre-paint intro script, `<Providers>`
 - `app/page.tsx` — composes the sections (server component; interactive leaves are `"use client"`)
-- `app/components/<section>/` — one folder per section, in page order: `intro`, `cursor`, `header` (nav, Menu dropdown below 1180px, "Get in touch"), `hero`, `marquee`, `about` (incl. canvas `accuracy-chart`), `work` (tabs, expandable `experience-row`, project hover preview, `case-study-drawer`), `talks`, `education`, `credentials`, `footer` (incl. `contact-form`)
+- `app/components/<section>/` — one folder per section, in page order: `intro`, `cursor`, `header` (nav, Menu dropdown below 1180px, "Get in touch"; also the header of `/blog` and `/privacidad`, where it stays in its floating style and its links navigate to `/#section`), `hero`, `marquee`, `about` (incl. canvas `accuracy-chart`), `work` (tabs, expandable `experience-row`, project hover preview, `case-study-drawer`), `talks`, `education`, `credentials`, `footer` (incl. `contact-form`)
 - `app/api/contact/route.ts` — contact form endpoint (Resend). Validates with the zod schema in `src/lib/contact-schema.ts`, has a `company` honeypot, and rate-limits in memory (5 requests / 10 min per IP)
 - `app/components/providers/` — `ThemeProvider` (next-themes, `data-theme`, key `sg-theme`), `LangProvider` (`useLang()`, key `sga-lang`), `UIProvider` (`useUI()`: work tab, nav highlight, open case study, intro state/replay; `scrollToId()`)
 - `app/components/shared/` — `TechLogo` (bundled simple-icons + AWS wordmark, `currentColor`), `LogoTag`/`LogoTagList`, `Reveal`

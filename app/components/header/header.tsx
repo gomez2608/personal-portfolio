@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { motion, useMotionValueEvent, useScroll } from "framer-motion";
 import { useTheme } from "next-themes";
@@ -84,27 +85,55 @@ function ThemeToggle({ lineClass }: { lineClass: string }) {
 export default function Header() {
   const { t, lang, setLang } = useLang();
   const { navOn, setNavOn, setTab, introActive } = useUI();
-  const { floating, onHero, scrollYProgress } = useHeaderScroll();
+  const scroll = useHeaderScroll();
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
+
+  // The same header serves the blog and the other inner pages. There is no hero there, so the
+  // bar always uses its floating style, and the section links navigate to the home page instead
+  // of scrolling. The logo intro only runs on the home page, so elsewhere the mark is never hidden.
+  const isHome = pathname === "/";
+  const floating = !isHome || scroll.floating;
+  const onHero = isHome && scroll.onHero;
+  const { scrollYProgress } = scroll;
+  const markHidden = isHome && introActive;
+  const onBlog = pathname === "/blog" || pathname.startsWith("/blog/");
+
+  const goTo = (id: string) => {
+    if (isHome) scrollToId(id);
+    else router.push(`/#${id}`);
+  };
 
   // About → #about; Experience/Projects/Writing → Work tab 0–2; Credentials → #certificates.
+  // The work tab lives in UIProvider (root layout), so it survives the navigation to the home page.
   const goNav = (i: number) => {
     setNavOn(i);
     setMenuOpen(false);
     if (i === 0) {
-      scrollToId("about");
+      goTo("about");
     } else if (i === t.nav.length - 1) {
-      scrollToId("certificates");
+      goTo("certificates");
     } else {
       setTab(i - 1);
-      scrollToId("work");
+      goTo("work");
     }
   };
 
   const toContact = () => {
     setMenuOpen(false);
-    scrollToId("contact-form");
+    goTo("contact-form");
   };
+
+  // Arriving on the home page with a #hash (from an inner page, or a shared link): scroll there
+  // with the header offset once the logo intro has finished, since it holds the page at the top.
+  useEffect(() => {
+    if (!isHome || introActive) return;
+    const id = decodeURIComponent(window.location.hash.slice(1));
+    if (!id) return;
+    const frame = requestAnimationFrame(() => scrollToId(id));
+    return () => cancelAnimationFrame(frame);
+  }, [isHome, introActive]);
 
   // The menu closes on Escape and when the viewport grows past the menu breakpoint.
   useEffect(() => {
@@ -166,11 +195,15 @@ export default function Header() {
         )}
         style={barStyle}
       >
-        <a
-          href="#top"
-          onClick={toTop}
+        <Link
+          href={isHome ? "#top" : "/"}
+          onClick={isHome ? toTop : undefined}
           className="flex shrink-0 items-center gap-3"
-          aria-label={`${site.name} — top`}
+          aria-label={
+            isHome
+              ? `${site.name} — top`
+              : `${site.name} — ${lang === "es" ? "inicio" : "home"}`
+          }
         >
           <span
             data-header-mark
@@ -178,7 +211,7 @@ export default function Header() {
             className={cn(
               "relative size-9 shrink-0 rounded-lg bg-emph transition-[background] duration-[350ms]",
             )}
-            style={{ opacity: introActive ? 0 : 1 }}
+            style={{ opacity: markHidden ? 0 : 1 }}
           >
             <span
               className={cn(
@@ -195,7 +228,7 @@ export default function Header() {
           <span className="text-[15px] leading-none font-bold tracking-[-.01em] whitespace-nowrap max-[520px]:hidden">
             {site.name}
           </span>
-        </a>
+        </Link>
 
         <nav
           aria-label={lang === "es" ? "Principal" : "Primary"}
@@ -215,7 +248,11 @@ export default function Header() {
           ))}
           <Link
             href="/blog"
-            className="py-1.5 text-sm leading-none font-medium whitespace-nowrap opacity-[.62] hover:opacity-100 focus-visible:opacity-100"
+            aria-current={onBlog ? "page" : undefined}
+            className={cn(
+              "py-1.5 text-sm leading-none font-medium whitespace-nowrap hover:opacity-100 focus-visible:opacity-100",
+              onBlog ? "opacity-100" : "opacity-[.62]",
+            )}
           >
             {t.blog}
           </Link>
@@ -310,6 +347,7 @@ export default function Header() {
             <Link
               href="/blog"
               onClick={() => setMenuOpen(false)}
+              aria-current={onBlog ? "page" : undefined}
               className="rounded-lg px-3 py-3.5 text-left text-base leading-none font-semibold text-navy hover:bg-fog"
             >
               {t.blog}

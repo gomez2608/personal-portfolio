@@ -1,4 +1,4 @@
-import { BlogTopBar } from "@/app/components/blog/blog-top-bar";
+import Header from "@/app/components/header/header";
 
 /** Spanish page shell for the privacy policy, mirroring the blog layout. */
 export default function PrivacidadLayout({ children }: { children: React.ReactNode }) {
@@ -10,7 +10,9 @@ export default function PrivacidadLayout({ children }: { children: React.ReactNo
       >
         Saltar al contenido
       </a>
-      <BlogTopBar />
+      <Header />
+      {/* The shared header is fixed; this keeps the page clear of it. */}
+      <div aria-hidden="true" className="h-[84px]" />
       {children}
     </div>
   );
