@@ -2,9 +2,9 @@
   "slug": "mezcla-de-expertos",
   "title": "Mezcla de expertos: modelos enormes que solo usan una parte a la vez",
   "hook": "Cómo un modelo de IA puede saber muchísimo sin volverse lento: para cada palabra, solo despierta a unos pocos especialistas.",
-  "date": "2026-11-13",
+  "date": "2026-11-17",
   "issue": 1,
-  "status": "draft",
+  "status": "published",
   "paper": {
     "title": "Outrageously Large Neural Networks: The Sparsely-Gated Mixture-of-Experts Layer",
     "url": "https://arxiv.org/abs/1701.06538",
