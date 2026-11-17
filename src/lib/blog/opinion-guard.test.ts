@@ -1,98 +1,76 @@
 import { expect, test } from "vitest";
-import { findIllegalOpinionEdits } from "./opinion-guard";
+import { applyOpinion, parseOpinionCommand } from "./opinion";
+import { findUnauthorizedOpinions } from "./opinion-guard";
 
-const BOT = "github-actions[bot]";
-const HUMAN = "gomez2608";
-const sha = (n: number) => `${String(n).repeat(7)}abcdef0123456789`;
+type C = { user: string; viaApp: boolean; body: string; createdAt: string };
+const owner = (body: string, createdAt = "2026-11-17T10:00:00Z"): C => ({ user: "gomez2608", viaApp: false, body, createdAt });
+const err = (slug: string) => `${slug}: la opinión no coincide con un comentario /opinion tuyo`;
 
-test("a bot commit with the right message is ok", () =>
+test("a matching owner comment is ok", () =>
+  expect(findUnauthorizedOpinions([{ slug: "mezcla", opinion: "Hola." }], [owner("/opinion mezcla\nHola.\n")])).toEqual([]));
+
+test("a mismatch is flagged", () =>
+  expect(findUnauthorizedOpinions([{ slug: "mezcla", opinion: "Hola, editado." }], [owner("/opinion mezcla\nHola.")])).toEqual([
+    err("mezcla"),
+  ]));
+
+test("a comment from another user doesn't count", () =>
   expect(
-    findIllegalOpinionEdits([{ sha: sha(1), author: BOT, message: "opinion: mezcla", opinions: { mezcla: "Hola." } }], {
-      mezcla: null,
-    }),
-  ).toEqual([]));
+    findUnauthorizedOpinions([{ slug: "mezcla", opinion: "Hola." }], [{ ...owner("/opinion mezcla\nHola."), user: "otro" }]),
+  ).toEqual([err("mezcla")]));
 
-test("a bot commit with the wrong message is flagged", () =>
+test("a comment made via a GitHub App doesn't count", () =>
   expect(
-    findIllegalOpinionEdits([{ sha: sha(1), author: BOT, message: "chore: update", opinions: { mezcla: "Hola." } }], {
-      mezcla: null,
-    }),
-  ).toEqual(["1111111 changed the opinion of mezcla"]));
+    findUnauthorizedOpinions([{ slug: "mezcla", opinion: "Hola." }], [{ ...owner("/opinion mezcla\nHola."), viaApp: true }]),
+  ).toEqual([err("mezcla")]));
 
-test("a gomez2608 commit changing an opinion is flagged", () =>
+test("the latest owner comment overrides an earlier one", () => {
+  const comments = [owner("/opinion mezcla\nNueva.", "2026-11-17T12:00:00Z"), owner("/opinion mezcla\nVieja.", "2026-11-17T10:00:00Z")];
+  expect(findUnauthorizedOpinions([{ slug: "mezcla", opinion: "Nueva." }], comments)).toEqual([]);
+  expect(findUnauthorizedOpinions([{ slug: "mezcla", opinion: "Vieja." }], comments)).toEqual([err("mezcla")]);
+});
+
+test("a later app or foreign comment doesn't override the owner's", () =>
   expect(
-    findIllegalOpinionEdits(
+    findUnauthorizedOpinions(
+      [{ slug: "mezcla", opinion: "Del dueño." }],
       [
-        { sha: sha(1), author: BOT, message: "opinion: mezcla", opinions: { mezcla: "Hola." } },
-        { sha: sha(2), author: HUMAN, message: "opinion: mezcla", opinions: { mezcla: "Hola, editado." } },
+        owner("/opinion mezcla\nDel dueño.", "2026-11-17T10:00:00Z"),
+        { ...owner("/opinion mezcla\nDe la IA.", "2026-11-17T11:00:00Z"), viaApp: true },
+        { ...owner("/opinion mezcla\nDe otro.", "2026-11-17T12:00:00Z"), user: "otro" },
       ],
-      { mezcla: null },
-    ),
-  ).toEqual(["2222222 changed the opinion of mezcla"]));
-
-test("clearing an opinion back to null by a human is flagged", () =>
-  expect(
-    findIllegalOpinionEdits([{ sha: sha(3), author: HUMAN, message: "fix", opinions: { mezcla: null } }], {
-      mezcla: "Vieja.",
-    }),
-  ).toEqual(["3333333 changed the opinion of mezcla"]));
-
-test("an unchanged opinion in other commits is ok", () =>
-  expect(
-    findIllegalOpinionEdits(
-      [
-        { sha: sha(1), author: HUMAN, message: "feat: draft", opinions: { mezcla: "Vieja.", otra: null } },
-        { sha: sha(2), author: BOT, message: "opinion: otra", opinions: { mezcla: "Vieja.", otra: "Nueva." } },
-        { sha: sha(3), author: HUMAN, message: "fix: typo", opinions: { mezcla: "Vieja.", otra: "Nueva." } },
-      ],
-      { mezcla: "Vieja." },
     ),
   ).toEqual([]));
 
-test("a new post with a null opinion is ok", () =>
-  expect(
-    findIllegalOpinionEdits([{ sha: sha(1), author: HUMAN, message: "feat: post", opinions: { nuevo: null } }], {}),
-  ).toEqual([]));
+test("a slug with no comment is flagged; comments for other slugs don't count", () =>
+  expect(findUnauthorizedOpinions([{ slug: "mezcla", opinion: "Hola." }], [owner("/opinion otra\nHola.")])).toEqual([
+    err("mezcla"),
+  ]));
 
-test("a new post's first opinion set by the bot is ok", () =>
+test("a null opinion is fine without any comment", () =>
+  expect(findUnauthorizedOpinions([{ slug: "mezcla", opinion: null }], [])).toEqual([]));
+
+test("only flagged posts are reported, in input order", () =>
   expect(
-    findIllegalOpinionEdits(
+    findUnauthorizedOpinions(
       [
-        { sha: sha(1), author: HUMAN, message: "feat: post", opinions: { nuevo: null } },
-        { sha: sha(2), author: BOT, message: "opinion: nuevo", opinions: { nuevo: "Hola." } },
+        { slug: "b", opinion: "x" },
+        { slug: "a", opinion: "ok" },
+        { slug: "c", opinion: "y" },
       ],
-      {},
+      [owner("/opinion a\nok")],
     ),
-  ).toEqual([]));
+  ).toEqual([err("b"), err("c")]));
 
-test("a new post created with an opinion by a human is flagged", () =>
-  expect(
-    findIllegalOpinionEdits([{ sha: sha(4), author: HUMAN, message: "feat: post", opinions: { nuevo: "Escrita por IA." } }], {}),
-  ).toEqual(["4444444 changed the opinion of nuevo"]));
-
-test("deleting a post that had an opinion by a human is flagged", () =>
-  expect(
-    findIllegalOpinionEdits([{ sha: sha(5), author: HUMAN, message: "chore", opinions: {} }], { mezcla: "Vieja." }),
-  ).toEqual(["5555555 changed the opinion of mezcla"]));
-
-test("a human change after a bot commit is compared with the bot's state, not the base", () =>
-  expect(
-    findIllegalOpinionEdits(
-      [
-        { sha: sha(1), author: BOT, message: "opinion: mezcla", opinions: { mezcla: "Hola." } },
-        { sha: sha(2), author: HUMAN, message: "revert", opinions: { mezcla: null } },
-      ],
-      { mezcla: null },
-    ),
-  ).toEqual(["2222222 changed the opinion of mezcla"]));
-
-test("the message must start with 'opinion: ' exactly", () =>
-  expect(
-    findIllegalOpinionEdits(
-      [
-        { sha: sha(1), author: BOT, message: "Opinion: mezcla", opinions: { mezcla: "a" } },
-        { sha: sha(2), author: BOT, message: "chore opinion: mezcla", opinions: { mezcla: "b" } },
-      ],
-      { mezcla: null },
-    ),
-  ).toEqual(["1111111 changed the opinion of mezcla", "2222222 changed the opinion of mezcla"]));
+test("round trip: what applyOpinion writes equals what parseOpinionCommand returns", () => {
+  const body = "/opinion mezcla  \r\n  Sangría, *énfasis*, `código`,\n\n\"comillas\" y \\barras\\ y emoji 🙂.\t \n\n";
+  const cmd = parseOpinionCommand(body);
+  expect(cmd).not.toBeNull();
+  const post = `${JSON.stringify({ slug: "mezcla", opinion: null }, null, 2)}\n`;
+  const r = applyOpinion(post, cmd!.text);
+  expect(r.ok).toBe(true);
+  if (!r.ok) return;
+  const written = (JSON.parse(r.json) as { opinion: string }).opinion;
+  expect(written).toBe(cmd!.text);
+  expect(findUnauthorizedOpinions([{ slug: "mezcla", opinion: written }], [owner(body)])).toEqual([]);
+});

@@ -1,0 +1,52 @@
+name: Opinion guard
+
+# Every non-null opinion in a PR's changed post.json must equal the latest `/opinion <slug>` comment
+# that gomez2608 wrote on that PR directly (not via a GitHub App). Commit authorship isn't trusted.
+#
+# pull_request_target runs this file and the guard from the default branch, so a PR can't weaken
+# its own check. The PR is read only as data through the API: no PR code, no npm ci of PR content.
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+  # Dispatched by opinion.yml (ref master) after it pushes, since GITHUB_TOKEN pushes trigger nothing.
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: "PR number"
+        required: true
+        type: number
+
+concurrency:
+  group: opinion-guard-${{ github.event.pull_request.number || inputs.pr }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  # The job name is what a ruleset requires; keep it fixed.
+  opinion-guard:
+    name: opinion-guard
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Check opinions against /opinion comments
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number || inputs.pr }}
+        run: npx tsx scripts/blog/opinion-guard.ts

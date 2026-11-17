@@ -2,7 +2,7 @@ name: Opinion
 
 # `/opinion <slug>` + newline + text, commented on a PR by gomez2608 (not via a GitHub App), is
 # copied verbatim into app/blog/<slug>/post.json → opinion. No AI runs here: this workflow is the
-# only writer an opinion has, and blog-pr-checks rejects opinion changes made by anything else.
+# only writer an opinion has; opinion-guard.yml rejects any opinion that doesn't match such a comment.
 #
 # issue_comment always runs this file from the default branch. The PR branch is checked out into
 # ./pr and only its post.json is touched: no code or dependencies from the PR run with this token.
@@ -143,8 +143,11 @@ jobs:
           GH_REPO: ${{ github.repository }}
           COMMENT_ID: ${{ github.event.comment.id }}
           BRANCH: ${{ steps.pr.outputs.branch }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          PR: ${{ github.event.issue.number }}
         run: |
           set -euo pipefail
           gh api --method POST "repos/$GH_REPO/issues/comments/$COMMENT_ID/reactions" -f content=+1 > /dev/null
-          # A push made with GITHUB_TOKEN doesn't trigger pull_request workflows; workflow_dispatch does.
+          # A push made with GITHUB_TOKEN doesn't trigger pull_request(_target) workflows; workflow_dispatch does.
           gh workflow run blog-pr-checks.yml --ref "$BRANCH"
+          gh workflow run opinion-guard.yml --ref "$DEFAULT_BRANCH" -f pr="$PR"

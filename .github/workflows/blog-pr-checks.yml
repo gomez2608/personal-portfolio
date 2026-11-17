@@ -20,11 +20,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      # The PR head itself (not the synthetic merge commit), so both triggers check the same commits.
+      # The PR head itself (not the synthetic merge commit), so both triggers check the same code.
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha || github.ref }}
-          fetch-depth: 0
           persist-credentials: false
 
       - uses: actions/setup-node@v4
@@ -37,6 +36,3 @@ jobs:
       - run: npm run lint
       - run: npm run blog:check
       - run: npm run build
-
-      - name: Opinion guard
-        run: npx tsx scripts/blog/opinion-guard.ts

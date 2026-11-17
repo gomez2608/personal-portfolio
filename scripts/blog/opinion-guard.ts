@@ -1,58 +1,66 @@
 /**
- * Fails when any `opinion` in app/blog/<slug>/post.json changed in a commit that isn't the
- * `/opinion` workflow's (author github-actions[bot], message "opinion: …").
+ * Run by .github/workflows/opinion-guard.yml from the trusted default-branch checkout.
+ * Reads the PR only through the GitHub API (as data): changed post.json files at the head SHA and
+ * all PR comments, then fails unless every non-null opinion equals the latest `/opinion <slug>`
+ * comment written by gomez2608 directly (not via a GitHub App).
  *
- * Range: merge-base(origin/master, HEAD)..HEAD, so a pull_request run and a workflow_dispatch run
- * on the PR branch see the same commits. Needs full history (fetch-depth: 0).
+ * Env: PR (number), GH_REPO (owner/name), GH_TOKEN.
  */
 import { execFileSync } from "node:child_process";
-import { findIllegalOpinionEdits, type OpinionCommit } from "../../src/lib/blog/opinion-guard";
+import { findUnauthorizedOpinions, type OpinionComment } from "../../src/lib/blog/opinion-guard";
 
 const POST_RE = /^app\/blog\/([^/]+)\/post\.json$/;
-/** Stands in for a post.json that isn't valid JSON (or has a non-string opinion), so it can't hide a change. */
-const UNREADABLE = "\u0000unreadable post.json";
 
-function git(...args: string[]): string {
-  return execFileSync("git", args, { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
+const pr = process.env.PR ?? "";
+const repo = process.env.GH_REPO ?? "";
+if (!/^[1-9]\d*$/.test(pr)) throw new Error(`PR must be a number, got "${pr}"`);
+if (!/^[\w.-]+\/[\w.-]+$/.test(repo)) throw new Error(`GH_REPO must be owner/name, got "${repo}"`);
+
+function gh(...args: string[]): string {
+  return execFileSync("gh", ["api", ...args], { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
+}
+/** All pages of a paginated list endpoint, flattened. */
+function list<T>(endpoint: string): T[] {
+  return (JSON.parse(gh("--paginate", "--slurp", endpoint)) as T[][]).flat();
 }
 
-function opinionsAt(sha: string): Record<string, string | null> {
-  const out: Record<string, string | null> = {};
-  const files = git("ls-tree", "-r", "--name-only", sha, "--", "app/blog").split("\n");
-  for (const f of files) {
-    const m = POST_RE.exec(f);
-    if (!m) continue;
-    let value: string | null = UNREADABLE;
-    try {
-      const parsed: unknown = JSON.parse(git("show", `${sha}:${f}`));
-      if (typeof parsed === "object" && parsed !== null && !Array.isArray(parsed)) {
-        const op = (parsed as Record<string, unknown>).opinion;
-        if (op === undefined || op === null) value = null;
-        else if (typeof op === "string") value = op;
-      }
-    } catch {
-      // stays UNREADABLE
-    }
-    out[m[1]] = value;
+const headSha = (JSON.parse(gh(`repos/${repo}/pulls/${pr}`)) as { head: { sha: string } }).head.sha;
+
+const files = list<{ filename: string; status: string }>(`repos/${repo}/pulls/${pr}/files?per_page=100`);
+const errors: string[] = [];
+const changed: { slug: string; opinion: string | null }[] = [];
+for (const f of files) {
+  const m = POST_RE.exec(f.filename);
+  if (!m || f.status === "removed") continue;
+  const slug = m[1];
+  const encoded = f.filename.split("/").map(encodeURIComponent).join("/");
+  const raw = gh("-H", "Accept: application/vnd.github.raw+json", `repos/${repo}/contents/${encoded}?ref=${headSha}`);
+  let opinion: unknown;
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    opinion = typeof parsed === "object" && parsed !== null && !Array.isArray(parsed) ? (parsed as Record<string, unknown>).opinion : undefined;
+  } catch {
+    opinion = undefined;
   }
-  return out;
+  if (opinion === null || typeof opinion === "string") changed.push({ slug, opinion });
+  else errors.push(`${slug}: no pude leer la opinión de ${f.filename}`);
 }
 
-const baseRef = process.env.OPINION_GUARD_BASE_REF ?? "origin/master";
-const base = git("merge-base", baseRef, "HEAD").trim();
-const log = git("log", "--reverse", "--topo-order", "--format=%H%x1f%an%x1f%s", `${base}..HEAD`);
-const commits: OpinionCommit[] = log
-  .split("\n")
-  .filter(Boolean)
-  .map((line) => {
-    const [sha, author, message] = line.split("\x1f");
-    return { sha, author, message, opinions: opinionsAt(sha) };
-  });
+const comments: OpinionComment[] = list<{
+  user: { login: string } | null;
+  performed_via_github_app: unknown;
+  body: string | null;
+  created_at: string;
+}>(`repos/${repo}/issues/${pr}/comments?per_page=100`).map((c) => ({
+  user: c.user?.login ?? "",
+  viaApp: c.performed_via_github_app != null,
+  body: c.body ?? "",
+  createdAt: c.created_at,
+}));
 
-const errors = findIllegalOpinionEdits(commits, opinionsAt(base));
+errors.push(...findUnauthorizedOpinions(changed, comments));
 if (errors.length > 0) {
   for (const e of errors) console.error(`::error::${e}`);
-  console.error("Only the /opinion workflow (github-actions[bot], \"opinion: <slug>\") may change an opinion.");
   process.exit(1);
 }
-console.log(`opinion-guard ok (${commits.length} commits since ${base.slice(0, 7)})`);
+console.log(`opinion-guard ok (PR #${pr} at ${headSha.slice(0, 7)}: ${changed.length} posts, ${comments.length} comments)`);
