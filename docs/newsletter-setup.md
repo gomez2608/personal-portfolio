@@ -39,3 +39,7 @@ One-time setup for the Spanish double-opt-in newsletter. Do the steps in order.
 - The confirmation link is signed and carries the sign-up's consent evidence (time, policy version, source page, IP hash). Neon only records that evidence when the link is confirmed.
 - A link newer than the last confirmation counts as fresh consent: it refreshes the evidence and re-subscribes the contact in Resend. An older link (already used, or from before a later confirmation) changes nothing, so it can never undo an unsubscribe.
 - Unsubscribing happens in Resend (the "Darte de baja" link). Resend keeps the address marked as unsubscribed; Neon keeps the record of the last confirmed authorization. Full deletion is done by hand on request, in both.
+
+## Automating the content
+
+To have an agent propose candidates and draft posts for you, follow `docs/newsletter-automation-setup.md` once this guide is done.
