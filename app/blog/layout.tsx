@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { BlogTopBar } from "@/app/components/blog/blog-top-bar";
+import Header from "@/app/components/header/header";
 import { LangNote } from "@/app/components/blog/lang-note";
 import { blogSocialMetadata } from "@/lib/blog/metadata";
 
@@ -17,7 +17,9 @@ export default function BlogLayout({ children }: { children: React.ReactNode }) 
       >
         Saltar al contenido
       </a>
-      <BlogTopBar />
+      <Header />
+      {/* The shared header is fixed; this keeps the page clear of it. */}
+      <div aria-hidden="true" className="h-[84px]" />
       <LangNote />
       {children}
     </div>
