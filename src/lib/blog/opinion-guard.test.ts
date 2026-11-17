@@ -1,6 +1,6 @@
-import { expect, test } from "vitest";
+import { describe, expect, test } from "vitest";
 import { applyOpinion, parseOpinionCommand } from "./opinion";
-import { findUnauthorizedOpinions } from "./opinion-guard";
+import { findProtectedPathChanges, findUnauthorizedOpinions } from "./opinion-guard";
 
 type C = { user: string; viaApp: boolean; body: string; createdAt: string };
 const owner = (body: string, createdAt = "2026-11-17T10:00:00Z"): C => ({ user: "gomez2608", viaApp: false, body, createdAt });
@@ -73,4 +73,31 @@ test("round trip: what applyOpinion writes equals what parseOpinionCommand retur
   const written = (JSON.parse(r.json) as { opinion: string }).opinion;
   expect(written).toBe(cmd!.text);
   expect(findUnauthorizedOpinions([{ slug: "mezcla", opinion: written }], [owner(body)])).toEqual([]);
+});
+
+describe("findProtectedPathChanges", () => {
+  test("a PR touching only posts is ok", () =>
+    expect(findProtectedPathChanges(["app/blog/mezcla/post.json", "app/blog/mezcla/page.mdx", "README.md"])).toEqual([]));
+  test.each([
+    ".github/workflows/opinion-guard.yml",
+    ".github/workflows/nuevo.yml",
+    "scripts/blog/opinion-guard.ts",
+    "scripts/blog/check.ts",
+    "src/lib/blog/opinion.ts",
+    "src/lib/blog/opinion-guard.ts",
+    "src/lib/blog/opinion-guard.test.ts",
+  ])("flags %s", (path) =>
+    expect(findProtectedPathChanges(["app/blog/x/post.json", path])).toEqual([
+      `El PR modifica archivos protegidos (${path}); revísalo tú y aplica esos cambios fuera de una edición.`,
+    ]));
+  test.each(["github/workflows/x.yml", "scripts/newsletter/send.ts", "src/lib/blog/schema.ts", "app/.github/x"])(
+    "doesn't flag %s",
+    (path) => expect(findProtectedPathChanges([path])).toEqual([]),
+  );
+  test("lists up to 5 paths, deduplicated, and counts the rest", () => {
+    const paths = [".github/a", ".github/b", ".github/a", "scripts/blog/c", "scripts/blog/d", "scripts/blog/e", "scripts/blog/f", "scripts/blog/g"];
+    expect(findProtectedPathChanges(paths)).toEqual([
+      "El PR modifica archivos protegidos (.github/a, .github/b, scripts/blog/c, scripts/blog/d, scripts/blog/e y 2 más); revísalo tú y aplica esos cambios fuera de una edición.",
+    ]);
+  });
 });

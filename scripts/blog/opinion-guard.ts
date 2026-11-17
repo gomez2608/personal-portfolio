@@ -2,12 +2,17 @@
  * Run by .github/workflows/opinion-guard.yml from the trusted default-branch checkout.
  * Reads the PR only through the GitHub API (as data): changed post.json files at the head SHA and
  * all PR comments, then fails unless every non-null opinion equals the latest `/opinion <slug>`
- * comment written by gomez2608 directly (not via a GitHub App).
+ * comment written by gomez2608 directly (not via a GitHub App), and that the PR touches no protected
+ * path (.github/, scripts/blog/, src/lib/blog/opinion*).
  *
  * Env: PR (number), GH_REPO (owner/name), GH_TOKEN, HEAD_SHA (optional; defaults to the PR's head).
  */
 import { execFileSync } from "node:child_process";
-import { findUnauthorizedOpinions, type OpinionComment } from "../../src/lib/blog/opinion-guard";
+import {
+  findProtectedPathChanges,
+  findUnauthorizedOpinions,
+  type OpinionComment,
+} from "../../src/lib/blog/opinion-guard";
 
 const POST_RE = /^app\/blog\/([^/]+)\/post\.json$/;
 
@@ -29,8 +34,13 @@ const headSha =
   process.env.HEAD_SHA || (JSON.parse(gh(`repos/${repo}/pulls/${pr}`)) as { head: { sha: string } }).head.sha;
 if (!/^[0-9a-f]{40}$/.test(headSha)) throw new Error(`Bad head SHA "${headSha}"`);
 
-const files = list<{ filename: string; status: string }>(`repos/${repo}/pulls/${pr}/files?per_page=100`);
-const errors: string[] = [];
+const files = list<{ filename: string; status: string; previous_filename?: string }>(
+  `repos/${repo}/pulls/${pr}/files?per_page=100`,
+);
+// Both sides of a rename count, so moving a workflow or guard file away is caught too.
+const errors: string[] = findProtectedPathChanges(
+  files.flatMap((f) => (f.previous_filename ? [f.filename, f.previous_filename] : [f.filename])),
+);
 const changed: { slug: string; opinion: string | null }[] = [];
 for (const f of files) {
   const m = POST_RE.exec(f.filename);

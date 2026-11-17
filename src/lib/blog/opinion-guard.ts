@@ -28,3 +28,19 @@ export function findUnauthorizedOpinions(
     .filter((p) => p.opinion !== null && latest.get(p.slug)?.text !== p.opinion)
     .map((p) => `${p.slug}: la opinión no coincide con un comentario /opinion tuyo`);
 }
+
+/**
+ * Paths an edition PR must never touch: workflows (a PR could otherwise post its own
+ * `opinion-guard: success` status) and the blog scripts / opinion code the checks rely on.
+ * Prefix match on repo-relative paths.
+ */
+export const PROTECTED_PREFIXES = [".github/", "scripts/blog/", "src/lib/blog/opinion"] as const;
+
+/** One Spanish error naming up to 5 protected paths the PR changes (added, edited, removed or renamed), or []. */
+export function findProtectedPathChanges(paths: string[]): string[] {
+  const hits = [...new Set(paths.filter((p) => PROTECTED_PREFIXES.some((prefix) => p.startsWith(prefix))))];
+  if (hits.length === 0) return [];
+  const shown = hits.slice(0, 5).join(", ");
+  const more = hits.length > 5 ? ` y ${hits.length - 5} más` : "";
+  return [`El PR modifica archivos protegidos (${shown}${more}); revísalo tú y aplica esos cambios fuera de una edición.`];
+}
