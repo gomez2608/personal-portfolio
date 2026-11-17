@@ -54,7 +54,7 @@ In Claude Code on the web, create (or edit) the environment the tasks use:
 
 ## 8. Scheduled tasks
 
-Create three tasks in the cloud environment from step 6, all with the prompt `Sigue newsletter/agent/<file>.md al pie de la letra.` (in backticks around the file name). Scheduled tasks are a research preview, so the UI may change.
+Create three tasks in the cloud environment from step 6, all with the prompt `Sigue newsletter/agent/<file>.md al pie de la letra.`. Scheduled tasks are a research preview, so the UI may change.
 
 - [ ] **Candidatos** (`newsletter/agent/candidatos.md`): Schedule, `CRON_TZ=America/Bogota 0 9 1,15 * *` (09:00 Bogotá on the 1st and 15th).
 - [ ] **Borradores** (`newsletter/agent/borradores.md`): GitHub trigger, Issue labeled, label `aprobado`.
