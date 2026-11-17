@@ -49,7 +49,7 @@ An opinion must be yours. The `/opinion` workflow only accepts a comment by `gom
 In Claude Code on the web, create (or edit) the environment the tasks use:
 
 - [ ] **Network:** Allowed domains must include `arxiv.org`, `export.arxiv.org`, `huggingface.co` and `paperswithcode.com`, plus whichever lab blogs you want covered (for example `openai.com`, `anthropic.com`, `deepmind.google`, `ai.meta.com`), or choose Full access.
-- [ ] **Setup script:** `npm ci`.
+- [ ] **Setup script:** leave it empty. It runs outside the repo checkout, so `npm ci` there fails ("can only install with an existing package-lock.json") and the run never starts. `borradores.md` and `revision.md` run `npm ci` themselves; `candidatos.md` needs no packages.
 - [ ] **Secrets:** none. The agent never sends email through Resend and never touches the database; those stay in GitHub Actions. Chrome comes preinstalled at `$CHROME_PATH`, which `npm run blog:snap` reads, so no browser install is needed.
 
 ## 7. Gmail connector
