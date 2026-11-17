@@ -4,7 +4,7 @@
  * all PR comments, then fails unless every non-null opinion equals the latest `/opinion <slug>`
  * comment written by gomez2608 directly (not via a GitHub App).
  *
- * Env: PR (number), GH_REPO (owner/name), GH_TOKEN.
+ * Env: PR (number), GH_REPO (owner/name), GH_TOKEN, HEAD_SHA (optional; defaults to the PR's head).
  */
 import { execFileSync } from "node:child_process";
 import { findUnauthorizedOpinions, type OpinionComment } from "../../src/lib/blog/opinion-guard";
@@ -24,7 +24,10 @@ function list<T>(endpoint: string): T[] {
   return (JSON.parse(gh("--paginate", "--slurp", endpoint)) as T[][]).flat();
 }
 
-const headSha = (JSON.parse(gh(`repos/${repo}/pulls/${pr}`)) as { head: { sha: string } }).head.sha;
+// The workflow passes the SHA it posts the commit status on, so the check and the status agree.
+const headSha =
+  process.env.HEAD_SHA || (JSON.parse(gh(`repos/${repo}/pulls/${pr}`)) as { head: { sha: string } }).head.sha;
+if (!/^[0-9a-f]{40}$/.test(headSha)) throw new Error(`Bad head SHA "${headSha}"`);
 
 const files = list<{ filename: string; status: string }>(`repos/${repo}/pulls/${pr}/files?per_page=100`);
 const errors: string[] = [];

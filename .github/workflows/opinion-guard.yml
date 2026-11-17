@@ -24,6 +24,9 @@ concurrency:
 permissions:
   contents: read
   pull-requests: read
+  # A commit status `opinion-guard` on the PR head SHA is what the ruleset requires: check runs from
+  # pull_request_target / workflow_dispatch attach to a default-branch SHA, not the PR head.
+  statuses: write
 
 jobs:
   # The job name is what a ruleset requires; keep it fixed.
@@ -32,6 +35,32 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      - name: Resolve the PR head SHA
+        id: head
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number || inputs.pr }}
+        run: |
+          set -euo pipefail
+          sha=$(gh api "repos/$GH_REPO/pulls/$PR" --jq '.head.sha')
+          if ! [[ "$sha" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "::error::Bad head SHA: $sha"
+            exit 1
+          fi
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+
+      - name: Mark the status pending
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          SHA: ${{ steps.head.outputs.sha }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          gh api --method POST "repos/$GH_REPO/statuses/$SHA" -f state=pending -f context=opinion-guard \
+            -f description="Verificando opiniones contra /opinion" -f target_url="$RUN_URL" > /dev/null
+
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.repository.default_branch }}
@@ -45,8 +74,29 @@ jobs:
       - run: npm ci
 
       - name: Check opinions against /opinion comments
+        id: guard
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           PR: ${{ github.event.pull_request.number || inputs.pr }}
+          HEAD_SHA: ${{ steps.head.outputs.sha }}
         run: npx tsx scripts/blog/opinion-guard.ts
+
+      # always(): a crash or cancel in any earlier step ends as failure, never stuck on pending.
+      - name: Report the status
+        if: always() && steps.head.outputs.sha != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          SHA: ${{ steps.head.outputs.sha }}
+          OUTCOME: ${{ steps.guard.outcome }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          if [ "$OUTCOME" = "success" ]; then
+            state=success; desc="Opiniones verificadas"
+          else
+            state=failure; desc="Opinión no coincide con /opinion (o el chequeo falló)"
+          fi
+          gh api --method POST "repos/$GH_REPO/statuses/$SHA" -f state="$state" -f context=opinion-guard \
+            -f description="$desc" -f target_url="$RUN_URL" > /dev/null
