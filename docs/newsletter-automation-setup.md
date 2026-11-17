@@ -38,11 +38,17 @@ Infra PRs that touch `.github/`, `scripts/blog/` or `src/lib/blog/opinion*` **fa
 
 ## 5. Trust anchors (security checklist)
 
-An opinion must be yours. The `/opinion` workflow only accepts a comment by `gomez2608` with `performed_via_github_app == null`, and `opinion-guard` re-checks every opinion against such a comment. These three conditions keep the agent from forging that:
+An opinion must be yours. The `/opinion` workflow only accepts a comment by `gomez2608` with `performed_via_github_app == null`, and `opinion-guard` re-checks every opinion against such a comment.
 
-- [ ] **(a) Connect the agent through the Claude GitHub App, not `/web-setup`.** Install the app on this repo only (github.com/apps/claude, or Claude Code `/install-github-app`). Why: `/web-setup` hands the agent your personal token, so its comments would look like yours and could satisfy `/opinion`. Comments made through the app carry `performed_via_github_app`, and the workflow ignores those.
-- [ ] **(b) The app installation must lack `Workflows`, `Commit statuses` write and `Administration`.** Check: GitHub > Settings > Applications > Installed GitHub Apps > Claude > Configure, then read the permissions list. Why: `Workflows` lets the agent edit `.github/workflows/*` (for example neutralize the guard); `Commit statuses` write lets it post a green `opinion-guard` status itself; `Administration` lets it edit or disable the ruleset. If the app requests any of them on an update, **decline** it. The trade-off: without `Workflows`, any workflow change is yours to make by hand; none of the three is needed for this automation. If the Claude app does have `Commit statuses: write`, the guard is only advisory against the agent, and your own review of each PR before merging is the real control.
-- [ ] **(c) Nobody else has write access to the repo (defence in depth).** The guard only matches comments authored by `gomez2608`, so another user cannot forge one. But anyone with write access can edit or delete comments, push to a PR branch, and approve or merge, which undermines the review the guard assumes. `opinion-guard` rejects any `/opinion` comment that was edited (`updated_at` differs from `created_at`), so to change an opinion, post a new `/opinion` comment; never edit the old one. Keep Settings > Collaborators empty and add no other write-access apps. The Claude app itself does have write access (that is how it opens PRs); that is acceptable because its comments carry `performed_via_github_app` and, per (b), it cannot edit workflows, post statuses or change the ruleset.
+**What the rehearsal showed (2026-11-17):** cloud routines act on GitHub with your own identity. The candidates issue the agent created has author `gomez2608` and `performed_via_github_app: null`, exactly like something you wrote. So `opinion.yml` and `opinion-guard` **cannot tell the agent's comments from yours**: they stop other people and catch mistakes, but they are advisory against the agent itself. Decision: keep going, with **your review of every edition PR as the real control**:
+
+- [ ] Before merging, read every `opinion: <slug>` commit in the PR and confirm each opinion is text you wrote. A `/opinion` comment you didn't post, or an opinion you don't recognize, means: don't merge, close the PR and check the run logs.
+- [ ] Never merge an edition PR that touches `.github/`, `scripts/blog/` or `src/lib/blog/opinion*` (`opinion-guard` fails those anyway).
+- [ ] Keep Settings > Collaborators empty and add no other write-access apps. `opinion-guard` rejects edited `/opinion` comments, so to change an opinion post a new one; never edit the old one.
+
+The agent marks its own comments by starting them with `🤖 ` (`ESTILO.md` §7), and it treats your comments (`gomez2608`, no `🤖`) as instructions. Don't start your own comments with `🤖`.
+
+The alternative, if this ever stops being acceptable: give the agent its own GitHub account (a second user with write access, connected to claude.ai instead of yours); then the author checks in both workflows really separate you from it.
 
 ## 6. Cloud environment
 
@@ -83,13 +89,13 @@ To add a GitHub trigger to an existing task: claude.ai/code/routines → the tas
 For the first run, have **only yourself** in the Resend segment (pause or remove other subscribers) so a mistake cannot reach anyone.
 
 1. [ ] Run now on **Candidatos**. You should get an email and an issue `Edición NNNN — candidatos` with 6-8 papers.
-   - [ ] Check that the agent used the Claude App: `gh api repos/gomez2608/personal-portfolio/issues/<n> --jq .performed_via_github_app.slug` must print a slug, not `null`. **If it prints `null`, stop**: the agent isn't acting through the App, so `opinion.yml` and `opinion-guard` can't tell its comments from yours. Fix step 5(a) before going on.
+   - [ ] The issue shows as yours (`gomez2608`, no app): expected with cloud routines, see step 5.
 2. [ ] Tick 3 boxes in the issue and add the label `aprobado`.
 3. [ ] **Borradores** opens a PR on `edicion-NNNN` with a preview. Its `## Correo` section is the email copy (subject, preheader, intro, blurbs) verbatim: review it with the posts. Leave comments, add `revisar`; **Revisión** applies them (and repeats `## Correo` if the email copy changed).
 4. [ ] For each post, comment `/opinion <slug>` + newline + your text on the PR (as yourself, in the GitHub UI). The workflow commits `opinion: <slug>` as `github-actions[bot]`, reacts 👍 and re-runs the checks. Don't edit an `/opinion` comment afterwards (the guard rejects edited ones); post a new one instead.
    - [ ] Check that `opinion-guard` stays green after the 👍. The guard assumes a reaction doesn't change the comment's `updated_at`; if it turns red with "tu comentario /opinion fue editado", that assumption broke and the guard needs a fix.
 5. [ ] `blog-pr-checks` and `opinion-guard` are green.
-6. [ ] Merge. `Newsletter send` runs and emails the segment (just you).
+6. [ ] Read every `opinion: <slug>` commit and confirm each opinion is yours (step 5). Merge. `Newsletter send` runs and emails the segment (just you).
 
 ## 10. Fallback if scheduled tasks change
 
