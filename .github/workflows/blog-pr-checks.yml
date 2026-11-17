@@ -1,0 +1,42 @@
+name: Blog PR checks
+
+on:
+  pull_request:
+    branches: [master]
+  # Dispatched by opinion.yml after it pushes, since GITHUB_TOKEN pushes don't trigger pull_request.
+  workflow_dispatch:
+
+concurrency:
+  group: blog-pr-checks-${{ github.event.pull_request.head.ref || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # The job name is what a ruleset requires; keep it fixed.
+  blog-pr-checks:
+    name: blog-pr-checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      # The PR head itself (not the synthetic merge commit), so both triggers check the same commits.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.ref }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm test
+      - run: npm run lint
+      - run: npm run blog:check
+      - run: npm run build
+
+      - name: Opinion guard
+        run: npx tsx scripts/blog/opinion-guard.ts

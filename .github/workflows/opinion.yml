@@ -1,0 +1,150 @@
+name: Opinion
+
+# `/opinion <slug>` + newline + text, commented on a PR by gomez2608 (not via a GitHub App), is
+# copied verbatim into app/blog/<slug>/post.json → opinion. No AI runs here: this workflow is the
+# only writer an opinion has, and blog-pr-checks rejects opinion changes made by anything else.
+#
+# issue_comment always runs this file from the default branch. The PR branch is checked out into
+# ./pr and only its post.json is touched: no code or dependencies from the PR run with this token.
+
+on:
+  issue_comment:
+    types: [created]
+
+concurrency:
+  group: opinion-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+jobs:
+  opinion:
+    if: >-
+      github.event.issue.pull_request &&
+      github.event.comment.user.login == 'gomez2608' &&
+      github.event.comment.performed_via_github_app == null &&
+      startsWith(github.event.comment.body, '/opinion ')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Find the PR branch
+        id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR: ${{ github.event.issue.number }}
+        run: |
+          set -euo pipefail
+          info=$(gh pr view "$PR" --json headRefName,headRepositoryOwner,isCrossRepository,state)
+          branch=$(jq -r '.headRefName' <<<"$info")
+          owner=$(jq -r '.headRepositoryOwner.login' <<<"$info")
+          cross=$(jq -r '.isCrossRepository' <<<"$info")
+          state=$(jq -r '.state' <<<"$info")
+          if [ "$owner" != "gomez2608" ] || [ "$cross" != "false" ]; then
+            echo "::error::Refusing a PR from a fork ($owner)."
+            exit 1
+          fi
+          if [ "$state" != "OPEN" ]; then
+            echo "::error::PR #$PR is $state."
+            exit 1
+          fi
+          if ! [[ "$branch" =~ ^[A-Za-z0-9._/-]+$ ]] || [ "$branch" = "master" ]; then
+            echo "::error::Refusing branch name: $branch"
+            exit 1
+          fi
+          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+
+      # Trusted code: the default branch, where this workflow file lives.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # Untrusted data: the PR branch. Only its post.json is read and written.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.pr.outputs.branch }}
+          path: pr
+
+      - name: List the PR's changed files
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR: ${{ github.event.issue.number }}
+        run: |
+          set -euo pipefail
+          gh api --paginate "repos/$GH_REPO/pulls/$PR/files" --jq '.[].filename' > "$RUNNER_TEMP/changed-files.txt"
+
+      - name: Apply the opinion
+        id: apply
+        env:
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          POST_ROOT: pr
+          CHANGED_FILES_PATH: ${{ runner.temp }}/changed-files.txt
+        run: npx tsx scripts/blog/apply-opinion.ts
+
+      - name: Reply with the error
+        if: steps.apply.outputs.status == 'error'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR: ${{ github.event.issue.number }}
+          ERROR: ${{ steps.apply.outputs.error }}
+        run: |
+          set -euo pipefail
+          printf 'No apliqué la opinión: %s\n' "$ERROR" | gh pr comment "$PR" --body-file -
+          exit 0
+
+      - name: Reply that nothing changed
+        if: steps.apply.outputs.status == 'unchanged'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR: ${{ github.event.issue.number }}
+          SLUG: ${{ steps.apply.outputs.slug }}
+        run: |
+          set -euo pipefail
+          printf 'La opinión de `%s` ya tenía exactamente ese texto; no hay nada que commitear.\n' "$SLUG" | gh pr comment "$PR" --body-file -
+
+      - name: Commit and push
+        if: steps.apply.outputs.status == 'ok'
+        working-directory: pr
+        env:
+          SLUG: ${{ steps.apply.outputs.slug }}
+          BRANCH: ${{ steps.pr.outputs.branch }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- "app/blog/$SLUG/post.json"
+          # Only post.json may be in this commit.
+          if [ "$(git diff --cached --name-only)" != "app/blog/$SLUG/post.json" ]; then
+            echo "::error::Unexpected staged files"
+            git diff --cached --name-only
+            exit 1
+          fi
+          git commit -m "opinion: $SLUG"
+          git push origin "HEAD:refs/heads/$BRANCH"
+
+      - name: React and re-run the PR checks
+        if: steps.apply.outputs.status == 'ok'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          COMMENT_ID: ${{ github.event.comment.id }}
+          BRANCH: ${{ steps.pr.outputs.branch }}
+        run: |
+          set -euo pipefail
+          gh api --method POST "repos/$GH_REPO/issues/comments/$COMMENT_ID/reactions" -f content=+1 > /dev/null
+          # A push made with GITHUB_TOKEN doesn't trigger pull_request workflows; workflow_dispatch does.
+          gh workflow run blog-pr-checks.yml --ref "$BRANCH"
