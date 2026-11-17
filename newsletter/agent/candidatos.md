@@ -60,7 +60,7 @@ Puntaje "¿lo entiende un curioso sin formación?":
 - **2**: lo interesante está en detalles técnicos o matemáticos.
 - **1**: solo tiene sentido para especialistas.
 
-Propón 6–8, con puntaje ≥3, ordenados de mayor a menor puntaje. Si no llegas a 6 con puntaje ≥3, completa con los mejores de puntaje 2 y dilo en la primera línea del issue. Todo en español, sin hype, y solo con lo que dice el resumen: nada de resultados que no aparezcan ahí.
+Propón 6–8, con puntaje ≥3, ordenados de mayor a menor puntaje. Si no llegas a 6 con puntaje ≥3, completa con los mejores de puntaje 2 y dilo en la primera línea del issue. Si tienes menos de 3 candidatos verificados (URL responde `200`, título y autores coinciden), no crees el issue: ve al paso 5 con el asunto "Boletín: no encontré candidatos suficientes", explica qué fuentes fallaron y termina. Nunca rellenes con papers o URLs que no verificaste. Todo en español, sin hype, y solo con lo que dice el resumen: nada de resultados que no aparezcan ahí.
 
 ## 4. Crear el issue
 
@@ -94,4 +94,4 @@ Con el conector de Gmail, escribe a la dirección de Sebastián configurada en e
 - asunto: "Boletín NNNN: candidatos listos" (o el asunto que indique el paso donde paraste);
 - cuerpo: el enlace del issue, cuántos candidatos hay y "Marca 3–4 y añade la etiqueta `aprobado`". Si paraste antes, explica por qué en dos frases.
 
-Si el conector no está disponible, comenta en el issue (`POST $R/issues/<número>/comments`) "No pude enviar el correo: el conector de Gmail no está disponible." y termina.
+Si el conector no está disponible, comenta en el issue, si hay uno (`POST $R/issues/<número>/comments`), "No pude enviar el correo: el conector de Gmail no está disponible." y termina.

@@ -65,7 +65,7 @@ import Clip2 from "./clips/clip-2";
 
 `PostShell` ya pinta el título, el hook, la fecha, la edición, "Mi opinión", la tarjeta "Fuente" y la suscripción. No los repitas en el MDX. El cuerpo, en este orden (700–1100 palabras en total):
 
-1. **Introducción** (2–3 párrafos, sin encabezado): el problema en términos cotidianos, la idea y quién la propuso y cuándo.
+1. **Introducción** (2–3 párrafos, sin encabezado): el problema en términos cotidianos; qué aporta este trabajo, de quién es y cuándo salió, y de qué idea anterior parte.
 2. **`<Destacado>`**: una metáfora cotidiana en palabras (un hospital, una cocina, una biblioteca). Usa los mismos números que el clip 1.
 3. **`<Clip1 />`**: la idea general.
 4. **Explicación corta** de lo que mostró el clip, más las aclaraciones de lo que se simplificó.
@@ -104,6 +104,7 @@ import { sec, type Point } from "@/app/components/blog/clips/timing";
 
 - **Toda afirmación factual es rastreable** a una fuente concreta: sección, figura o tabla del paper, o un enlace aparte para el contexto que no viene del paper.
 - **Lee el paper**, no solo el resumen (`https://arxiv.org/html/<id>` o el PDF). No afirmes resultados, números ni comparaciones que no estén en el resumen o en el paper. Copia los números exactos y atribúyelos ("los autores reportan"). No extrapoles ("esto hará que…").
+- **Distingue qué aporta el paper de lo que ya existía**: lee la introducción y el trabajo relacionado y usa la lista de contribuciones de los propios autores. No digas que "inventaron", "crearon" o "propusieron por primera vez" algo salvo que el paper lo afirme y lo puedas citar.
 - **Verifica la fuente** antes de escribir: la URL responde (`curl -sSL -o /dev/null -w '%{http_code}' <url>` da `200`) y el título, los autores y la fecha coinciden. Para arXiv, toma los datos de `https://export.arxiv.org/api/query?id_list=<id>` (`<title>`, cada `<author><name>`, `<published>` = v1).
 - **La descripción del PR lista, por post**, la URL del paper y cada afirmación clave con su fuente: `- "137.000 millones de parámetros" → paper, sección 5.1, tabla 1`.
 - Si no puedes verificar algo, quítalo del post.

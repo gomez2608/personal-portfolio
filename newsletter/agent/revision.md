@@ -57,7 +57,8 @@ Repite los checks de `borradores.md` paso 5: `npm ci`, `npm run blog:registry`, 
 ```bash
 git add <solo las rutas que cambiaste, más src/lib/blog/clip-registry.generated.ts si cambió>
 git diff --cached --name-only                                   # solo rutas permitidas
-git diff --cached -- 'app/blog/*/post.json' | grep '"opinion"'  # no debe imprimir nada
+git diff --cached --diff-filter=M -- 'app/blog/*/post.json' | grep '^[-+].*"opinion"'  # no debe imprimir nada
+jq -e '.opinion == null' app/blog/<slug-nuevo>/post.json        # por cada post.json añadido (reemplazos)
 git commit -m "edición NNNN: revisión"
 git push origin edicion-NNNN
 ```
