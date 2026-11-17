@@ -2,11 +2,15 @@
 
 One-time setup to switch on the AI-research newsletter agent. Do the steps in order and tick each box. The agent proposes candidates, drafts posts and applies review comments; **you** choose papers, write every opinion and merge. Nothing is sent without both label gates (`aprobado`, then your merge).
 
-## 1. Prerequisite
+## 1. Prerequisites
+
+- [ ] **Merge `feat/newsletter-agent` to `master` first**, locally or with the admin bypass (it touches `.github/`, so it fails `opinion-guard` by design). `pull_request_target` and `issue_comment` always run the workflow files from `master`, so this branch's own PR will never get an `opinion-guard` status, and `/opinion` does not work until the merge.
 
 - [ ] `docs/newsletter-setup.md` is fully done (Resend domain, segment, Neon tables, env vars, GitHub secrets, end-to-end test). The agent only prepares content; the send workflow in that guide is what emails subscribers.
 
 ## 2. Make the repo private
+
+- [ ] **Check your plan first.** On a GitHub Free personal account, rulesets and branch protection are **not available on private repos** (they need GitHub Pro or higher). If you are on Free, choose before continuing: (1) upgrade to Pro, (2) keep the repo public and do step 3, or (3) go private and skip step 3, relying on reviewing every PR yourself before merging (the guard then cannot block anything). Free also limits private repos to 2,000 Actions minutes per month.
 
 - [ ] GitHub > `gomez2608/personal-portfolio` > Settings > General > Danger zone > Change visibility > Private.
 
@@ -20,7 +24,7 @@ Why: the agent runs against this repo and its drafts and prompts stay unpublishe
 Settings > Rules > Rulesets > New branch ruleset, target `master`, enforcement Active.
 
 - [ ] **Require a pull request before merging.**
-- [ ] **Require status checks to pass:** add `blog-pr-checks` (the job from `blog-pr-checks.yml`) **and** `opinion-guard` (a commit status posted by `opinion-guard.yml` on the PR head; if it is not in the picker yet, run the workflow once on a PR so GitHub has seen it, or type the name).
+- [ ] **Require status checks to pass:** add `blog-pr-checks` (the job from `blog-pr-checks.yml`) **and** `opinion-guard` (a commit status posted by `opinion-guard.yml` on the PR head; add it as a commit status with the context typed exactly `opinion-guard`; it will not appear in the picker until a PR has received it, which is why the branch must be merged first).
 - [ ] **Block force pushes** and **restrict deletions**.
 - [ ] **Bypass list:** add **Deploy keys** (the CV pipeline pushes `public/resume.pdf` straight to `master`) and the **Repository admin** role (you).
 
@@ -37,8 +41,8 @@ Infra PRs that touch `.github/`, `scripts/blog/` or `src/lib/blog/opinion*` **fa
 An opinion must be yours. The `/opinion` workflow only accepts a comment by `gomez2608` with `performed_via_github_app == null`, and `opinion-guard` re-checks every opinion against such a comment. These three conditions keep the agent from forging that:
 
 - [ ] **(a) Connect the agent through the Claude GitHub App, not `/web-setup`.** Install the app on this repo only (github.com/apps/claude, or Claude Code `/install-github-app`). Why: `/web-setup` hands the agent your personal token, so its comments would look like yours and could satisfy `/opinion`. Comments made through the app carry `performed_via_github_app`, and the workflow ignores those.
-- [ ] **(b) The app installation must not have the `workflows` permission.** Check: GitHub > Settings > Applications > Installed GitHub Apps > Claude > Configure, then read the permissions list. Why: with it the agent could edit `.github/workflows/*` (for example neutralize the guard) or forge commit statuses. If the app requests `workflows` on an update, **decline** it. The trade-off: without it the agent cannot touch workflow files, so any workflow change is yours to make by hand; the permission is not needed for this automation.
-- [ ] **(c) Nobody else has write access to the repo.** Comments are read in their current form, so any collaborator with write access could post a `/opinion`-looking comment as themselves, and the guard only matches the author login `gomez2608`. Keep Settings > Collaborators empty, and do not add other apps with write access.
+- [ ] **(b) The app installation must lack both `Workflows` and `Commit statuses` write.** Check: GitHub > Settings > Applications > Installed GitHub Apps > Claude > Configure, then read the permissions list. Why: `Workflows` lets the agent edit `.github/workflows/*` (for example neutralize the guard); `Commit statuses` write lets it post a green `opinion-guard` status itself. If the app requests either on an update, **decline** it. The trade-off: without `Workflows`, any workflow change is yours to make by hand; neither is needed for this automation. If the Claude app does have `Commit statuses: write`, the guard is only advisory against the agent, and your own review of each PR before merging is the real control.
+- [ ] **(c) Nobody else has write access to the repo (defence in depth).** The guard only matches comments authored by `gomez2608`, so another user cannot forge one. But anyone with write access can edit or delete comments, push to a PR branch, and approve or merge, which undermines the review the guard assumes. Comments are read in their current form, so editing one after the fact changes what counts. Keep Settings > Collaborators empty and add no other write-access apps. The Claude app itself does have write access (that is how it opens PRs); that is acceptable because its comments carry `performed_via_github_app` and, per (b), it cannot edit workflows or post statuses.
 
 ## 6. Cloud environment
 
@@ -64,7 +68,7 @@ Create three tasks in the cloud environment from step 6, all with the prompt `Si
 
 ## 9. Rehearsal
 
-> `/opinion` and `opinion-guard` only work **after this branch (`feat/newsletter-agent`) is merged to `master`**: `issue_comment` and `pull_request_target` always run the workflow files from the default branch. Merge first (with the admin bypass, since it touches `.github/`), then rehearse.
+> Reminder: `/opinion` and `opinion-guard` only work once `feat/newsletter-agent` is merged to `master` (step 1).
 
 For the first run, have **only yourself** in the Resend segment (pause or remove other subscribers) so a mistake cannot reach anyone.
 
