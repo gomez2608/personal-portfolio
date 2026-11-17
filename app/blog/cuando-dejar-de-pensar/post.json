@@ -1,0 +1,23 @@
+{
+  "slug": "cuando-dejar-de-pensar",
+  "title": "Compresión del razonamiento: enseñarle a un modelo cuándo dejar de pensar",
+  "hook": "Los modelos que razonan a veces siguen dándole vueltas a algo que ya resolvieron. Este trabajo les enseña a reconocer el momento justo para concluir.",
+  "date": "2026-11-17",
+  "issue": 1,
+  "status": "published",
+  "paper": {
+    "title": "Think Less, Locally: Local Preference Learning for Reasoning Compression",
+    "url": "https://arxiv.org/abs/2611.04814",
+    "authors": [
+      "Muyao Yuan",
+      "Liyan Xu",
+      "Weizhan Zhang",
+      "Muyan Jiao",
+      "Jiangnan Li",
+      "Jinchao Zhang",
+      "Jie Zhou"
+    ],
+    "published": "2026-11-03"
+  },
+  "opinion": null
+}

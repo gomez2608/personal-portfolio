@@ -1,0 +1,63 @@
+import post from "./post.json";
+import { PostShell, postMetadata } from "@/app/components/blog/post-shell";
+export const metadata = postMetadata(post);
+export default function Layout({ children }) { return <PostShell post={post}>{children}</PostShell>; }
+
+import Clip1 from "./clips/clip-1";
+import Clip2 from "./clips/clip-2";
+
+Algunos modelos de lenguaje "piensan" antes de responder. Primero escriben una **cadena de razonamiento** (los pasos intermedios, como el borrador de un estudiante) y solo después dan la respuesta. Eso los hace mejores en matemáticas y en programación, pero tiene un costo: cada palabra de ese borrador gasta tiempo y cómputo. Y muchas veces el modelo sigue escribiendo mucho después de tener lo que necesitaba. A eso se le llama *overthinking* (pensar de más).
+
+Ya hay métodos para acortar esos razonamientos. La mayoría compara soluciones completas, una corta y una larga, y le enseña al modelo a preferir la corta. Así el modelo aprende "escribe menos" en general, pero no aprende en qué momento concreto ya podía terminar.
+
+Ese es el hueco que ataca **LoCo**, un trabajo de investigadores de la Universidad Jiaotong de Xi'an y de WeChat AI (Tencent), publicado el 3 de noviembre de 2026. LoCo busca en los razonamientos del propio modelo los puntos donde ya podía concluir, escribe desde ahí un final más corto que llega a la respuesta correcta y entrena al modelo para que prefiera ese final. La técnica de base, aprender de pares "respuesta preferida / respuesta descartada", ya existía. Lo nuevo es aplicarla a un punto exacto del razonamiento y no a la solución entera.
+
+<Destacado>
+Piensa en un estudiante que resuelve "¿qué fracción de 1/2 es 1/7?". Plantea la ecuación, calcula 2/7 y lo comprueba. Ya está. Pero en vez de entregar, vuelve a mirar el problema, lo reformula y lo comprueba otra vez, y otra más. Un buen profesor no le dice "escribe menos" en general: le marca con lápiz el punto exacto donde ya podía haber entregado.
+</Destacado>
+
+<Clip1 />
+
+LoCo hace eso con el modelo: le muestra, en sus propios borradores, dónde ya tenía lo necesario y le enseña a concluir ahí. No le enseña a pensar siempre poco: si a un problema difícil todavía le falta trabajo, aprende a seguir.
+
+Una aclaración: el clip resume el razonamiento en seis pasos. En el ejemplo real del artículo, con esta pregunta, el modelo había escrito 11 párrafos antes de ese punto, con dos comprobaciones de 2/7.
+
+## Cómo encuentra el punto y qué hace con él
+
+**Primero, encontrar el punto.** LoCo divide el razonamiento en pasos (cada párrafo es uno) y mide qué tan seguro está el modelo en cada paso. Marca como sospechosos los pasos con seguridad baja que además cambia mucho respecto del anterior. Como eso también pasa cuando un problema es difícil, un segundo modelo, más grande, revisa cada sospechoso: ¿lo que viene repite cosas ya resueltas o aporta algo?
+
+**Segundo, escribir otros finales.** Se congela el razonamiento hasta ese punto: ese tramo inicial se llama **prefijo**. Desde el prefijo, el mismo modelo escribe varios finales nuevos. Cada final se verifica: ¿llega a la respuesta correcta? De los correctos, se queda el más corto, y solo si es más corto que el final original.
+
+**Tercero, formar el par.** El final corto queda como "preferido" y el original como "descartado". Los dos parten del mismo prefijo: solo cambia lo que el modelo hizo desde ahí. Con miles de pares así, el modelo aprende la decisión local: aquí, seguir o concluir.
+
+En el clip hay tres finales para que se vea la verificación; el final "Nuevo A", incorrecto, es inventado para el ejemplo. En el artículo, el modelo escribe varios finales desde cada punto.
+
+Con el ejemplo de la fracción, puedes seguir las cuentas con lápiz. Desde el prefijo, el final original ocupaba 1.247 *tokens* (pedacitos de palabra; los modelos no leen palabras enteras). El nuevo final correcto ocupó 296. La diferencia es de 951 *tokens*: el final preferido es menos de una cuarta parte del original.
+
+<Clip2 />
+
+## Por qué importa
+
+Cada *token* cuesta dinero y tiempo de espera. Quitar casi la mitad sin perder precisión hace al mismo modelo más rápido y más barato.
+
+En el artículo, los autores entrenan un modelo de razonamiento de 7.000 millones de parámetros (DeepSeek-R1-Distill-Qwen-7B) solo con problemas de matemáticas. En cinco pruebas de matemáticas, reportan entre 41,7 % y 45,4 % menos texto, con una precisión igual o mejor. En la prueba AIME 2024, por ejemplo, la precisión pasa de 50,83 % a 54,17 % y el largo promedio de la respuesta baja de 13.493 a 7.364 *tokens*. En tres pruebas de programación, aunque el modelo nunca entrenó con código, reportan entre 23,4 % y 36,3 % menos texto, también sin perder precisión.
+
+La comparación más clara es con la versión "global": mismos datos, pero con pares de soluciones completas, la corta contra la larga. Esa versión recorta solo entre 5,2 % y 15,8 % del texto, contra 41,7 % a 45,4 % de LoCo en las mismas pruebas.
+
+Los límites: todo se probó con un solo modelo, de tamaño mediano, y en matemáticas y programación. Preparar los datos requiere un segundo modelo más grande que revise los puntos sospechosos. Y "igual o mejor" a veces significa casi igual: en MATH-500, la precisión pasa de 91,88 % a 91,80 %.
+
+<Profundizar title="Los detalles técnicos">
+
+**Estado de razonamiento (lo escrito hasta un paso).** Es el enunciado más todos los pasos escritos hasta un punto. En cada estado hay una decisión: seguir o concluir.
+
+**Confianza y volatilidad (qué tan seguro está y cuánto cambia).** La confianza de un paso es el promedio de la probabilidad que el modelo le daba a cada *token* que eligió. La volatilidad mide cuánto cambia esa confianza entre pasos seguidos. Un paso es candidato cuando la confianza queda por debajo del percentil 25 y la volatilidad por encima del percentil 75, ambos calculados sobre los propios razonamientos del modelo.
+
+**Juez de revisión (un segundo modelo que confirma).** Qwen3-30B clasifica el paso que sigue a cada candidato como redundante, necesario o de cierre. Solo se cortan los redundantes: el cierre, aunque repita la respuesta, hace falta para extraerla.
+
+**DPO (optimización directa de preferencias).** Entrena con pares: sube la probabilidad del final preferido frente al descartado. Aquí se aplica con LoRA (un adaptador pequeño que se suma al modelo sin cambiar sus pesos).
+
+Montaje experimental: 14.027 problemas de matemáticas, con la solución correcta más corta de tres intentos como punto de partida. Se evalúa en cinco pruebas de matemáticas (MATH-500, AMC 2023, Olympiad, AIME 2024 y AIME 2025) y tres de programación (MBPP, LiveCodeBench y CodeContests), contra los métodos DAST y TokenSqueeze.
+
+Artículo: [Think Less, Locally: Local Preference Learning for Reasoning Compression](https://arxiv.org/abs/2611.04814), de Muyao Yuan, Liyan Xu, Weizhan Zhang, Muyan Jiao, Jiangnan Li, Jinchao Zhang y Jie Zhou. Publicado en arXiv el 3 de noviembre de 2026.
+
+</Profundizar>

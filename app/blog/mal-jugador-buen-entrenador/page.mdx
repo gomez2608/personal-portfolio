@@ -1,0 +1,59 @@
+import post from "./post.json";
+import { PostShell, postMetadata } from "@/app/components/blog/post-shell";
+export const metadata = postMetadata(post);
+export default function Layout({ children }) { return <PostShell post={post}>{children}</PostShell>; }
+
+import Clip1 from "./clips/clip-1";
+import Clip2 from "./clips/clip-2";
+
+Un **agente** de IA es un programa que usa un modelo para decidir, paso a paso, qué hacer en un entorno: abrir un cajón o comprar un producto. Para entrenarlo se suele usar **aprendizaje por refuerzo** (el modelo prueba, recibe un premio si la tarea salió bien y ajusta su comportamiento). Pero el premio llega al final, y todos los pasos reciben el mismo crédito, incluso los inútiles.
+
+Para repartir mejor el crédito hace falta alguien que puntúe cada paso. Una familia reciente de modelos sirve para eso: los **modelos de decisión**, que en vez de escribir texto eligen entre opciones, con una probabilidad para cada una, de forma rápida y barata. Hasta ahora se evaluaban sobre todo eligiendo ellos mismos las acciones, y ahí suelen fallar.
+
+Un trabajo de investigadores de la Universidad de Zhejiang y Baidu, publicado el 12 de noviembre de 2026, hace la pregunta al revés: ¿un modelo que actúa mal puede enseñar bien? Compara el mismo modelo en tres papeles (actor, juez y maestro) sobre las mismas tareas. La idea de juzgar un paso por lo que pasa después ya existía, con el nombre de *hindsight credit assignment* (asignar crédito en retrospectiva). Lo que aporta este estudio es medir, papel por papel, por qué esa mirada hacia atrás ayuda y qué pregunta hay que hacerle al juez.
+
+<Destacado>
+Piensa en un comentarista de fútbol. En la cancha, con la jugada en marcha, quizás no vería el pase que abre la defensa. Pero al ver la repetición completa, con el gol al final, sabe señalar el pase clave, aunque en el momento pareciera inútil. No necesita jugar bien para enseñar qué pases funcionan. Con estos modelos pasa algo parecido: el del clip resuelve solo 42,9 % de las tareas por su cuenta, pero el alumno que entrena llega a 82,9 %.
+</Destacado>
+
+<Clip1 />
+
+Los tres papeles usan el mismo modelo, sin cambiarlo. Como **actor**, elige cada acción antes de ver qué pasa. Como **juez**, puntúa acciones de un episodio ya grabado y puede ver todo lo que vino después. Como **maestro**, puntúa los pasos de otro modelo, el **alumno**, mientras se entrena; esos puntajes se suman al premio final. Después, el alumno trabaja solo.
+
+Una aclaración: el modelo del clip es JEV, uno de los seis del artículo; el alumno tiene 1.500 millones de parámetros, y las cifras son de ALFWorld, un entorno de tareas domésticas en texto.
+
+## Por qué el actor falla y el juez no
+
+Las tareas más difíciles en ALFWorld tienen dos objetivos con un orden obligado. "Pon una taza caliente en el mueble" exige calentarla primero y guardarla después. Con la taza en la mano frente al mueble, guardarla cuesta una sola acción; calentarla, varias. Los actores suelen tomar el camino fácil y guardan la taza fría. JEV resuelve 70,8 % de las tareas con dos objetivos sin orden, pero solo 14,7 % de las que tienen un orden obligado.
+
+No es que no sepa calentar la taza. Si se le quita del objetivo la parte de "ponla en el mueble", la probabilidad que le da a ir a calentarla sube de 14,6 % a 77,6 %. El objetivo fácil lo distrae.
+
+Como juez, en cambio, puede ver el final del episodio. Los autores muestran un episodio real: la taza se guarda fría, se saca, se calienta en el microondas y se vuelve a guardar. El juez puntúa cada acción de 0 a 1 respondiendo "¿esta acción ayudó a cumplir el objetivo?". Viendo solo lo ocurrido hasta cada acción, premia guardar la taza fría (0,79) y casi no valora abrir el microondas (0,20). Viendo el episodio completo, abrir el microondas sube a 0,76 y guardar la taza fría baja a 0,60.
+
+<Clip2 />
+
+La pregunta también importa. Si se le pregunta "¿la tarea va a salir bien después de esta acción?", todas las acciones de un episodio reciben casi el mismo puntaje: para todas, la respuesta es el resultado final. Con la pregunta "¿esta acción ayudó?", JEV le da a las acciones que cumplen un objetivo 0,36 puntos más que a las que no cambian nada. Con la otra pregunta, la diferencia es de solo 0,05.
+
+## Por qué importa
+
+Separa dos habilidades que solemos tratar como una sola: saber hacer y saber evaluar. Los autores reportan que, con JEV como maestro (viendo el episodio completo y preguntando si cada acción ayudó), el alumno pasa de 72,8 % a 82,9 % de tareas resueltas en ALFWorld, frente a entrenar solo con premio final. En WebShop, un entorno de compras en línea, pasa de 56,8 % a 71,4 %. Con la pregunta "¿va a salir bien?", el alumno llega solo a 69,3 % en ALFWorld. Y así supera, en los dos entornos, a un alumno de 7.000 millones de parámetros entrenado solo con premio final.
+
+También es barato: consultar al maestro durante todo un entrenamiento costó entre 22 y 30 dólares en sus experimentos.
+
+Los límites: solo se probó en dos entornos de texto, con episodios de máximo 30 acciones. El juez sirve después de que el episodio termina, no para filtrar acciones en vivo. Y dos de los modelos de decisión son cerrados, así que no se sabe qué los hace buenos jueces.
+
+<Profundizar title="Los detalles técnicos">
+
+**Prefix vs. hindsight (lo anterior vs. todo el episodio).** El juez puede ver el episodio solo hasta la acción que puntúa (*prefix*) o completo (*hindsight*), en ambos casos sin la etiqueta de éxito o fracaso.
+
+**Value vs. progress (¿saldrá bien? vs. ¿ayudó?).** *Value* repite casi lo mismo que el premio final. *Progress* separa mejor las acciones: en 462 episodios, pone entre 8,0 % y 16,0 % más acciones clave entre las mejor puntuadas.
+
+**GRPO (optimización de política por grupos).** Es el método de aprendizaje por refuerzo del alumno: compara varios intentos de la misma tarea y premia los que superan el promedio del grupo. Los puntajes del maestro, centrados en cada grupo, se suman a esa ventaja.
+
+**Modelos comparados.** Tres modelos de decisión (JEV, Decider v1.2 y GPT Decisions) y tres modelos de lenguaje generales con las mismas preguntas. Los seis caen en el mismo error como actores, y los seis dan más crédito a los pasos hacia el objetivo previo cuando ven el episodio completo.
+
+Montaje experimental: ALFWorld y WebShop, con Qwen2.5-1.5B-Instruct y Qwen2.5-7B-Instruct como alumnos, evaluados con tres semillas, frente a GRPO solo con premio final (resultados publicados en el trabajo GiGPO).
+
+Artículo: [Actor, Judge, or Teacher? Understanding Decision Models in Long-Horizon Agents](https://arxiv.org/abs/2611.17167), de Haochen Liu, Qianhao Zhu, Zixuan Wang y otros. Publicado en arXiv el 12 de noviembre de 2026.
+
+</Profundizar>

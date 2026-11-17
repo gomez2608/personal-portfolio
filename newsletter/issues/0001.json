@@ -1,0 +1,21 @@
+{
+  "issue": 1,
+  "date": "2026-11-17",
+  "subject": "Pensar menos, no obedecer al correo y aprender de un mal jugador",
+  "preheader": "Tres papers de noviembre: modelos que saben cuándo dejar de razonar, agentes que no se dejan desviar y un mal actor que enseña bien.",
+  "intro": "Esta primera edición trae tres trabajos de las últimas dos semanas, y los tres van de lo mismo: cómo hacer que un modelo decida mejor. Cuándo dejar de pensar, a quién no hacerle caso y cómo aprender de alguien que no sabe jugar.\n\nCada post explica la idea con palabras simples y un par de clips animados. Si quieres el detalle técnico, está al final de cada uno.",
+  "posts": [
+    {
+      "slug": "cuando-dejar-de-pensar",
+      "blurb": "Los modelos que razonan gastan mucho texto revisando lo que ya resolvieron. LoCo les marca el punto exacto donde podían concluir y, según los autores, recorta entre 41,7 % y 45,4 % del texto en matemáticas sin perder precisión."
+    },
+    {
+      "slug": "agentes-contra-instrucciones-ocultas",
+      "blurb": "Una orden escondida en un correo puede desviar un pago. SPILLWAY no le pregunta a otro modelo si eso es sospechoso: revisa de dónde salió cada destino. En sus pruebas, ninguna inyección estándar llegó a un destino del atacante."
+    },
+    {
+      "slug": "mal-jugador-buen-entrenador",
+      "blurb": "Un modelo que resuelve solo 42,9 % de las tareas como actor puede entrenar a otro hasta 82,9 %. La clave es juzgar cada paso viendo el episodio completo y hacerle la pregunta correcta."
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "slug": "agentes-contra-instrucciones-ocultas",
+  "title": "Inyección de instrucciones: revisar de dónde salió cada destino",
+  "hook": "Un correo con una orden escondida puede hacer que tu asistente de IA le pague a un desconocido. Esta defensa no intenta entender la trampa: revisa de dónde salió cada destino.",
+  "date": "2026-11-17",
+  "issue": 1,
+  "status": "published",
+  "paper": {
+    "title": "SPILLWAY: Separating Target Admission from Sanitization to Defend Tool-Using Agents against Prompt Injection",
+    "url": "https://arxiv.org/abs/2611.07222",
+    "authors": [
+      "Woosang Lim",
+      "Yeseul Chang",
+      "Jaewoo Lee"
+    ],
+    "published": "2026-11-04"
+  },
+  "opinion": null
+}

@@ -1,0 +1,26 @@
+{
+  "slug": "mal-jugador-buen-entrenador",
+  "title": "Actor, juez o maestro: un modelo que actúa mal puede enseñar bien",
+  "hook": "Un modelo que falla al hacer una tarea puede, mirando la jugada completa, entrenar a otro para que la haga mejor que él.",
+  "date": "2026-11-17",
+  "issue": 1,
+  "status": "published",
+  "paper": {
+    "title": "Actor, Judge, or Teacher? Understanding Decision Models in Long-Horizon Agents",
+    "url": "https://arxiv.org/abs/2611.17167",
+    "authors": [
+      "Haochen Liu",
+      "Qianhao Zhu",
+      "Zixuan Wang",
+      "Dingming Li",
+      "Tongbo Chen",
+      "Peng Qiu",
+      "Yingqi Qu",
+      "Weiming Lu",
+      "Jun Xiao",
+      "Yongliang Shen"
+    ],
+    "published": "2026-11-12"
+  },
+  "opinion": null
+}

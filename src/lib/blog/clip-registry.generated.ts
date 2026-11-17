@@ -3,6 +3,18 @@ import type { ClipComponent } from "@/app/components/blog/clips/clip-types";
 type ClipRegistry = Record<string, Record<string, () => Promise<{ default: ClipComponent }>>>;
 
 export const clipRegistry: ClipRegistry = {
+  "agentes-contra-instrucciones-ocultas": {
+    "clip-1": () => import("@/app/blog/agentes-contra-instrucciones-ocultas/clips/clip-1"),
+    "clip-2": () => import("@/app/blog/agentes-contra-instrucciones-ocultas/clips/clip-2"),
+  },
+  "cuando-dejar-de-pensar": {
+    "clip-1": () => import("@/app/blog/cuando-dejar-de-pensar/clips/clip-1"),
+    "clip-2": () => import("@/app/blog/cuando-dejar-de-pensar/clips/clip-2"),
+  },
+  "mal-jugador-buen-entrenador": {
+    "clip-1": () => import("@/app/blog/mal-jugador-buen-entrenador/clips/clip-1"),
+    "clip-2": () => import("@/app/blog/mal-jugador-buen-entrenador/clips/clip-2"),
+  },
   "mezcla-de-expertos": {
     "clip-1": () => import("@/app/blog/mezcla-de-expertos/clips/clip-1"),
     "clip-2": () => import("@/app/blog/mezcla-de-expertos/clips/clip-2"),
