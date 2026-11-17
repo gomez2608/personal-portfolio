@@ -2,14 +2,6 @@ import { validateClipDef, type ClipDef } from "../../../app/components/blog/clip
 import type { PostEntry } from "./entries";
 import { PostMetaSchema } from "./schema";
 
-const PENDING_OPINION_RE = /<MiOpinion\s+pending\b/;
-const OPINION_RE = /<MiOpinion\s*>([\s\S]*?)<\/MiOpinion>/g;
-
-/** True when the MDX has at least one `<MiOpinion>…</MiOpinion>` with real text in it. */
-function hasOpinion(mdx: string): boolean {
-  return [...mdx.matchAll(OPINION_RE)].some((m) => m[1].trim().length > 0);
-}
-
 /** Returns human-readable errors for the given posts; empty means OK. */
 export function validatePosts(entries: PostEntry[], today: string): string[] {
   const errors: string[] = [];
@@ -39,11 +31,13 @@ export function validatePosts(entries: PostEntry[], today: string): string[] {
       continue;
     }
 
+    if (entry.mdx.includes("<MiOpinion")) {
+      errors.push(`${meta.slug}: MiOpinion ya no se usa; la opinión va en post.json`);
+    }
+
     if (meta.status === "published") {
-      if (PENDING_OPINION_RE.test(entry.mdx)) {
-        errors.push(`${where}: published post still has a pending opinion (<MiOpinion pending>)`);
-      } else if (!hasOpinion(entry.mdx)) {
-        errors.push(`${where}: published post needs a non-empty <MiOpinion>…</MiOpinion>`);
+      if (meta.opinion === null || meta.opinion.trim() === "") {
+        errors.push(`${meta.slug}: falta tu opinión. Escribe /opinion ${meta.slug} en el PR.`);
       }
       if (meta.date > today) {
         errors.push(`${where}: published post is dated in the future (${meta.date} > ${today})`);

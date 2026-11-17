@@ -10,6 +10,7 @@ const meta = (slug: string, status: "draft" | "published"): PostMeta => ({
   issue: 1,
   status,
   paper: { title: "P", url: "https://arxiv.org/abs/1", authors: ["A"], published: "2020-01-01" },
+  opinion: null,
 });
 const posts = new Map<string, PostMeta>([
   ["a", meta("a", "published")],

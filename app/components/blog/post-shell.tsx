@@ -63,6 +63,24 @@ export function PostShell({ post, children }: { post: unknown; children: ReactNo
           </p>
         </header>
         <div className="mt-10">{children}</div>
+        {meta.opinion !== null && meta.opinion.trim() !== "" ? (
+          <aside aria-labelledby="opinion-title" className="my-10 rounded-xl border border-line bg-card p-6">
+            <h2 id="opinion-title" className="mb-3 font-mono text-xs tracking-widest text-graphite uppercase">
+              Mi opinión
+            </h2>
+            <div className="space-y-4 text-[1.0625rem] leading-[1.75] text-graphite">
+              {meta.opinion.split(/\n\s*\n/).map((para, i) => (
+                <p key={i} className="whitespace-pre-line">
+                  {para.trim()}
+                </p>
+              ))}
+            </div>
+          </aside>
+        ) : meta.status === "draft" ? (
+          <aside className="my-8 rounded-xl border border-dashed border-line bg-fog p-5 font-mono text-sm text-graphite">
+            Pendiente: opinión de Sebastián
+          </aside>
+        ) : null}
         <aside aria-labelledby="fuente-title" className="mt-14 rounded-xl border border-line bg-card p-6">
           <h2 id="fuente-title" className="font-mono text-xs tracking-widest text-graphite uppercase">
             Fuente

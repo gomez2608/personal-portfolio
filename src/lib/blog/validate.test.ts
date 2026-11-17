@@ -10,6 +10,7 @@ const meta = {
   date: "2026-11-01",
   issue: 1,
   status: "published",
+  opinion: "Creo que sí.",
   paper: {
     title: "Paper",
     url: "https://arxiv.org/abs/1234.5678",
@@ -22,7 +23,7 @@ function entry(overrides: Partial<PostEntry> = {}): PostEntry {
   return {
     dir: "a",
     meta,
-    mdx: "<MiOpinion>Texto</MiOpinion>",
+    mdx: "Texto",
     clipFiles: [],
     ...overrides,
   };
@@ -36,28 +37,21 @@ describe("validatePosts", () => {
     expect(validatePosts([entry({ meta: { ...meta, title: "" } })], T)[0]).toMatch(/title/));
   test("missing page.mdx is reported", () =>
     expect(validatePosts([entry({ mdx: null })], T)).toHaveLength(1));
-  test("published post with pending opinion fails", () =>
-    expect(validatePosts([entry({ mdx: "<MiOpinion pending />" })], T)).toContainEqual(
-      expect.stringMatching(/opini/i),
+  test.each([null, "", "  \n "])("published post with opinion %j fails", (opinion) =>
+    expect(validatePosts([entry({ meta: { ...meta, opinion } })], T)).toContainEqual(
+      "a: falta tu opinión. Escribe /opinion a en el PR.",
     ));
-  test("draft post with pending opinion passes", () =>
-    expect(
-      validatePosts([entry({ mdx: "<MiOpinion pending />", meta: { ...meta, status: "draft" } })], T),
-    ).toEqual([]));
+  test("published post with an opinion passes", () => expect(validatePosts([entry()], T)).toEqual([]));
+  test("draft post with a null opinion passes", () =>
+    expect(validatePosts([entry({ meta: { ...meta, status: "draft", opinion: null } })], T)).toEqual([]));
+  test.each(["<MiOpinion pending />", "<MiOpinion>Hola</MiOpinion>"])("MDX containing %s is rejected", (mdx) =>
+    expect(validatePosts([entry({ mdx })], T)).toContainEqual(
+      "a: MiOpinion ya no se usa; la opinión va en post.json",
+    ));
   test("published post dated in the future fails", () =>
     expect(
       validatePosts([entry({ meta: { ...meta, date: "2026-12-01" } })], "2026-11-13"),
     ).toHaveLength(1));
-  test.each([
-    ["missing", "Solo texto."],
-    ["empty", "<MiOpinion></MiOpinion>"],
-    ["whitespace only", "<MiOpinion>\n  \n</MiOpinion>"],
-  ])("published post with %s opinion fails", (_, mdx) =>
-    expect(validatePosts([entry({ mdx })], T)).toContainEqual(expect.stringMatching(/MiOpinion/)));
-  test("published post with a multi-line opinion passes", () =>
-    expect(validatePosts([entry({ mdx: "<MiOpinion>\n\nCreo que sí.\n\n</MiOpinion>" })], T)).toEqual([]));
-  test("draft post without an opinion passes", () =>
-    expect(validatePosts([entry({ mdx: "Solo texto.", meta: { ...meta, status: "draft" } })], T)).toEqual([]));
   test("duplicate slugs are rejected", () =>
     expect(validatePosts([entry(), entry()], T).length).toBeGreaterThan(0));
 });

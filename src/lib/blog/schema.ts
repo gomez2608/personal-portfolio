@@ -38,6 +38,12 @@ export const PostMetaSchema = z
         published: isoDate,
       })
       .strict(),
+    /** Sebastián's take. `null` until the `/opinion` workflow writes it. Plain text, never MDX. */
+    opinion: z
+      .string()
+      .max(1500)
+      .refine((s) => !s.includes("{{{") && !s.includes("}}}"), { message: "No se permite {{{ ni }}}" })
+      .nullable(),
   })
   .strict();
 
