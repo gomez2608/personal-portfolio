@@ -19,5 +19,5 @@
     ],
     "published": "2017-01-23"
   },
-  "opinion": null
+  "opinion": "Lo que más me gusta de esta idea es que no es nueva: viene de los noventa, y lo que cambió en 2017 fue la forma de hacerla funcionar a gran escala. Es un buen recordatorio de que muchos avances en IA son ideas viejas que por fin encontraron el truco práctico.\n\nLo que me parece más interesante es el problema del balance: si el router siempre elige a los mismos expertos, el modelo desperdicia todo lo demás. Gran parte del trabajo no está en la idea elegante, sino en evitar que falle de formas aburridas.\n\nPara quien construye productos con modelos grandes, la lección es que \"más grande\" ya no significa necesariamente \"más lento\" ni \"más caro\" por cada respuesta. Vale la pena entender esto antes de elegir qué modelo usar."
 }
