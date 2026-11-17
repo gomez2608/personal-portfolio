@@ -2,7 +2,7 @@
 
 Lee primero `newsletter/agent/ESTILO.md` y `CLAUDE.md`.
 
-Disparo: GitHub, issue etiquetado `aprobado`. Resultado: la rama `edicion-NNNN` con 1–4 posts y `newsletter/issues/NNNN.json`, un PR hacia `master`, un comentario en el issue y un correo. Nunca hagas merge.
+Disparo: GitHub, cualquier issue etiquetado (sin filtro de etiqueta; el paso 1.1 descarta lo que no lleve `aprobado`). Resultado: la rama `edicion-NNNN` con 1–4 posts y `newsletter/issues/NNNN.json`, un PR hacia `master`, un comentario en el issue y un correo. Nunca hagas merge.
 
 ```bash
 R=repos/gomez2608/personal-portfolio
@@ -16,7 +16,7 @@ gh api --paginate "$R/issues/$ISSUE/comments" --jq '.[] | {user: .user.login, ap
 
 ## 1. Comprobar el issue y la selección
 
-1. Sin la etiqueta `newsletter`: no es tuyo. Termina sin hacer nada.
+1. Sin la etiqueta `aprobado`, o sin la etiqueta `newsletter`: no es para ti (el disparo de GitHub no filtra por etiqueta, así que también te despierta cualquier otra etiqueta, como la `newsletter` que pone Candidatos al crear el issue). Termina sin hacer nada: no comentes, no quites etiquetas y no envíes correo.
 2. El título debe ser exactamente `Edición NNNN — candidatos` y el issue debe estar abierto. Si no: comenta el problema, quita `aprobado`, ve al paso 7 y termina.
 3. Seleccionados = líneas del cuerpo que cumplen `^- \[[xX]\] \*\*C[0-9]+ · `. Si hay menos de 1 o más de 4, comenta "Marca entre 1 y 4 candidatos y vuelve a añadir la etiqueta `aprobado`. Ahora hay <k> marcados.", quita `aprobado`, ve al paso 7 y termina.
 4. Si la rama ya existe (`git ls-remote --exit-code --heads origin edicion-NNNN` sale con 0), no la toques. Busca su PR con `gh api "$R/pulls?state=all&head=gomez2608:edicion-NNNN" --jq '.[] | [.number, .state, .html_url] | @tsv'` y comenta: si hay un PR abierto, "Esta edición ya tiene PR (<url>). Para cambios, comenta en el PR y añade la etiqueta `revisar`."; si no, "La rama `edicion-NNNN` ya existe sin PR abierto. Bórrala y vuelve a añadir `aprobado`.". Quita `aprobado`, ve al paso 7 y termina.

@@ -69,8 +69,10 @@ Correo de avisos: <your address>
 Scheduled tasks are a research preview, so the UI may change.
 
 - [ ] **Candidatos** (`newsletter/agent/candidatos.md`): Schedule, `CRON_TZ=America/Bogota 0 9 1,15 * *` (09:00 Bogotá on the 1st and 15th).
-- [ ] **Borradores** (`newsletter/agent/borradores.md`): GitHub trigger, Issue labeled, label `aprobado`.
-- [ ] **Revisión** (`newsletter/agent/revision.md`): GitHub trigger, Pull request labeled, label `revisar`, head branch `edicion-*`.
+- [ ] **Borradores** (`newsletter/agent/borradores.md`): GitHub trigger, Issue → labeled. Issue triggers have no label filter, so it also wakes on other labels (including the `newsletter` label Candidatos adds); `borradores.md` step 1.1 ends silently unless the issue has `aprobado`.
+- [ ] **Revisión** (`newsletter/agent/revision.md`): GitHub trigger, Pull request → labeled, filters: Labels contains `revisar`, Head branch starts with `edicion-`.
+
+To add a GitHub trigger to an existing task: claude.ai/code/routines → the task → the menu next to its name → **Edit** → **Trigger** row → **+** → **GitHub event** → pick the event, add filters → **Save changes**.
 
 `newsletter/agent/ESTILO.md` is the shared style guide the three files point to; it needs no task of its own.
 
