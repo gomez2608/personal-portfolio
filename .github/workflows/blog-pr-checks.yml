@@ -18,6 +18,8 @@ jobs:
   blog-pr-checks:
     name: blog-pr-checks
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     timeout-minutes: 30
     steps:
       # The PR head itself (not the synthetic merge commit), so both triggers check the same code.
@@ -61,3 +63,40 @@ jobs:
           done
 
       - run: npm run build
+
+  # Runs started by workflow_dispatch (opinion.yml re-runs the checks after its bot push) aren't
+  # linked to the PR, so the master ruleset doesn't count their check run. This job mirrors the
+  # result as a commit status with the same context on the PR head, which the ruleset does count.
+  # It is a separate job on purpose: it never checks out or runs PR code, so `statuses: write`
+  # never reaches anything the PR controls (the job above keeps a read-only token).
+  report-status:
+    name: blog-pr-checks-status
+    needs: blog-pr-checks
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      statuses: write
+    steps:
+      - name: Post blog-pr-checks commit status
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          RESULT: ${{ needs.blog-pr-checks.result }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          if ! [[ "$SHA" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "::error::Unexpected head SHA"
+            exit 1
+          fi
+          if [ "$RESULT" = "success" ]; then
+            state=success; desc="Tests, lint, blog:check y build en verde"
+          else
+            state=failure; desc="Fallaron los chequeos del blog ($RESULT)"
+          fi
+          gh api "repos/$REPO/statuses/$SHA" \
+            -f state="$state" -f context="blog-pr-checks" \
+            -f description="$desc" -f target_url="$RUN_URL" >/dev/null
+          echo "blog-pr-checks status: $state on $SHA"
