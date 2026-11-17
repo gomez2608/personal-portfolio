@@ -4,13 +4,15 @@ import { defineClip } from "@/app/components/blog/clips/clip-def";
 import { Connector, Counter, Dim, FlowDot, Highlight, Node, Text } from "@/app/components/blog/clips/primitives";
 import { sec, type Point } from "@/app/components/blog/clips/timing";
 
-// Layout (1280×720 stage). Snapshots burn captions into the bottom ~140px, so everything
-// sits above y≈570. Text uses the primitives' 34px default, the readable floor on phones.
-const ROUTER = { x: 110, y: 274, w: 190 };
-const NAME_X = 300;
-const BAR = { x: 530, h: 44, min: 30, perPoint: 6 };
-const ROW = { top: 60, gap: 64 };
-const RESULT = { x: 1100, y: 274, w: 200 };
+// Layout (full 1280×720 stage; captions sit in a bar under it, never on it). The eight
+// score rows run from y=80 to y=640, so ~50px stays clear top and bottom; the router and
+// the result sit at mid-height on either side. Every label, sub-labels included, uses the
+// primitives' 34px default, the readable floor on phones.
+const ROUTER = { x: 140, y: 360, w: 190, h: 120 };
+const NAME_X = 330;
+const BAR = { x: 560, h: 50, min: 30, perPoint: 6 };
+const ROW = { top: 80, gap: 80 };
+const RESULT = { x: 1110, y: 360, w: 210 };
 
 /** Router scores for «París»; they add up to 100. */
 const EXPERTS = [
@@ -77,7 +79,7 @@ function Scene() {
   const rest = EXPERTS.map((_, i) => i).filter((i) => !CHOSEN.includes(i));
   return (
     <>
-      <Node x={ROUTER.x} y={ROUTER.y} w={ROUTER.w} label="Router" sub="puntajes" tone="navy" appearAt={0} />
+      <Node x={ROUTER.x} y={ROUTER.y} w={ROUTER.w} h={ROUTER.h} label="Router" sub="puntajes" tone="navy" appearAt={0} />
 
       <Dim from={T.dim} amount={0.25}>
         {rest.map((i) => (
@@ -116,7 +118,7 @@ function Scene() {
       })}
       <Text
         x={RESULT.x}
-        y={RESULT.y + 95}
+        y={RESULT.y + 110}
         text={"60 % Lugares\n40 % Gramática"}
         tone="navy"
         align="center"

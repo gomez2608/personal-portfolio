@@ -2,9 +2,10 @@
 
 import { Thumbnail } from "@remotion/player";
 import { useEffect, useState } from "react";
+import { CaptionBar } from "@/app/components/blog/clips/caption-bar";
 import { ClipFrame } from "@/app/components/blog/clips/clip-frame";
 import type { ClipDef } from "@/app/components/blog/clips/clip-types";
-import { FPS, HEIGHT, WIDTH } from "@/app/components/blog/clips/timing";
+import { activeCaption, FPS, HEIGHT, WIDTH } from "@/app/components/blog/clips/timing";
 import { clipRegistry } from "@/lib/blog/clip-registry.generated";
 
 type State =
@@ -15,7 +16,11 @@ type State =
 
 const OVERLAY = { position: "fixed", inset: 0, zIndex: 100, background: "#f7f5f0" } as const;
 
-/** One frame of a clip at 1280×720 CSS px. `data-ready` flips once the clip and fonts have loaded. */
+/**
+ * One frame of a clip: the 1280×720 stage with the page's caption bar under it, wrapped in
+ * `[data-snap]` (what `blog:snap` screenshots). `data-ready` flips once the clip and fonts
+ * have loaded.
+ */
 export function FrameView({ slug, clip, frame }: { slug: string; clip: string; frame: number }) {
   const [state, setState] = useState<State>({ status: "loading" });
   const [ready, setReady] = useState(false);
@@ -71,17 +76,20 @@ export function FrameView({ slug, clip, frame }: { slug: string; clip: string; f
   const shown = Math.min(frame, def.durationInFrames - 1);
   return (
     <div style={OVERLAY} data-ready={ready ? "true" : undefined} data-duration={def.durationInFrames} data-frame={shown}>
-      <div data-stage style={{ width: WIDTH, height: HEIGHT }}>
-        <Thumbnail
-          component={ClipFrame}
-          inputProps={{ def, burnCaptions: true }}
-          compositionWidth={WIDTH}
-          compositionHeight={HEIGHT}
-          durationInFrames={def.durationInFrames}
-          fps={FPS}
-          frameToDisplay={shown}
-          style={{ width: WIDTH, height: HEIGHT }}
-        />
+      <div data-snap style={{ width: WIDTH }}>
+        <div data-stage style={{ width: WIDTH, height: HEIGHT }}>
+          <Thumbnail
+            component={ClipFrame}
+            inputProps={{ def }}
+            compositionWidth={WIDTH}
+            compositionHeight={HEIGHT}
+            durationInFrames={def.durationInFrames}
+            fps={FPS}
+            frameToDisplay={shown}
+            style={{ width: WIDTH, height: HEIGHT }}
+          />
+        </div>
+        <CaptionBar text={activeCaption(def.captions, shown)?.text ?? ""} />
       </div>
     </div>
   );

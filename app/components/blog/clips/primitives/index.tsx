@@ -3,10 +3,11 @@
 // provides, so a Scene is just `() => <>...primitives...</>`.
 //
 // 34px is the readable floor at phone width: on a 375px phone the 1280px stage is drawn at
-// about 0.27×, so 34px text ends up around 9px. Node labels default to 34px (sub 26px) and
-// Text to 34px; never pass a Text or Counter `size` below 34. Captions are not drawn in the
-// stage at runtime (ClipPlayer shows them as HTML), but snapshots burn them into the bottom
-// ~140px, so keep scene elements above y≈570.
+// about 0.27×, so 34px text ends up around 9px. 34px for every label, sub-labels included;
+// scenes may use the full 1280×720 stage. Node labels and sub-labels and Text default to
+// 34px; never pass a Text or Counter `size` below 34. Captions are never drawn in the stage:
+// they appear as HTML in a bar under it (in the page and in snapshots). Keep ~40px clear of
+// every edge.
 export { Node, type NodeProps, type NodeTone } from "./node";
 export { Connector, type ConnectorProps, type ConnectorTone } from "./connector";
 export { FlowDot, type FlowDotProps, type FlowDotTone } from "./flow-dot";

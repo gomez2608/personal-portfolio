@@ -1,12 +1,15 @@
 /**
  * Screenshots every clip of a post at fixed frames, for spotting layout glitches.
  *   npm run blog:snap -- <slug> [--base http://localhost:3000]
- * Needs a running dev server (npm run dev) and Chromium (npx playwright install chromium).
+ * Needs a running dev server (npm run dev) and Chromium: Playwright's own
+ * (npx playwright install chromium), or set CHROME_PATH to an installed Chrome/Chromium.
+ * Each PNG is the 1280×720 stage plus the caption bar under it.
  */
 import fs from "node:fs";
 import path from "node:path";
 import { chromium } from "playwright";
 import { readPostEntries } from "../../src/lib/blog/entries";
+import { resolveChromePath } from "./chrome-path";
 
 const args = process.argv.slice(2);
 const baseIdx = args.indexOf("--base");
@@ -38,9 +41,11 @@ async function main() {
 
   let browser;
   try {
-    browser = await chromium.launch();
+    browser = await chromium.launch({ executablePath: resolveChromePath(process.env) });
   } catch (e) {
-    console.error(`Could not launch Chromium (${(e as Error).message.split("\n")[0]}).\nInstall it once with: npx playwright install chromium`);
+    console.error(
+      `Could not launch Chromium (${(e as Error).message.split("\n")[0]}).\nInstall it once with: npx playwright install chromium (or set CHROME_PATH to an installed Chrome).`,
+    );
     process.exit(1);
   }
 
@@ -50,7 +55,8 @@ async function main() {
   const failures: string[] = [];
 
   try {
-    const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
+    // Taller than the stage so the caption bar under it fits in the viewport too.
+    const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
     // Hide the Next.js dev indicator so it doesn't end up in the screenshots.
     await page.addInitScript(() => {
       document.addEventListener("DOMContentLoaded", () => {
@@ -89,7 +95,7 @@ async function main() {
           failures.push(`${clip}: failed to load: ${message}`);
           return null;
         }
-        return page.locator("[data-stage]");
+        return page.locator("[data-snap]");
       };
 
       try {

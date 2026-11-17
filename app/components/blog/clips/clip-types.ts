@@ -1,7 +1,7 @@
 import type { FC } from "react";
 import { sec } from "./timing";
 
-/** A caption, in frames. `from` is inclusive, `to` exclusive. Shown in the HTML caption bar under the stage (burned in only for snapshots). */
+/** A caption, in frames. `from` is inclusive, `to` exclusive. Shown in the HTML caption bar under the stage (in the page and in snapshots), never on it. */
 export type Caption = { from: number; to: number; text: string };
 
 export type ClipDef = {

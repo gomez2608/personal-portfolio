@@ -3,7 +3,7 @@ import { C, FONT_MONO, FONT_SANS } from "../palette";
 import { sec } from "../timing";
 
 const LABEL_SIZE = 34;
-const SUB_SIZE = 26;
+const SUB_SIZE = 34;
 
 export type NodeTone = "ink" | "navy" | "accent" | "muted";
 
@@ -22,7 +22,7 @@ export type NodeProps = {
   h?: number;
   /** One short line (Manrope 700, 34px). */
   label: string;
-  /** Optional second line (DM Mono, 26px). */
+  /** Optional second line (DM Mono, 34px); give the box `h` ≥ 120 so both lines fit. */
   sub?: string;
   /** Frame the box starts springing in (scale 0.7→1 and fade over `sec(0.5)`). */
   appearAt?: number;

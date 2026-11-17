@@ -4,12 +4,14 @@ import { defineClip } from "@/app/components/blog/clips/clip-def";
 import { Connector, Counter, Dim, FlowDot, Highlight, Node, Text } from "@/app/components/blog/clips/primitives";
 import { sec, type Point } from "@/app/components/blog/clips/timing";
 
-// Layout (1280×720 stage). Snapshots burn captions into the bottom ~140px, so everything
-// sits above y≈570. Labels use the primitives' 34px default, the readable floor on phones.
-const WORD = { x: 150, y: 190, w: 230 };
-const ROUTER = { x: 500, y: 190, w: 230 };
-const EXPERT = { x: 1060, w: 260, h: 54, top: 60, gap: 64 };
-const COUNT = { x: 380, y: 360 };
+// Layout (full 1280×720 stage; captions sit in a bar under it, never on it). Two columns:
+// the word, router and count on the left, the eight experts down the right edge from
+// y=80 to y=640, so ~50px stays clear top and bottom. Every label, sub-labels included,
+// uses the primitives' 34px default, the readable floor on phones.
+const WORD = { x: 180, y: 230, w: 240, h: 120 };
+const ROUTER = { x: 530, y: 230, w: 240, h: 120 };
+const EXPERT = { x: 1060, w: 260, h: 60, top: 80, gap: 80 };
+const COUNT = { x: 355, y: 445 };
 
 const EXPERTS = ["Gramática", "Lugares", "Matemáticas", "Código", "Fechas", "Nombres", "Tono", "Lógica"];
 /** Indices of the two experts the router picks for «París». */
@@ -38,8 +40,8 @@ function Scene() {
   const rest = EXPERTS.map((_, i) => i).filter((i) => !CHOSEN.includes(i));
   return (
     <>
-      <Node x={WORD.x} y={WORD.y} w={WORD.w} label="París" sub="una palabra" appearAt={0} />
-      <Node x={ROUTER.x} y={ROUTER.y} w={ROUTER.w} label="Router" sub="enrutador" tone="navy" appearAt={T.router} />
+      <Node x={WORD.x} y={WORD.y} w={WORD.w} h={WORD.h} label="París" sub="una palabra" appearAt={0} />
+      <Node x={ROUTER.x} y={ROUTER.y} w={ROUTER.w} h={ROUTER.h} label="Router" sub="enrutador" tone="navy" appearAt={T.router} />
       <Connector from={wordOut} to={routerIn} drawFrom={T.toRouter} drawTo={T.toRouter + sec(0.6)} />
       <FlowDot from={wordOut} to={routerIn} start={T.toRouter + sec(0.6)} end={T.toRouter + sec(1.3)} />
 
@@ -105,10 +107,10 @@ function Scene() {
         </Highlight>
       ))}
 
-      <Counter x={COUNT.x} y={COUNT.y} from={100} to={25} suffix=" %" size={110} start={T.count} end={T.count + sec(1.2)} accent />
+      <Counter x={COUNT.x} y={COUNT.y} from={100} to={25} suffix=" %" size={120} start={T.count} end={T.count + sec(1.2)} accent />
       <Text
         x={COUNT.x}
-        y={COUNT.y + 105}
+        y={COUNT.y + 130}
         text={"de esta capa trabaja\nen cada palabra"}
         align="center"
         appearAt={T.countText}

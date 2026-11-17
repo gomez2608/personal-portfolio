@@ -3,6 +3,7 @@
 import { Player, type PlayerRef } from "@remotion/player";
 import { useCallback, useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
 import type { ClipDef } from "./clip-types";
+import { CaptionBar } from "./caption-bar";
 import { ClipFrame } from "./clip-frame";
 import { playbackPolicy } from "./playback";
 import { activeCaptionIndex, FPS, HEIGHT, WIDTH } from "./timing";
@@ -147,13 +148,7 @@ export function ClipPlayer({ def }: { def: ClipDef }) {
           <li key={c.from}>{c.text}</li>
         ))}
       </ol>
-      {/* Up to 70 characters: 3 lines are reserved on phones, 2 from sm up, so the bar never jumps. */}
-      <p
-        aria-hidden="true"
-        className="m-0 flex min-h-[calc(3*1.4em+1rem)] items-center justify-center border-t border-line bg-card px-4 py-2 text-center font-sans text-[15px] leading-[1.4] font-semibold text-ink sm:min-h-[calc(2*1.4em+1rem)] sm:text-base"
-      >
-        {def.captions[captionIndex]?.text ?? ""}
-      </p>
+      <CaptionBar text={def.captions[captionIndex]?.text ?? ""} />
       <div className="flex items-center gap-3 border-t border-line px-3 py-2">
         <button
           type="button"
