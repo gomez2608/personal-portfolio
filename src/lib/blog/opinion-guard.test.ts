@@ -1,10 +1,17 @@
 import { describe, expect, test } from "vitest";
 import { applyOpinion, parseOpinionCommand } from "./opinion";
-import { findProtectedPathChanges, findUnauthorizedOpinions } from "./opinion-guard";
+import { findIncompleteFileList, findProtectedPathChanges, findUnauthorizedOpinions, type OpinionComment } from "./opinion-guard";
 
-type C = { user: string; viaApp: boolean; body: string; createdAt: string };
-const owner = (body: string, createdAt = "2026-11-17T10:00:00Z"): C => ({ user: "gomez2608", viaApp: false, body, createdAt });
+type C = OpinionComment;
+const owner = (body: string, createdAt = "2026-11-17T10:00:00Z"): C => ({
+  user: "gomez2608",
+  viaApp: false,
+  body,
+  createdAt,
+  updatedAt: createdAt,
+});
 const err = (slug: string) => `${slug}: la opinión no coincide con un comentario /opinion tuyo`;
+const edited = (slug: string) => `${slug}: tu comentario /opinion fue editado; publica un /opinion nuevo en vez de editar`;
 
 test("a matching owner comment is ok", () =>
   expect(findUnauthorizedOpinions([{ slug: "mezcla", opinion: "Hola." }], [owner("/opinion mezcla\nHola.\n")])).toEqual([]));
@@ -62,6 +69,55 @@ test("only flagged posts are reported, in input order", () =>
     ),
   ).toEqual([err("b"), err("c")]));
 
+describe("edited /opinion comments", () => {
+  test("an edited comment is rejected, even when its current text matches", () =>
+    expect(
+      findUnauthorizedOpinions(
+        [{ slug: "mezcla", opinion: "Hola." }],
+        [{ ...owner("/opinion mezcla\nHola.", "2026-11-17T10:00:00Z"), updatedAt: "2026-11-17T10:05:00Z" }],
+      ),
+    ).toEqual([edited("mezcla")]));
+
+  test("an unedited comment is accepted", () =>
+    expect(
+      findUnauthorizedOpinions(
+        [{ slug: "mezcla", opinion: "Hola." }],
+        [{ ...owner("/opinion mezcla\nHola.", "2026-11-17T10:00:00Z"), updatedAt: "2026-11-17T10:00:00Z" }],
+      ),
+    ).toEqual([]));
+
+  test("a later unedited comment after an edited one is the one that counts", () => {
+    const comments = [
+      { ...owner("/opinion mezcla\nEditada.", "2026-11-17T10:00:00Z"), updatedAt: "2026-11-17T11:30:00Z" },
+      owner("/opinion mezcla\nNueva.", "2026-11-17T11:00:00Z"),
+    ];
+    expect(findUnauthorizedOpinions([{ slug: "mezcla", opinion: "Nueva." }], comments)).toEqual([]);
+    expect(findUnauthorizedOpinions([{ slug: "mezcla", opinion: "Editada." }], comments)).toEqual([err("mezcla")]);
+  });
+
+  test("an edited comment after an unedited one still blocks", () =>
+    expect(
+      findUnauthorizedOpinions(
+        [{ slug: "mezcla", opinion: "Vieja." }],
+        [
+          owner("/opinion mezcla\nVieja.", "2026-11-17T10:00:00Z"),
+          { ...owner("/opinion mezcla\nNueva.", "2026-11-17T11:00:00Z"), updatedAt: "2026-11-17T11:05:00Z" },
+        ],
+      ),
+    ).toEqual([edited("mezcla")]));
+
+  test("an edited comment from someone else is simply ignored", () =>
+    expect(
+      findUnauthorizedOpinions(
+        [{ slug: "mezcla", opinion: "Hola." }],
+        [
+          owner("/opinion mezcla\nHola.", "2026-11-17T10:00:00Z"),
+          { ...owner("/opinion mezcla\nOtra.", "2026-11-17T11:00:00Z"), user: "otro", updatedAt: "2026-11-17T11:05:00Z" },
+        ],
+      ),
+    ).toEqual([]));
+});
+
 test("round trip: what applyOpinion writes equals what parseOpinionCommand returns", () => {
   const body = "/opinion mezcla  \r\n  Sangría, *énfasis*, `código`,\n\n\"comillas\" y \\barras\\ y emoji 🙂.\t \n\n";
   const cmd = parseOpinionCommand(body);
@@ -100,4 +156,12 @@ describe("findProtectedPathChanges", () => {
       "El PR modifica archivos protegidos (.github/a, .github/b, scripts/blog/c, scripts/blog/d, scripts/blog/e y 2 más); revísalo tú y aplica esos cambios fuera de una edición.",
     ]);
   });
+});
+
+describe("findIncompleteFileList", () => {
+  test("ok when the API listed every changed file", () => expect(findIncompleteFileList(12, 12)).toEqual([]));
+  test("fails closed when the PR changes more files than were listed", () =>
+    expect(findIncompleteFileList(3500, 3000)).toEqual([
+      "El PR cambia 3500 archivos pero la API solo listó 3000; no puedo verificarlo completo. Revísalo tú y divide el PR.",
+    ]));
 });

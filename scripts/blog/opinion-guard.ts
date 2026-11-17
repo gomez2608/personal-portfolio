@@ -2,13 +2,15 @@
  * Run by .github/workflows/opinion-guard.yml from the trusted default-branch checkout.
  * Reads the PR only through the GitHub API (as data): changed post.json files at the head SHA and
  * all PR comments, then fails unless every non-null opinion equals the latest `/opinion <slug>`
- * comment written by gomez2608 directly (not via a GitHub App), and that the PR touches no protected
- * path (.github/, scripts/blog/, src/lib/blog/opinion*).
+ * comment written by gomez2608 directly (not via a GitHub App) and never edited, that the PR touches
+ * no protected path (.github/, scripts/blog/, src/lib/blog/opinion*), and that the API listed every
+ * changed file.
  *
  * Env: PR (number), GH_REPO (owner/name), GH_TOKEN, HEAD_SHA (optional; defaults to the PR's head).
  */
 import { execFileSync } from "node:child_process";
 import {
+  findIncompleteFileList,
   findProtectedPathChanges,
   findUnauthorizedOpinions,
   type OpinionComment,
@@ -29,17 +31,19 @@ function list<T>(endpoint: string): T[] {
   return (JSON.parse(gh("--paginate", "--slurp", endpoint)) as T[][]).flat();
 }
 
+const pull = JSON.parse(gh(`repos/${repo}/pulls/${pr}`)) as { head: { sha: string }; changed_files: number };
 // The workflow passes the SHA it posts the commit status on, so the check and the status agree.
-const headSha =
-  process.env.HEAD_SHA || (JSON.parse(gh(`repos/${repo}/pulls/${pr}`)) as { head: { sha: string } }).head.sha;
+const headSha = process.env.HEAD_SHA || pull.head.sha;
 if (!/^[0-9a-f]{40}$/.test(headSha)) throw new Error(`Bad head SHA "${headSha}"`);
 
 const files = list<{ filename: string; status: string; previous_filename?: string }>(
   `repos/${repo}/pulls/${pr}/files?per_page=100`,
 );
+// The files endpoint stops at 3000 entries: anything beyond it would go unchecked, so fail closed.
+const errors: string[] = findIncompleteFileList(pull.changed_files, files.length);
 // Both sides of a rename count, so moving a workflow or guard file away is caught too.
-const errors: string[] = findProtectedPathChanges(
-  files.flatMap((f) => (f.previous_filename ? [f.filename, f.previous_filename] : [f.filename])),
+errors.push(
+  ...findProtectedPathChanges(files.flatMap((f) => (f.previous_filename ? [f.filename, f.previous_filename] : [f.filename]))),
 );
 const changed: { slug: string; opinion: string | null }[] = [];
 for (const f of files) {
@@ -64,11 +68,15 @@ const comments: OpinionComment[] = list<{
   performed_via_github_app: unknown;
   body: string | null;
   created_at: string;
+  updated_at: string;
 }>(`repos/${repo}/issues/${pr}/comments?per_page=100`).map((c) => ({
   user: c.user?.login ?? "",
   viaApp: c.performed_via_github_app != null,
   body: c.body ?? "",
   createdAt: c.created_at,
+  // An edited /opinion comment is rejected (see findUnauthorizedOpinions). Reactions, such as
+  // opinion.yml's 👍, don't change updated_at on GitHub.
+  updatedAt: c.updated_at,
 }));
 
 errors.push(...findUnauthorizedOpinions(changed, comments));

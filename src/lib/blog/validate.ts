@@ -2,6 +2,9 @@ import { validateClipDef, type ClipDef } from "../../../app/components/blog/clip
 import type { PostEntry } from "./entries";
 import { PostMetaSchema } from "./schema";
 
+/** A Markdown heading or bold label "Mi opinión": the opinion is rendered from post.json only. */
+const MI_OPINION_RE = /^\s{0,3}#{1,6}\s*mi\s+opini[oó]n\b|(\*\*|__)\s*mi\s+opini[oó]n/imu;
+
 /** Returns human-readable errors for the given posts; empty means OK. */
 export function validatePosts(entries: PostEntry[], today: string): string[] {
   const errors: string[] = [];
@@ -38,6 +41,9 @@ export function validatePosts(entries: PostEntry[], today: string): string[] {
     if (meta.status === "published") {
       if (meta.opinion === null || meta.opinion.trim() === "") {
         errors.push(`${meta.slug}: falta tu opinión. Escribe /opinion ${meta.slug} en el PR.`);
+      }
+      if (MI_OPINION_RE.test(entry.mdx)) {
+        errors.push(`${meta.slug}: page.mdx no puede tener un encabezado ni una etiqueta "Mi opinión"; la opinión solo viene de post.json`);
       }
       if (meta.date > today) {
         errors.push(`${where}: published post is dated in the future (${meta.date} > ${today})`);

@@ -48,6 +48,20 @@ describe("validatePosts", () => {
     expect(validatePosts([entry({ mdx })], T)).toContainEqual(
       "a: MiOpinion ya no se usa; la opinión va en post.json",
     ));
+  const miOpinion = "a: page.mdx no puede tener un encabezado ni una etiqueta \"Mi opinión\"; la opinión solo viene de post.json";
+  test.each([
+    "Texto\n\n## Mi opinión\n\nCreo que sí.",
+    "# mi OPINIÓN",
+    "Texto\n\n**Mi opinión:** creo que sí.",
+    "__Mi opinion__: creo que sí.",
+  ])("published MDX with a Mi opinión heading or label is rejected: %j", (mdx) =>
+    expect(validatePosts([entry({ mdx })], T)).toContainEqual(miOpinion));
+  test("plain prose mentioning mi opinión is fine", () =>
+    expect(validatePosts([entry({ mdx: "Texto. Esta es mi opinión sobre el tema, dicha en prosa." })], T)).toEqual([]));
+  test("a draft post is not checked for Mi opinión", () =>
+    expect(
+      validatePosts([entry({ meta: { ...meta, status: "draft", opinion: null }, mdx: "## Mi opinión" })], T),
+    ).toEqual([]));
   test("published post dated in the future fails", () =>
     expect(
       validatePosts([entry({ meta: { ...meta, date: "2026-12-01" } })], "2026-11-13"),
