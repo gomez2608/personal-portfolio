@@ -30,6 +30,12 @@ function entry(overrides: Partial<PostEntry> = {}): PostEntry {
 }
 
 describe("validatePosts", () => {
+  test("a published post without a cover fails", () =>
+    expect(validatePosts([entry({ hasCover: false })], T)).toContainEqual(expect.stringContaining("falta la portada")));
+  test("unknown cover state (not read from disk) is not an error", () =>
+    expect(validatePosts([entry()], T)).toEqual([]));
+  test("a draft without a cover passes", () =>
+    expect(validatePosts([entry({ hasCover: false, meta: { ...meta, status: "draft", opinion: null } })], T)).toEqual([]));
   test("clip sources are checked", () => {
     const e = validatePosts([entry({ clipFiles: ["clip-1"], clipSources: { "clip-1": "<Box style={{}} />" } })], T);
     expect(e).toContainEqual(expect.stringContaining("app/blog/a/clips/clip-1.tsx"));

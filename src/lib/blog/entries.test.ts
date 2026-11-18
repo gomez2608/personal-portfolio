@@ -27,3 +27,17 @@ test("reads each clip's source into clipSources", () => {
   fs.writeFileSync(path.join(clips, "shared.tsx"), "no");
   expect(readPostEntries(root)[0].clipSources).toEqual({ "clip-1": "uno" });
 });
+
+test("hasCover reflects public/blog/<dir>/cover.png", () => {
+  root = fs.mkdtempSync(path.join(os.tmpdir(), "blog-entries-"));
+  const app = path.join(root, "app");
+  const covers = path.join(root, "covers");
+  for (const d of ["with", "without"]) {
+    fs.mkdirSync(path.join(app, d), { recursive: true });
+    fs.writeFileSync(path.join(app, d, "post.json"), "{}");
+  }
+  fs.mkdirSync(path.join(covers, "with"), { recursive: true });
+  fs.writeFileSync(path.join(covers, "with", "cover.png"), "");
+  const byDir = Object.fromEntries(readPostEntries(app, covers).map((e) => [e.dir, e.hasCover]));
+  expect(byDir).toEqual({ with: true, without: false });
+});
