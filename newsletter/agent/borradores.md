@@ -70,7 +70,7 @@ npm run blog:snap -- <slug>   # por cada post; si el primer intento expira mient
 
 Abre **cada** PNG de `.blog-snaps/<slug>/` con la herramienta de lectura de imágenes y busca, uno por uno: elementos que se solapan, se cortan o quedan a menos de ~40 px del borde; texto ilegible o que se sale de su caja; tangerine como texto o colores fuera de la marca; frames vacíos o que no muestran lo que dice el subtítulo; un último frame que no resume la idea por sí solo; un clip que se parece a uno anterior (ESTILO §4, "No repitas").
 
-Corrige y vuelve a correr `npm run blog:snap -- <slug>` (el servidor recarga solo) hasta que todos los frames estén limpios. Después apaga el servidor (`pkill -f "next dev"`) y repite `npm run blog:registry`, `npm test`, `npm run lint`, `npm run blog:check` y `npm run build`.
+Corrige y vuelve a correr `npm run blog:snap -- <slug>` (el servidor recarga solo) hasta que todos los frames estén limpios. Con los clips limpios, corre `npm run blog:cover -- <slug>` por cada post: guarda el último frame del `clip-1` en `public/blog/<slug>/cover.png`, que es la imagen del correo y de la tarjeta al compartir. Ábrela y comprueba que el frame resume la idea solo; si no, mejora el último frame del `clip-1` y repite. Después apaga el servidor (`pkill -f "next dev"`) y repite `npm run blog:registry`, `npm test`, `npm run lint`, `npm run blog:check` y `npm run build`.
 
 Corre `npm run newsletter:send -- --issue N --dry-run` y lee `.newsletter-preview/NNNN.html`: asunto, preheader, intro, un bloque por post con título, blurb y enlace `https://sebastiangomezahumada.com/blog/<slug>`. Corrige `NNNN.json` si algo se lee mal y repite el dry-run.
 
@@ -79,7 +79,7 @@ Si tras 3 rondas de corrección sigue fallando algo que no sea la falta de opini
 ## 6. Commit, push y PR
 
 ```bash
-git add app/blog/<slug-1> app/blog/<slug-2> newsletter/issues/NNNN.json src/lib/blog/clip-registry.generated.ts
+git add app/blog/<slug-1> app/blog/<slug-2> public/blog/<slug-1>/cover.png public/blog/<slug-2>/cover.png newsletter/issues/NNNN.json src/lib/blog/clip-registry.generated.ts
 git diff --cached --name-only        # solo esas rutas; si aparece otra, sácala con git restore --staged
 jq -e '.opinion == null' app/blog/<slug>/post.json   # por cada post
 git commit -m "edición NNNN: borradores"

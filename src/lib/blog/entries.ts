@@ -11,6 +11,8 @@ export type PostEntry = {
   clipFiles: string[];
   /** Each clip's source, by basename (same keys as `clipFiles`), for the brand check. */
   clipSources?: Record<string, string>;
+  /** Whether `<coversRoot>/<dir>/cover.png` exists (the share card image). */
+  hasCover?: boolean;
 };
 
 /** Only `clips/clip-<n>.tsx` are clips; helpers and tests in the folder are not registered. */
@@ -21,7 +23,7 @@ const CLIP_FILE = /^clip-\d+\.tsx$/;
  * folders without a post.json. Returns [] when `root` does not exist.
  * Kept free of `server-only` so build scripts can import it.
  */
-export function readPostEntries(root = "app/blog"): PostEntry[] {
+export function readPostEntries(root = "app/blog", coversRoot = "public/blog"): PostEntry[] {
   if (!fs.existsSync(root)) return [];
   const reserved: readonly string[] = RESERVED_SLUGS;
   const entries: PostEntry[] = [];
@@ -50,6 +52,7 @@ export function readPostEntries(root = "app/blog"): PostEntry[] {
       meta,
       mdx: fs.existsSync(mdxPath) ? fs.readFileSync(mdxPath, "utf8") : null,
       clipFiles,
+      hasCover: fs.existsSync(path.join(coversRoot, dirent.name, "cover.png")),
       clipSources: Object.fromEntries(
         clipFiles.map((c) => [c, fs.readFileSync(path.join(clipsDir, `${c}.tsx`), "utf8")]),
       ),

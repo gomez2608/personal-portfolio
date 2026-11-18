@@ -50,6 +50,11 @@ export function validatePosts(entries: PostEntry[], today: string): string[] {
       if (MI_OPINION_RE.test(entry.mdx)) {
         errors.push(`${meta.slug}: page.mdx no puede tener un encabezado ni una etiqueta "Mi opinión"; la opinión solo viene de post.json`);
       }
+      if (entry.hasCover === false) {
+        errors.push(
+          `${meta.slug}: falta la portada. Corre npm run blog:cover -- ${meta.slug} (con npm run dev) y commitea public/blog/${meta.slug}/cover.png.`,
+        );
+      }
       if (meta.date > today) {
         errors.push(`${where}: published post is dated in the future (${meta.date} > ${today})`);
       }

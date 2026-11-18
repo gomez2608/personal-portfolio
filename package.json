@@ -14,7 +14,8 @@
     "blog:snap": "tsx scripts/blog/snap.ts",
     "predev": "npm run blog:registry",
     "prebuild": "npm run blog:registry",
-    "newsletter:send": "tsx --conditions=react-server scripts/newsletter/send.ts"
+    "newsletter:send": "tsx --conditions=react-server scripts/newsletter/send.ts",
+    "blog:cover": "tsx scripts/covers/cover.ts"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.1",
@@ -38,6 +39,8 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@fontsource/dm-mono": "^5.3.0",
+    "@fontsource/manrope": "^5.3.0",
     "@tailwindcss/postcss": "^4",
     "@types/mdx": "^2.0.14",
     "@types/node": "^20",
