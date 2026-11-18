@@ -48,3 +48,37 @@ describe("checkClipSource", () => {
 
   test("style= is rejected", () => expect(err(`<Box style={{}} />`).join()).toContain("style= not allowed"));
 });
+
+describe("checkClipSource: review fixes", () => {
+  test.each([
+    `<linearGradient><stop stopColor="x"/></linearGradient>`,
+    `<set attributeName="fill" to="tomato"/>`,
+    `<style>{"text{fill:red}"}</style>`,
+    `<use href="a"/>`,
+    `<mask/>`,
+    `<img src="a"/>`,
+    `<div/>`,
+  ])("any lowercase element other than g is rejected: %s", (s) => expect(err(s).join()).toContain("not allowed: use Box, Path, Dot or Label"));
+
+  test("TS generics and comparisons are not elements", () =>
+    expect(err(`const a: Record<string, number> = {}; const b = Array<number>(); const c = x <y; const d = 1 < 2;`)).toEqual([]));
+
+  test("<g> spread props are rejected", () =>
+    expect(err(`<g {...{ fill: "x" }}>`).join()).toContain("<g> may only set key, transform or opacity"));
+  test("<g> attributes after a > inside an expression are still checked", () =>
+    expect(err(`<g opacity={a > b ? 1 : 0} fill="x">`).join()).toContain("<g> may only set key, transform or opacity"));
+  test("<g> scaling is rejected (it would shrink text below 34px)", () =>
+    expect(err(`<g transform="scale(.3)">`).join()).toContain("scale"));
+
+  test("createElement and dangerouslySetInnerHTML are rejected", () => {
+    expect(err(`React.createElement("rect", {})`).join()).toContain("createElement not allowed");
+    expect(err(`<Box dangerouslySetInnerHTML={{ __html: "" }} />`).join()).toContain("dangerouslySetInnerHTML not allowed");
+  });
+
+  test("comment markers inside strings don't hide code", () => {
+    expect(err(`<Label>{"//"}</Label><rect fill="x"/>`).join()).toContain("raw <rect>");
+    expect(err(`const a = "/*"; <rect/>; const b = "*/";`).join()).toContain("raw <rect>");
+  });
+
+  test("a # in label text is not a colour", () => expect(err(`<Label x={1} y={2}>Paso #123</Label>`)).toEqual([]));
+});

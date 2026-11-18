@@ -122,12 +122,24 @@ export function Label({ x, y, children, at = 0, size, mono = false, tone = "ink"
   );
 }
 
-export type GroupProps = { x?: number; y?: number; scale?: number; opacity?: number; children: ReactNode };
+export type GroupProps = {
+  x?: number;
+  y?: number;
+  /** ≥1 only: smaller values are raised to 1, so labels inside never drop below 34px. */
+  scale?: number;
+  opacity?: number;
+  children: ReactNode;
+};
 
-/** Moves, scales or fades a set of shapes together (to reuse a drawn piece). */
-export function Group({ x = 0, y = 0, scale = 1, opacity = 1, children }: GroupProps) {
+/** A group's scale, never below 1. */
+export function groupScale(scale?: number): number {
+  return Math.max(1, scale ?? 1);
+}
+
+/** Moves, enlarges or fades a set of shapes together (to reuse a drawn piece). */
+export function Group({ x = 0, y = 0, scale, opacity = 1, children }: GroupProps) {
   return (
-    <g transform={`translate(${x} ${y}) scale(${scale})`} opacity={opacity}>
+    <g transform={`translate(${x} ${y}) scale(${groupScale(scale)})`} opacity={opacity}>
       {children}
     </g>
   );
