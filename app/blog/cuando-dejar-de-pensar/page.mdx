@@ -30,7 +30,7 @@ Una aclaración sobre el clip: cada barra es un párrafo del razonamiento, y el 
 
 **Tercero, formar el par.** El final corto queda como "preferido" y el original como "descartado". Los dos parten del mismo prefijo: solo cambia lo que el modelo hizo desde ahí. Con miles de pares así, el modelo aprende la decisión local: aquí, seguir o concluir.
 
-En el clip hay tres finales para que se vea la verificación; el final "Nuevo A", incorrecto, es inventado para el ejemplo. En el artículo, el modelo escribe varios finales desde cada punto.
+En el clip, como en el artículo, el modelo escribe ocho finales desde el mismo punto, y el largo de cada barra es su largo en *tokens*. Solo el original (1.247) y el elegido (296) salen del ejemplo real; los largos de los demás y los tres finales incorrectos, que llegan a 1/14, son inventados para el ejemplo.
 
 Con el ejemplo de la fracción, puedes seguir las cuentas con lápiz. Desde el prefijo, el final original ocupaba 1.247 *tokens* (pedacitos de palabra; los modelos no leen palabras enteras). El nuevo final correcto ocupó 296. La diferencia es de 951 *tokens*: el final preferido es menos de una cuarta parte del original.
 

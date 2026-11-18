@@ -20,7 +20,7 @@ Piensa en un comentarista de fútbol. En la cancha, con la jugada en marcha, qui
 
 Los tres papeles usan el mismo modelo, sin cambiarlo. Como **actor**, elige cada acción antes de ver qué pasa. Como **juez**, puntúa acciones de un episodio ya grabado y puede ver todo lo que vino después. Como **maestro**, puntúa los pasos de otro modelo, el **alumno**, mientras se entrena; esos puntajes se suman al premio final. Después, el alumno trabaja solo.
 
-Una aclaración: el modelo del clip es JEV, uno de los seis del artículo; el alumno tiene 1.500 millones de parámetros, y las cifras son de ALFWorld, un entorno de tareas domésticas en texto.
+Una aclaración: el modelo del clip es JEV, uno de los seis del artículo; el alumno tiene 1.500 millones de parámetros, y las cifras son de ALFWorld, un entorno de tareas domésticas en texto. En la fila del actor, 63,8 % y 14,6 % son la probabilidad promedio que JEV le da a guardar el objeto de inmediato y a ir a prepararlo primero (calentarlo, enfriarlo o limpiarlo), en 116 situaciones de ese tipo. En la del maestro, 72,8 % es el mismo alumno entrenado solo con el premio final.
 
 ## Por qué el actor falla y el juez no
 
@@ -28,7 +28,7 @@ Las tareas más difíciles en ALFWorld tienen dos objetivos con un orden obligad
 
 No es que no sepa calentar la taza. Si se le quita del objetivo la parte de "ponla en el mueble", la probabilidad que le da a ir a calentarla sube de 14,6 % a 77,6 %. El objetivo fácil lo distrae.
 
-Como juez, en cambio, puede ver el final del episodio. Los autores muestran un episodio real: la taza se guarda fría, se saca, se calienta en el microondas y se vuelve a guardar. El juez puntúa cada acción de 0 a 1 respondiendo "¿esta acción ayudó a cumplir el objetivo?". Viendo solo lo ocurrido hasta cada acción, premia guardar la taza fría (0,79) y casi no valora abrir el microondas (0,20). Viendo el episodio completo, abrir el microondas sube a 0,76 y guardar la taza fría baja a 0,60.
+Como juez, en cambio, puede ver el final del episodio. Los autores muestran un episodio real: la taza se guarda fría, se saca, se calienta en el microondas y se vuelve a guardar. El juez puntúa cada acción de 0 a 1 respondiendo "¿esta acción ayudó a cumplir el objetivo?". Viendo solo lo ocurrido hasta cada acción, premia guardar la taza fría (0,79) y casi no valora abrir el microondas (0,20). Viendo el episodio completo, abrir el microondas sube a 0,76 y guardar la taza fría baja a 0,60. El clip muestra las 12 acciones del episodio y cómo cambian sus puntajes a medida que el juez ve más de lo que vino después. Ver solo lo que pasó justo después de guardar la taza fría la hace parecer todavía mejor (0,90): hace falta ver más allá.
 
 <Clip2 />
 

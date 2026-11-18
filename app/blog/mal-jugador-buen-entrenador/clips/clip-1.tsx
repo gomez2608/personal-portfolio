@@ -1,91 +1,122 @@
 "use client";
+// Construido a partir de: un mismo modelo de decisión consultado de tres maneras, cada una con su pregunta y su salida tipada (paper, figura 1; sección 3.1.1 y figura 3a; tabla 9; sección 3.3 y tabla 3).
 
 import { defineClip } from "@/app/components/blog/clips/clip-def";
-import { Connector, Dim, FlowDot, Highlight, Node, Text } from "@/app/components/blog/clips/primitives";
-import { sec, type Point } from "@/app/components/blog/clips/timing";
+import { Box, Fade, Label, Path } from "@/app/components/blog/clips/draw";
+import { Highlight } from "@/app/components/blog/clips/primitives";
+import { sec } from "@/app/components/blog/clips/timing";
 
-// Layout (full 1280×720 stage; captions sit in a bar under it, never on it). The model on
-// the left at mid-height; its three roles stacked in the middle (y=80 to y=640); on the
-// right, what each role gives: the actor's own success, what the judge sees, and the
-// student the teacher trains.
-const MODEL = { x: 180, y: 360, w: 260, h: 120 };
-const ROLE = { x: 600, w: 300, h: 120 };
-const ROWS = [140, 360, 580];
-const RESULT_X = 1050;
-const STUDENT = { x: RESULT_X, y: ROWS[2], w: 260, h: 120 };
+// Layout: three rows, one per role (centres y=210, 400, 590), under a title at y=70. Left
+// (x=60): the role and the question it is asked. Middle (x=520–1000): what it answers. Right
+// (centre x=1150): the number that role produces.
+const ROWS = [210, 400, 590];
+const OUT_X = 520;
+const RESULT_X = 1150;
 
-const ROLES = [
-  { label: "Actor", sub: "elige" },
-  { label: "Juez", sub: "puntúa" },
-  { label: "Maestro", sub: "enseña" },
+// Actor: JEV's mean probability on each kind of action, over 116 states (paper, figure 3a).
+const OPTIONS = [
+  { label: "guardarla ya", p: 0.638, text: "63,8 %", fill: "muted" as const },
+  { label: "calentarla", p: 0.146, text: "14,6 %", fill: "navy" as const },
 ];
-const ACTOR = 0;
-const JUDGE = 1;
-const TEACHER = 2;
+const BAR_X = 770;
+const BAR_MAX = 160;
 
-const modelOut: Point = [MODEL.x + MODEL.w / 2, MODEL.y];
-const roleIn = (i: number): Point => [ROLE.x - ROLE.w / 2, ROWS[i]];
-const teacherOut: Point = [ROLE.x + ROLE.w / 2, ROWS[TEACHER]];
-const studentIn: Point = [STUDENT.x - STUDENT.w / 2, STUDENT.y];
+// Judge: the recorded 12-action episode of the heated mug (paper, table 9); action 9 opens the microwave.
+const STEPS = 12;
+const OPEN = 8;
+const SQ = 30;
+const SQ_PITCH = 40;
 
-// Already on screen at frame 0 (a Node at appearAt 0 is still fading in there).
+// Teacher: the student's success on ALFWorld (paper, table 3).
+const METER = { x: OUT_X, w: 480, h: 24 };
+
 const START = -sec(0.5);
-
-// Timeline.
 const T = {
-  roles: sec(0.6),
-  links: sec(0.8),
   actor: sec(3.5),
-  judge: sec(7.0),
+  judge: sec(7),
   teacher: sec(10.5),
-  student: sec(11.3),
-  dimActor: sec(12.2),
+  dimActor: sec(13),
 };
 
-function Activate({ i, at }: { i: number; at: number }) {
+function Role({ i, name, question }: { i: number; name: string; question: string }) {
   return (
     <>
-      <Connector from={modelOut} to={roleIn(i)} tone="accent" width={3} drawFrom={at} drawTo={at + sec(0.6)} />
-      <FlowDot from={modelOut} to={roleIn(i)} start={at + sec(0.6)} end={at + sec(1.2)} />
+      <Label x={60} y={ROWS[i] - 35} weight={800} at={START}>{name}</Label>
+      <Label x={60} y={ROWS[i] + 30} mono at={START}>{question}</Label>
+    </>
+  );
+}
+
+function Result({ i, sub, value, tone, at }: { i: number; sub: string; value: string; tone: "ink" | "navy"; at: number }) {
+  return (
+    <>
+      <Label x={RESULT_X} y={ROWS[i] - 35} anchor="middle" tone="slate" weight={600} at={at}>{sub}</Label>
+      <Label x={RESULT_X} y={ROWS[i] + 30} anchor="middle" size={48} weight={800} tone={tone} at={at}>{value}</Label>
     </>
   );
 }
 
 function Scene() {
+  const [actorY, judgeY, teacherY] = ROWS;
   return (
     <>
-      <Node x={MODEL.x} y={MODEL.y} w={MODEL.w} h={MODEL.h} label="JEV" sub="un modelo" tone="navy" appearAt={START} />
-      {ROLES.map((_, i) => (
-        <Connector key={`l-${i}`} from={modelOut} to={roleIn(i)} tone="muted" drawFrom={T.links} drawTo={T.links + sec(0.6)} />
-      ))}
+      <Label x={60} y={70} tone="slate" weight={600} at={START}>Un mismo modelo, JEV, con tres preguntas</Label>
+      <Path d="M 60 305 H 1220" stroke="line" at={START} />
+      <Path d="M 60 495 H 1220" stroke="line" at={START} />
 
-      {/* As an actor it solves few tasks; that row fades once the teacher result is in. */}
-      <Dim from={T.dimActor} amount={0.3}>
-        <Node x={ROLE.x} y={ROWS[ACTOR]} w={ROLE.w} h={ROLE.h} label={ROLES[ACTOR].label} sub={ROLES[ACTOR].sub} appearAt={T.roles} />
-        <Activate i={ACTOR} at={T.actor} />
-        <Text x={RESULT_X} y={ROWS[ACTOR] - 22} text={"42,9 %\nresuelve solo"} align="center" appearAt={T.actor + sec(1.0)} />
-      </Dim>
+      {/* Actor: it puts most of its probability on the easy step. */}
+      <Fade from={T.dimActor} to={0.45}>
+        <Role i={0} name="Actor" question="¿qué acción sigue?" />
+        {OPTIONS.map((o, k) => {
+          const y = actorY - 35 + k * 70;
+          return (
+            <g key={o.label}>
+              <Label x={OUT_X} y={y} at={T.actor}>{o.label}</Label>
+              <Box x={BAR_X} y={y - 12} w={Math.round(o.p * BAR_MAX)} h={24} r={6} fill={o.fill} grow at={T.actor + sec(0.4)} dur={sec(0.8)} />
+              <Label x={BAR_X + Math.round(o.p * BAR_MAX) + 14} y={y} mono at={T.actor + sec(1.2)}>{o.text}</Label>
+            </g>
+          );
+        })}
+        <Result i={0} sub="resuelve" value="42,9 %" tone="ink" at={T.actor + sec(2)} />
+      </Fade>
 
-      <Node x={ROLE.x} y={ROWS[JUDGE]} w={ROLE.w} h={ROLE.h} label={ROLES[JUDGE].label} sub={ROLES[JUDGE].sub} appearAt={T.roles + sec(0.3)} />
-      <Activate i={JUDGE} at={T.judge} />
-      <Text x={RESULT_X} y={ROWS[JUDGE] - 22} text={"ve el episodio\ncompleto"} align="center" appearAt={T.judge + sec(1.0)} />
-
-      <Node x={ROLE.x} y={ROWS[TEACHER]} w={ROLE.w} h={ROLE.h} label={ROLES[TEACHER].label} sub={ROLES[TEACHER].sub} appearAt={T.roles + sec(0.6)} />
-      <Activate i={TEACHER} at={T.teacher} />
-      <Connector from={teacherOut} to={studentIn} tone="accent" width={3} drawFrom={T.student} drawTo={T.student + sec(0.5)} />
-      <FlowDot from={teacherOut} to={studentIn} start={T.student + sec(0.5)} end={T.student + sec(1.0)} />
-      <Highlight from={T.dimActor}>
-        <Node
-          x={STUDENT.x}
-          y={STUDENT.y}
-          w={STUDENT.w}
-          h={STUDENT.h}
-          label="Alumno"
-          sub="82,9 %"
-          tone="navy"
-          appearAt={T.student + sec(0.3)}
+      {/* Judge: it scores the actions of a recorded episode, seeing all of it. */}
+      <Role i={1} name="Juez" question="¿esta acción ayudó?" />
+      <Label x={OUT_X} y={judgeY - 35} tone="slate" weight={600} at={T.judge}>episodio grabado</Label>
+      {Array.from({ length: STEPS }, (_, k) => (
+        <Box
+          key={k}
+          x={OUT_X + k * SQ_PITCH}
+          y={judgeY + 30 - SQ / 2}
+          w={SQ}
+          h={SQ}
+          r={6}
+          fill={k === OPEN ? "line" : "fog"}
+          stroke="line"
+          at={T.judge + k * sec(0.1)}
         />
+      ))}
+      <Highlight from={T.judge + sec(1.8)}>
+        <Box x={OUT_X + OPEN * SQ_PITCH} y={judgeY + 30 - SQ / 2} w={SQ} h={SQ} r={6} fill="navy" at={T.judge + sec(1.6)} />
       </Highlight>
+      <Result i={1} sub="paso 9" value="0,76" tone="navy" at={T.judge + sec(2)} />
+
+      {/* Teacher: its scores train a small student, which ends up far ahead of it. */}
+      <Role i={2} name="Maestro" question="puntúa al alumno" />
+      <Box x={METER.x} y={teacherY - 30 - METER.h / 2} w={METER.w} h={METER.h} r={6} fill="fog" stroke="line" at={T.teacher} />
+      <Box x={METER.x} y={teacherY - 30 - METER.h / 2} w={Math.round(0.829 * METER.w)} h={METER.h} r={6} fill="navy" grow at={T.teacher + sec(0.4)} dur={sec(1.5)} />
+      <Path
+        d={`M ${METER.x + Math.round(0.728 * METER.w)} ${teacherY - 56} V ${teacherY - 4}`}
+        stroke="ink"
+        weight="bold"
+        at={T.teacher + sec(0.6)}
+        dur={sec(0.3)}
+      />
+      <Label x={OUT_X} y={teacherY + 30} mono at={T.teacher + sec(0.8)}>sin maestro: 72,8 %</Label>
+      <Highlight from={T.teacher + sec(2.3)}>
+        <Box x={RESULT_X - 95} y={teacherY - 75} w={190} h={150} r={14} fill="fog" stroke="line" at={T.teacher + sec(2)} />
+      </Highlight>
+      <Result i={2} sub="alumno" value="82,9 %" tone="navy" at={T.teacher + sec(2)} />
     </>
   );
 }
@@ -93,12 +124,12 @@ function Scene() {
 export default defineClip({
   id: "clip-1",
   title: "La idea general",
-  durationInFrames: sec(15),
+  durationInFrames: sec(16),
   captions: [
-    { from: 0, to: sec(3.5), text: "Un mismo modelo de decisión, usado de tres maneras." },
-    { from: sec(3.5), to: sec(7), text: "Como actor, elige cada acción: resuelve 42,9 % de las tareas." },
-    { from: sec(7), to: sec(10.5), text: "Como juez, puntúa acciones viendo el episodio completo." },
-    { from: sec(10.5), to: sec(15), text: "Como maestro, entrena a un alumno que llega a 82,9 %." },
+    { from: 0, to: sec(3.5), text: "Un mismo modelo de decisión, JEV, y tres preguntas distintas." },
+    { from: sec(3.5), to: sec(7), text: "Como actor elige el paso fácil y resuelve solo 42,9 % de las tareas." },
+    { from: sec(7), to: sec(10.5), text: "Como juez puntúa un episodio grabado: abrir el microondas, 0,76." },
+    { from: sec(10.5), to: sec(16), text: "Como maestro, sus puntajes llevan a un alumno de 72,8 % a 82,9 %." },
   ],
   Scene,
 });

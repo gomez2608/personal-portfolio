@@ -1,51 +1,62 @@
 "use client";
+// Construido a partir de: el prefijo congelado y los k = 8 finales que se muestrean desde él, con su largo en tokens y su verificación (paper, sección 4.3, ecuaciones 9–11; sección 5.1; apéndice B, ejemplo 2).
 
 import { defineClip } from "@/app/components/blog/clips/clip-def";
-import { Connector, Dim, FlowDot, Highlight, Node } from "@/app/components/blog/clips/primitives";
-import { sec, type Point } from "@/app/components/blog/clips/timing";
+import { Box, Fade, Label, Path } from "@/app/components/blog/clips/draw";
+import { Highlight } from "@/app/components/blog/clips/primitives";
+import { sec } from "@/app/components/blog/clips/timing";
 
-// Layout (full 1280×720 stage; captions sit in a bar under it, never on it). Three columns:
-// the frozen prefix on the left at mid-height; the three endings from it in the middle
-// (y=90 to y=630); the training pair on the right, discarded on top (next to the original)
-// and preferred below (next to the short ending), so the two links never cross. Every label and sub-label uses the
-// primitives' 34px default.
-const PREFIX = { x: 180, y: 360, w: 260, h: 120 };
-const END = { x: 610, w: 340, h: 120, ys: [150, 360, 570] };
-const PAIR = { x: 1070, w: 300, h: 120, ys: [250, 520] };
+// Layout: the frozen prefix as a short navy bar on the left (x=60–280). From its end, a fan of
+// curves to one strip per ending, starting at x=380: the original ending on top (y=110), the
+// eight new endings below (y=210–616). A strip's length is its length in tokens (1.247 → 673px),
+// and the answer it reaches sits right after it. Only 296 and 1.247 come from the paper; the
+// other lengths and the three wrong endings are ILLUSTRATIVE (the post says so).
+const PREFIX = { x: 60, y: 393, w: 220, h: 40 };
+const FAN_FROM = { x: PREFIX.x + PREFIX.w, y: PREFIX.y + PREFIX.h / 2 };
+const STRIP_X = 380;
+const STRIP_H = 20;
+const PX_PER_TOKEN = 0.54;
+const ORIGINAL = { tokens: 1247, y: 110 };
+const rowY = (j: number) => 210 + j * 58;
 
-/** The original ending and two new ones; «Nuevo A» is invented for the example. */
-const ENDINGS = [
-  { label: "Original", sub: "1.247 tokens" },
-  { label: "Nuevo A", sub: "incorrecto" },
-  { label: "Nuevo B", sub: "296 tokens" },
+const NEW = [
+  { tokens: 640, ok: true },
+  { tokens: 230, ok: false },
+  { tokens: 910, ok: true },
+  { tokens: 296, ok: true },
+  { tokens: 530, ok: true },
+  { tokens: 1100, ok: false },
+  { tokens: 780, ok: true },
+  { tokens: 420, ok: false },
 ];
-const ORIGINAL = 0;
-const WRONG = 1;
-const SHORT = 2;
+const CHOSEN = 3;
 
-const prefixOut: Point = [PREFIX.x + PREFIX.w / 2, PREFIX.y];
-const endIn = (i: number): Point => [END.x - END.w / 2, END.ys[i]];
-const endOut = (i: number): Point => [END.x + END.w / 2, END.ys[i]];
-const pairIn = (i: number): Point => [PAIR.x - PAIR.w / 2, PAIR.ys[i]];
+const len = (tokens: number) => Math.round(tokens * PX_PER_TOKEN);
+const fan = (y: number) => `M ${FAN_FROM.x} ${FAN_FROM.y} C ${FAN_FROM.x + 60} ${FAN_FROM.y}, ${STRIP_X - 60} ${y}, ${STRIP_X - 8} ${y}`;
+const growDur = (tokens: number) => Math.max(sec(0.4), Math.round((tokens / 1247) * sec(2)));
 
-// Already on screen at frame 0 (a Node at appearAt 0 is still fading in there).
 const START = -sec(0.5);
-
-// Timeline.
 const T = {
-  original: sec(0.8),
-  newEnds: sec(4.0),
-  check: sec(7.6),
-  dimWrong: sec(7.8),
-  pair: sec(11.2),
+  original: sec(0.3),
+  news: (j: number) => sec(4) + j * sec(0.25),
+  check: sec(8),
+  pick: sec(10),
+  pair: sec(12.5),
 };
-const endAt = (i: number) => (i === ORIGINAL ? T.original : T.newEnds + (i - 1) * sec(0.8));
 
-function Ending({ i }: { i: number }) {
+function Strip({ y, tokens, at, fill = "muted" }: { y: number; tokens: number; at: number; fill?: "muted" | "navy" }) {
+  return <Box x={STRIP_X} y={y - STRIP_H / 2} w={len(tokens)} h={STRIP_H} r={6} fill={fill} grow at={at} dur={growDur(tokens)} />;
+}
+
+function Ending({ j }: { j: number }) {
+  const e = NEW[j];
+  const y = rowY(j);
+  const at = T.news(j);
   return (
     <>
-      <Connector from={prefixOut} to={endIn(i)} tone="muted" drawFrom={endAt(i) - sec(0.5)} drawTo={endAt(i)} />
-      <Node x={END.x} y={END.ys[i]} w={END.w} h={END.h} label={ENDINGS[i].label} sub={ENDINGS[i].sub} appearAt={endAt(i)} />
+      <Path d={fan(y)} stroke="line" at={at - sec(0.4)} dur={sec(0.4)} />
+      <Strip y={y} tokens={e.tokens} at={at} />
+      <Label x={STRIP_X + len(e.tokens) + 18} y={y} mono at={at + growDur(e.tokens)}>{e.ok ? "2/7" : "1/14"}</Label>
     </>
   );
 }
@@ -53,37 +64,44 @@ function Ending({ i }: { i: number }) {
 function Scene() {
   return (
     <>
-      <Node x={PREFIX.x} y={PREFIX.y} w={PREFIX.w} h={PREFIX.h} label="Prefijo" sub="congelado" tone="navy" appearAt={START} />
+      {/* The frozen prefix: the first 11 paragraphs of the trace. */}
+      <Label x={PREFIX.x} y={PREFIX.y - 44} tone="slate" weight={600} at={START}>prefijo</Label>
+      <Box x={PREFIX.x} y={PREFIX.y} w={PREFIX.w} h={PREFIX.h} r={6} fill="navy" at={START} />
+      <Label x={PREFIX.x} y={PREFIX.y + PREFIX.h + 44} mono at={START}>11 pasos</Label>
 
-      <Ending i={ORIGINAL} />
-      <Dim from={T.dimWrong} amount={0.25}>
-        <Ending i={WRONG} />
-      </Dim>
-      <Ending i={SHORT} />
-      <FlowDot from={prefixOut} to={endIn(SHORT)} start={T.newEnds + sec(0.8)} end={T.newEnds + sec(1.6)} />
+      {/* The original ending from the same state. */}
+      <Path d={fan(ORIGINAL.y)} stroke="line" at={START} dur={sec(0.4)} />
+      <Label x={STRIP_X} y={62} tone="slate" weight={600} at={T.original}>
+        {"original · 1.247 tokens"}
+      </Label>
+      <Strip y={ORIGINAL.y} tokens={ORIGINAL.tokens} at={T.original} />
+      <Label x={STRIP_X + len(ORIGINAL.tokens) + 18} y={ORIGINAL.y} mono at={T.original + growDur(ORIGINAL.tokens)}>2/7</Label>
 
-      {/* The shortest correct ending wins. */}
-      <Highlight from={T.check}>
-        <Node
-          x={END.x}
-          y={END.ys[SHORT]}
-          w={END.w}
-          h={END.h}
-          label={ENDINGS[SHORT].label}
-          sub={ENDINGS[SHORT].sub}
-          tone="navy"
-          appearAt={T.check}
-        />
+      {/* Eight new endings: the wrong ones fade at the check, the longer correct ones at the pick. */}
+      {NEW.map((e, j) =>
+        j === CHOSEN ? null : (
+          <Fade key={j} from={e.ok ? T.pick : T.check} to={e.ok ? 0.4 : 0.15}>
+            <Ending j={j} />
+          </Fade>
+        ),
+      )}
+      <Ending j={CHOSEN} />
+
+      {/* The shortest correct ending becomes the preferred one. */}
+      <Highlight from={T.pick + sec(0.3)}>
+        <Strip y={rowY(CHOSEN)} tokens={NEW[CHOSEN].tokens} at={T.pick} fill="navy" />
       </Highlight>
+      <Fade from={T.pair} to={0}>
+        <Label x={660} y={rowY(CHOSEN)} mono at={T.pick + sec(0.4)}>296 tokens</Label>
+      </Fade>
+      <Label x={660} y={rowY(CHOSEN)} tone="navy" weight={800} at={T.pair + sec(0.3)}>
+        {"preferido · 296"}
+      </Label>
 
-      {/* The training pair: both endings continue the same prefix. */}
-      <Connector from={endOut(SHORT)} to={pairIn(1)} tone="accent" width={3} drawFrom={T.pair} drawTo={T.pair + sec(0.7)} />
-      <FlowDot from={endOut(SHORT)} to={pairIn(1)} start={T.pair + sec(0.7)} end={T.pair + sec(1.3)} />
-      <Connector from={endOut(ORIGINAL)} to={pairIn(0)} tone="muted" drawFrom={T.pair + sec(0.3)} drawTo={T.pair + sec(1.0)} />
-      <Highlight from={T.pair + sec(1.3)}>
-        <Node x={PAIR.x} y={PAIR.ys[1]} w={PAIR.w} h={PAIR.h} label="Preferido" sub="el corto" tone="navy" appearAt={T.pair + sec(0.5)} />
-      </Highlight>
-      <Node x={PAIR.x} y={PAIR.ys[0]} w={PAIR.w} h={PAIR.h} label="Descartado" sub="el largo" tone="muted" appearAt={T.pair + sec(0.8)} />
+      {/* The pair: the same prefix, two endings. */}
+      <Label x={752} y={62} tone="ink" weight={800} at={T.pair + sec(0.3)}>
+        {"· descartado"}
+      </Label>
     </>
   );
 }
@@ -93,10 +111,11 @@ export default defineClip({
   title: "Cómo se arma cada par",
   durationInFrames: sec(17),
   captions: [
-    { from: 0, to: sec(4), text: "Se congela el razonamiento donde ya podía concluir." },
-    { from: sec(4), to: sec(7.6), text: "Desde ahí, el mismo modelo escribe otros finales." },
-    { from: sec(7.6), to: sec(11.2), text: "¿Llegan a 2/7? Se queda el correcto más corto." },
-    { from: sec(11.2), to: sec(17), text: "El par: preferir el corto (296), no el largo (1.247)." },
+    { from: 0, to: sec(4), text: "Desde el prefijo congelado, el final original ocupó 1.247 tokens." },
+    { from: sec(4), to: sec(8), text: "Desde el mismo punto, el modelo escribe 8 finales nuevos." },
+    { from: sec(8), to: sec(10), text: "Se verifica cada uno: los que no llegan a 2/7 se descartan." },
+    { from: sec(10), to: sec(12.5), text: "De los correctos, se queda el más corto: 296 tokens." },
+    { from: sec(12.5), to: sec(17), text: "El par: preferir el corto (296) frente al original (1.247)." },
   ],
   Scene,
 });

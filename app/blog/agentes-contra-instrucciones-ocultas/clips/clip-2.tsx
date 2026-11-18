@@ -1,98 +1,108 @@
 "use client";
+// Construido a partir de: el pedido del usuario T, el índice tipado de identidades I y la búsqueda en conjunto del piso sobre los destinos de cada llamada (paper, sección 3.1, figura 2A y algoritmo 1).
 
 import { defineClip } from "@/app/components/blog/clips/clip-def";
-import { Connector, Dim, FlowDot, Highlight, Node } from "@/app/components/blog/clips/primitives";
+import { Box, Fade, Label, MoveAlong, Path } from "@/app/components/blog/clips/draw";
+import { Highlight } from "@/app/components/blog/clips/primitives";
 import { sec, type Point } from "@/app/components/blog/clips/timing";
 
-// Layout (full 1280×720 stage; captions sit in a bar under it, never on it). Three rows,
-// one per origin of a destination (y=90 to y=630): the origin on the left, the filter as
-// one tall box in the middle, and the outcome on the right. All links are horizontal.
-const SOURCE = { x: 240, w: 380, h: 120 };
-const FILTER = { x: 700, y: 360, w: 200, h: 540 };
-const OUT = { x: 1080, w: 260, h: 100 };
-const ROWS = [150, 360, 570];
-
-/** Where each destination came from; the account numbers are invented for the example. */
-const ORIGINS = [
-  { label: "Tu pedido", sub: "«cuenta 123»", passes: true },
-  { label: "Campo tipado", sub: "remitente", passes: true },
-  { label: "Texto libre", sub: "«cuenta 999»", passes: false },
+// Layout: the two places a destination may come from on the left (x=60–760): your request
+// on top (y=60–200) and the index of typed fields below it (y=250–520), filled from the
+// email's «remitente» field; its body never enters. On the right (x=840–1200), the three
+// destinations the agent proposes, one per row; each slides left to look itself up. The
+// accounts and the address are invented.
+const REQUEST = { x: 60, y: 60, w: 700, h: 140 };
+const INDEX = { x: 60, y: 250, w: 700, h: 270 };
+const CHIP = { x: 840, w: 360, h: 70 };
+const ROWS = [130, 400, 580];
+const MATCH: (Point | null)[] = [
+  [680, 145], // «123» in your request
+  [530, 400], // the sender in the index
+  null, // «999»: nowhere
 ];
+const DESTS = ["cuenta 123", "luz@factura.co", "cuenta 999"];
+const VERDICT = ["pasa", "pasa", "bloqueado"];
 
-const sourceOut = (i: number): Point => [SOURCE.x + SOURCE.w / 2, ROWS[i]];
-const filterIn = (i: number): Point => [FILTER.x - FILTER.w / 2, ROWS[i]];
-const filterOut = (i: number): Point => [FILTER.x + FILTER.w / 2, ROWS[i]];
-const outIn = (i: number): Point => [OUT.x - OUT.w / 2, ROWS[i]];
-
-// Already on screen at frame 0 (a Node at appearAt 0 is still fading in there).
 const START = -sec(0.5);
-
-// Timeline.
 const T = {
-  sources: START,
-  filter: sec(1.2),
-  links: sec(1.8),
-  rows: [sec(4.0), sec(7.5), sec(11.0)],
+  index: sec(1),
+  rows: [sec(4), sec(7.5), sec(11)],
 };
 
-function Row({ i }: { i: number }) {
-  const { passes } = ORIGINS[i];
+function Chip({ i }: { i: number }) {
+  const y = ROWS[i];
   const t = T.rows[i];
+  const ok = MATCH[i] !== null;
   return (
     <>
-      <FlowDot from={sourceOut(i)} to={filterIn(i)} tone="ink" start={t} end={t + sec(0.6)} />
-      <Connector
-        from={filterOut(i)}
-        to={outIn(i)}
-        tone={passes ? "accent" : "muted"}
-        width={passes ? 3 : 2}
-        drawFrom={t + sec(0.6)}
-        drawTo={t + sec(1.2)}
-      />
-      {passes ? <FlowDot from={filterOut(i)} to={outIn(i)} start={t + sec(1.2)} end={t + sec(1.8)} /> : null}
+      {/* A refused destination fades; its verdict stays readable. */}
+      <Fade from={ok ? Infinity : t + sec(1.4)} to={0.35}>
+        <Box x={CHIP.x} y={y - CHIP.h / 2} w={CHIP.w} h={CHIP.h} r={10} fill="ink" stroke="ink" weight="bold" at={START + i * sec(0.3)} />
+        <Label x={CHIP.x + 24} y={y} mono at={START + i * sec(0.3)}>{DESTS[i]}</Label>
+      </Fade>
+      {ok ? (
+        <Highlight from={t + sec(1.4)}>
+          <Box x={CHIP.x} y={y - CHIP.h / 2} w={CHIP.w} h={CHIP.h} r={10} fill="navy" at={t + sec(1.2)} />
+          <Label x={CHIP.x + 24} y={y} mono tone="white" at={t + sec(1.2)}>{DESTS[i]}</Label>
+        </Highlight>
+      ) : null}
+      <Label x={CHIP.x + CHIP.w} y={y + CHIP.h / 2 + 30} anchor="end" tone={ok ? "navy" : "slate"} weight={800} at={t + sec(1.4)}>
+        {VERDICT[i]}
+      </Label>
     </>
   );
 }
 
-function Source({ i }: { i: number }) {
+function Lookup({ i }: { i: number }) {
+  const y = ROWS[i];
+  const t = T.rows[i];
+  const m = MATCH[i];
+  if (m) {
+    const pts: Point[] = [[CHIP.x - 10, y], [m[0] + 90, m[1]]];
+    return (
+      <>
+        <Path d={`M ${CHIP.x - 10} ${y} L ${m[0] + 90} ${m[1]}`} stroke="navy" weight="bold" at={t} dur={sec(0.8)} />
+        <Fade from={t + sec(0.8)} to={0} dur={sec(0.2)}>
+          <MoveAlong points={pts} from={t} to={t + sec(0.8)}>
+            <Box x={-12} y={-12} w={24} h={24} r={6} fill="accent" at={t} />
+          </MoveAlong>
+        </Fade>
+      </>
+    );
+  }
+  // «999» is looked up in both and found in neither.
   return (
-    <>
-      <Node
-        x={SOURCE.x}
-        y={ROWS[i]}
-        w={SOURCE.w}
-        h={SOURCE.h}
-        label={ORIGINS[i].label}
-        sub={ORIGINS[i].sub}
-        appearAt={T.sources + i * sec(0.4)}
-      />
-      <Connector from={sourceOut(i)} to={filterIn(i)} tone="muted" drawFrom={T.links} drawTo={T.links + sec(0.6)} />
-    </>
+    <Fade from={t + sec(1.4)} to={0.5}>
+      <Path d={`M ${CHIP.x - 10} ${y} C 790 ${y}, 800 200, 770 140`} stroke="muted" weight="bold" dashed at={t} dur={sec(0.6)} />
+      <Path d={`M ${CHIP.x - 10} ${y} C 790 ${y}, 800 440, 770 400`} stroke="muted" weight="bold" dashed at={t + sec(0.3)} dur={sec(0.6)} />
+    </Fade>
   );
 }
 
 function Scene() {
-  const blocked = 2;
   return (
     <>
-      <Source i={0} />
-      <Source i={1} />
-      <Dim from={T.rows[blocked] + sec(1.4)} amount={0.3}>
-        <Source i={blocked} />
-      </Dim>
-      <Node x={FILTER.x} y={FILTER.y} w={FILTER.w} h={FILTER.h} label="Filtro" tone="navy" appearAt={T.filter} />
+      {/* Your request: what you named is never suspicious. */}
+      <Box x={REQUEST.x} y={REQUEST.y} w={REQUEST.w} h={REQUEST.h} r={14} fill="fog" stroke="line" at={START} />
+      <Label x={REQUEST.x + 30} y={REQUEST.y + 40} tone="slate" weight={600} at={START}>Tu pedido</Label>
+      <Label x={REQUEST.x + 30} y={145} at={START}>«Paga la factura a la cuenta 123»</Label>
 
-      {ORIGINS.map((_, i) => (
-        <Row key={i} i={i} />
-      ))}
+      {/* The index: only typed fields of read-only tools. */}
+      <Box x={INDEX.x} y={INDEX.y} w={INDEX.w} h={INDEX.h} r={14} fill="ink" stroke="line" at={START} />
+      <Label x={INDEX.x + 30} y={INDEX.y + 45} tone="slate" weight={600} at={START}>Índice (campos tipados)</Label>
+      <Label x={INDEX.x + 30} y={400} tone="slate" weight={600} at={T.index}>remitente</Label>
+      <Label x={290} y={400} mono at={T.index}>luz@factura.co</Label>
+      <Path d={`M ${INDEX.x + 30} 450 H ${INDEX.x + INDEX.w - 30}`} stroke="line" at={T.index} />
+      <Fade from={T.index + sec(0.6)} to={0.5}>
+        <Label x={INDEX.x + 30} y={485} tone="slate" weight={600} at={T.index + sec(0.4)}>cuerpo: no entra</Label>
+      </Fade>
 
-      {/* The two admitted destinations get the ring. */}
-      {[0, 1].map((i) => (
-        <Highlight key={`hl-${i}`} from={T.rows[i] + sec(1.8)}>
-          <Node x={OUT.x} y={ROWS[i]} w={OUT.w} h={OUT.h} label="Pasa" tone="navy" appearAt={T.rows[i] + sec(1.2)} />
-        </Highlight>
+      {[0, 1, 2].map((i) => (
+        <Lookup key={`l-${i}`} i={i} />
       ))}
-      <Node x={OUT.x} y={ROWS[blocked]} w={OUT.w} h={OUT.h} label="Bloqueado" tone="muted" appearAt={T.rows[blocked] + sec(1.2)} />
+      {[0, 1, 2].map((i) => (
+        <Chip key={i} i={i} />
+      ))}
     </>
   );
 }
@@ -102,10 +112,10 @@ export default defineClip({
   title: "De dónde salió cada destino",
   durationInFrames: sec(16),
   captions: [
-    { from: 0, to: sec(4), text: "El filtro no lee la orden: mira de dónde salió cada destino." },
-    { from: sec(4), to: sec(7.5), text: "Una cuenta que tú escribiste en tu pedido pasa." },
-    { from: sec(7.5), to: sec(11), text: "Una dirección del campo «remitente» de un correo también pasa." },
-    { from: sec(11), to: sec(16), text: "Una cuenta escrita en texto libre se bloquea, diga lo que diga." },
+    { from: 0, to: sec(4), text: "Un destino pasa si está en tu pedido o en el índice de campos tipados." },
+    { from: sec(4), to: sec(7.5), text: "La cuenta 123 está en tu pedido: pasa." },
+    { from: sec(7.5), to: sec(11), text: "La dirección vino del campo «remitente», que está indexado: pasa." },
+    { from: sec(11), to: sec(16), text: "La cuenta 999 no está en ninguno de los dos: se bloquea." },
   ],
   Scene,
 });
