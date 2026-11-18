@@ -9,6 +9,8 @@ export type PostEntry = {
   mdx: string | null;
   /** Clip basenames without extension, sorted. */
   clipFiles: string[];
+  /** Each clip's source, by basename (same keys as `clipFiles`), for the brand check. */
+  clipSources?: Record<string, string>;
 };
 
 /** Only `clips/clip-<n>.tsx` are clips; helpers and tests in the folder are not registered. */
@@ -36,17 +38,21 @@ export function readPostEntries(root = "app/blog"): PostEntry[] {
     }
     const mdxPath = path.join(dir, "page.mdx");
     const clipsDir = path.join(dir, "clips");
+    const clipFiles = fs.existsSync(clipsDir)
+      ? fs
+          .readdirSync(clipsDir)
+          .filter((f) => CLIP_FILE.test(f))
+          .map((f) => f.replace(/\.tsx$/, ""))
+          .sort()
+      : [];
     entries.push({
       dir: dirent.name,
       meta,
       mdx: fs.existsSync(mdxPath) ? fs.readFileSync(mdxPath, "utf8") : null,
-      clipFiles: fs.existsSync(clipsDir)
-        ? fs
-            .readdirSync(clipsDir)
-            .filter((f) => CLIP_FILE.test(f))
-            .map((f) => f.replace(/\.tsx$/, ""))
-            .sort()
-        : [],
+      clipFiles,
+      clipSources: Object.fromEntries(
+        clipFiles.map((c) => [c, fs.readFileSync(path.join(clipsDir, `${c}.tsx`), "utf8")]),
+      ),
     });
   }
   return entries.sort((a, b) => a.dir.localeCompare(b.dir));
