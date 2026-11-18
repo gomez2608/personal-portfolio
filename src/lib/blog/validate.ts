@@ -1,4 +1,5 @@
 import { validateClipDef, type ClipDef } from "../../../app/components/blog/clips/clip-types";
+import { checkClipSource } from "./clip-source";
 import type { PostEntry } from "./entries";
 import { PostMetaSchema } from "./schema";
 
@@ -20,6 +21,10 @@ export function validatePosts(entries: PostEntry[], today: string): string[] {
       continue;
     }
     const meta = parsed.data;
+
+    for (const [clip, source] of Object.entries(entry.clipSources ?? {})) {
+      errors.push(...checkClipSource(`${where}/clips/${clip}.tsx`, source));
+    }
 
     if (meta.slug !== entry.dir) {
       errors.push(`${where}: folder name "${entry.dir}" must equal slug "${meta.slug}"`);

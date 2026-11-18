@@ -17,3 +17,13 @@ test("registers only clips/clip-<n>.tsx files", () => {
   }
   expect(readPostEntries(root)[0].clipFiles).toEqual(["clip-1", "clip-2"]);
 });
+
+test("reads each clip's source into clipSources", () => {
+  root = fs.mkdtempSync(path.join(os.tmpdir(), "blog-entries-"));
+  const clips = path.join(root, "post", "clips");
+  fs.mkdirSync(clips, { recursive: true });
+  fs.writeFileSync(path.join(root, "post", "post.json"), "{}");
+  fs.writeFileSync(path.join(clips, "clip-1.tsx"), "uno");
+  fs.writeFileSync(path.join(clips, "shared.tsx"), "no");
+  expect(readPostEntries(root)[0].clipSources).toEqual({ "clip-1": "uno" });
+});
