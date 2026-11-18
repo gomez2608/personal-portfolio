@@ -1,0 +1,26 @@
+{
+  "slug": "mal-jugador-buen-entrenador",
+  "title": "Actor, juez o maestro: un modelo que actúa mal puede enseñar bien",
+  "hook": "Un modelo que falla al hacer una tarea puede, mirando la jugada completa, entrenar a otro para que la haga mejor que él.",
+  "date": "2026-11-17",
+  "issue": 1,
+  "status": "published",
+  "paper": {
+    "title": "Actor, Judge, or Teacher? Understanding Decision Models in Long-Horizon Agents",
+    "url": "https://arxiv.org/abs/2611.17167",
+    "authors": [
+      "Haochen Liu",
+      "Qianhao Zhu",
+      "Zixuan Wang",
+      "Dingming Li",
+      "Tongbo Chen",
+      "Peng Qiu",
+      "Yingqi Qu",
+      "Weiming Lu",
+      "Jun Xiao",
+      "Yongliang Shen"
+    ],
+    "published": "2026-11-12"
+  },
+  "opinion": "Esto me recuerda algo que pasa mucho con personas: evaluar un trabajo terminado es más fácil que hacerlo bien en tiempo real. Que un modelo que resuelve menos de la mitad de las tareas pueda llevar a otro de 72,8 % a 82,9 % dice que \"saber hacer\" y \"saber juzgar\" son habilidades distintas, y que vale la pena medirlas por separado.\n\nLo que más me entusiasma es lo que esto podría abrir en costos. Los autores reportan que un modelo de 1.500 millones de parámetros entrenado con este maestro supera a uno de 7.000 millones entrenado de la forma habitual, y que las consultas al maestro cuestan entre 22 y 30 dólares por entrenamiento. Mi lectura, que ellos no plantean así: en tareas concretas y bien delimitadas, esto apunta a que un modelo barato puede acercarse al rendimiento de uno más caro. Me queda la duda de cuánto se sostiene fuera de entornos de texto con 30 acciones como máximo, que es donde lo probaron."
+}

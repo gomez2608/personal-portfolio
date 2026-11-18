@@ -1,0 +1,23 @@
+{
+  "slug": "cuando-dejar-de-pensar",
+  "title": "Compresión del razonamiento: enseñarle a un modelo cuándo dejar de pensar",
+  "hook": "Los modelos que razonan a veces siguen dándole vueltas a algo que ya resolvieron. Este trabajo les enseña a reconocer el momento justo para concluir.",
+  "date": "2026-11-17",
+  "issue": 1,
+  "status": "published",
+  "paper": {
+    "title": "Think Less, Locally: Local Preference Learning for Reasoning Compression",
+    "url": "https://arxiv.org/abs/2611.04814",
+    "authors": [
+      "Muyao Yuan",
+      "Liyan Xu",
+      "Weizhan Zhang",
+      "Muyan Jiao",
+      "Jiangnan Li",
+      "Jinchao Zhang",
+      "Jie Zhou"
+    ],
+    "published": "2026-11-03"
+  },
+  "opinion": "Lo que más me gusta de LoCo es que no castiga pensar, castiga seguir pensando cuando ya no hace falta. Pedirle a un modelo \"sé más breve\" en general es fácil; enseñarle a reconocer el punto exacto donde ya tenía la respuesta es mucho más fino, y por eso me parece que funciona.\n\nPara quien usa estos modelos todos los días, esto no es un detalle académico: cada token de más es tiempo de espera y dinero. Que el ahorro también aparezca en código, sin haber entrenado con código, me hace pensar que el modelo aprendió algo general sobre cuándo parar y no solo un truco para matemáticas."
+}
