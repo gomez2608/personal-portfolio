@@ -1,110 +1,84 @@
 "use client";
+// Construido a partir de: la traza de razonamiento, párrafo por párrafo, y la señal de confianza por paso (paper, secciones 3–4.2 y apéndice B, ejemplo 2).
 
 import { defineClip } from "@/app/components/blog/clips/clip-def";
-import { Connector, Dim, FlowDot, Highlight, Node } from "@/app/components/blog/clips/primitives";
-import { sec, type Point } from "@/app/components/blog/clips/timing";
+import { Box, Dot, Fold, Label, Path, useClipFrame } from "@/app/components/blog/clips/draw";
+import { formatNumberEs, progress, sec } from "@/app/components/blog/clips/timing";
 
-// Layout (full 1280×720 stage; captions sit in a bar under it, never on it). Top row: the
-// three useful steps (it ends where the model could already answer), x=60 to x=1220.
-// Middle row: the extra rechecking, narrower (x=50 to x=1070) so a clear lane stays on the
-// right for the link from the stop point down to the answer box (x=720 to x=1160,
-// y=500 to y=620).
-const STEP = { w: 340, h: 100 };
-const COLS = [230, 640, 1050];
-const EXTRA_STEP = { w: 300, h: 100 };
-const EXTRA_COLS = [200, 560, 920];
-const ROW_TOP = 140;
-const ROW_EXTRA = 330;
-const ANSWER = { x: 940, y: 560, w: 440, h: 120 };
+// Layout: the trace as a page on the left (x=60–700), one bar per paragraph. A confidence
+// trace runs down its right margin (x=740–860), one point per paragraph. The length of the
+// ending (tokens) on the right (x=900–1220).
+const PAGE = { x: 60, y: 40, w: 660, h: 640 };
+const ROW0 = 130;
+const PITCH = 22;
+const PREFIX = 11; // paragraphs before the point where it could stop (paper, appendix B)
+const TAIL = 12;
+const rowY = (i: number) => ROW0 + i * PITCH;
+const CUT_Y = rowY(PREFIX) - PITCH / 2 + 6;
+const widths = [540, 500, 560, 470, 520, 555, 480, 530, 440, 515, 380, 545, 500, 560, 470, 525, 490, 555, 505, 460, 530, 485, 420];
 
-const USEFUL = ["Plantea", "Calcula: 2/7", "Comprueba"];
-const EXTRA = ["Mira de nuevo", "Reformula", "Otra vez"];
+// Confidence per paragraph: ILLUSTRATIVE (the post says so), steady, then a low, jumpy point at paragraph 11.
+const conf = [0.82, 0.8, 0.85, 0.78, 0.83, 0.79, 0.84, 0.8, 0.76, 0.72, 0.22, 0.6, 0.48, 0.66, 0.52, 0.63, 0.5, 0.68, 0.55, 0.61, 0.49, 0.64, 0.58];
+const MX = (c: number) => 745 + c * 115;
+const trace = (from: number, to: number) =>
+  conf.slice(from, to).map((c, k) => `${k === 0 ? "M" : "L"} ${MX(c)} ${rowY(from + k) + 6}`).join(" ");
 
-const right = (x: number, y: number, w = STEP.w): Point => [x + w / 2, y];
-const left = (x: number, y: number, w = STEP.w): Point => [x - w / 2, y];
-/** From the last useful step down to the first extra step. */
-const wrapFrom: Point = [COLS[2] - 60, ROW_TOP + STEP.h / 2];
-const wrapTo: Point = [EXTRA_COLS[0], ROW_EXTRA - EXTRA_STEP.h / 2];
-/** From the step where it could stop straight down the right lane to the answer. */
-const stopFrom: Point = [1160, ROW_TOP + STEP.h / 2];
-const answerIn: Point = [1140, ANSWER.y - ANSWER.h / 2];
-
-// Already on screen at frame 0 (a Node at appearAt 0 is still fading in there).
 const START = -sec(0.5);
-
-// Timeline.
 const T = {
-  useful: START,
-  extra: sec(7.5),
-  mark: sec(11.0),
-  dim: sec(11.2),
-  answer: sec(12.0),
-  link: sec(12.2),
+  prefix: (i: number) => (i === 0 ? START : sec(0.3) + i * sec(0.3)),
+  tail: (j: number) => sec(4) + j * sec(0.3),
+  countUp: [sec(4), sec(7.6)] as const,
+  cut: sec(8),
+  fold: sec(11),
+  short: (j: number) => sec(12) + j * sec(0.3),
+  countDown: [sec(12), sec(13.2)] as const,
 };
-/** «Plantea» is there from the start; the other two useful steps arrive with the second caption. */
-const usefulAt = (i: number) => (i === 0 ? T.useful : sec(3.5) + (i - 1) * sec(1.4));
-const extraAt = (i: number) => T.extra + i * sec(0.9);
+
+function EndingLength() {
+  const f = useClipFrame();
+  const up = Math.round(1247 * progress(f, ...T.countUp));
+  const v = f < T.countDown[0] ? up : Math.round(1247 - (1247 - 296) * progress(f, ...T.countDown));
+  if (f < T.countUp[0]) return null;
+  return (
+    <>
+      <Label x={1060} y={470} anchor="middle" tone="slate" weight={600} at={T.countUp[0]}>tokens del final</Label>
+      <Label x={1060} y={560} anchor="middle" size={96} weight={800} at={T.countUp[0]}>{formatNumberEs(v)}</Label>
+    </>
+  );
+}
 
 function Scene() {
   return (
     <>
-      {USEFUL.map((label, i) => (
-        <Node key={label} x={COLS[i]} y={ROW_TOP} w={STEP.w} h={STEP.h} label={label} appearAt={usefulAt(i)} />
+      <Box x={PAGE.x} y={PAGE.y} w={PAGE.w} h={PAGE.h} r={14} fill="ink" stroke="line" at={START} />
+      <Label x={PAGE.x + 36} y={PAGE.y + 46} tone="slate" weight={600} at={START}>Razonamiento</Label>
+
+      {/* Paragraphs up to the point where it could already answer. */}
+      {Array.from({ length: PREFIX }, (_, i) => (
+        <Box key={i} x={100} y={rowY(i)} w={widths[i]} h={12} r={6} fill="muted" grow at={T.prefix(i)} dur={sec(0.3)} />
       ))}
-      {[0, 1].map((i) => (
-        <Connector
-          key={`u-${i}`}
-          from={right(COLS[i], ROW_TOP)}
-          to={left(COLS[i + 1], ROW_TOP)}
-          drawFrom={usefulAt(i + 1) - sec(0.4)}
-          drawTo={usefulAt(i + 1)}
-        />
+      <Label x={745} y={PAGE.y + 46} tone="slate" weight={600} at={START}>confianza</Label>
+      <Path d={trace(0, PREFIX)} stroke="navy" weight="bold" at={START} dur={sec(3.8)} />
+
+      {/* The original ending: it keeps going, then folds away once the cut is learnt. */}
+      <Fold from={T.fold} originY={CUT_Y}>
+        {Array.from({ length: TAIL }, (_, j) => (
+          <Box key={j} x={100} y={rowY(PREFIX + j)} w={widths[PREFIX + j]} h={12} r={6} fill="muted" grow at={T.tail(j)} dur={sec(0.3)} />
+        ))}
+        <Path d={trace(PREFIX - 1, PREFIX + TAIL)} stroke="muted" weight="bold" at={T.tail(0)} dur={sec(3.6)} />
+      </Fold>
+
+      {/* The point where it could stop. */}
+      <Path d={`M 80 ${CUT_Y} H 880`} stroke="accent" weight="bold" at={T.cut} dur={sec(0.8)} />
+      <Dot x={MX(conf[PREFIX - 1])} y={rowY(PREFIX - 1) + 6} r={14} at={T.cut} />
+      <Label x={900} y={CUT_Y - 40} tone="navy" at={T.cut + sec(0.4)}>podía concluir</Label>
+
+      {/* The short ending LoCo trains it to prefer. */}
+      {Array.from({ length: 3 }, (_, j) => (
+        <Box key={j} x={100} y={rowY(PREFIX) + 14 + j * PITCH} w={[520, 470, 300][j]} h={12} r={6} fill="navy" grow at={T.short(j)} dur={sec(0.3)} />
       ))}
 
-      {/* The rechecking after the model already had 2/7; it fades once the stop point is marked. */}
-      <Dim from={T.dim} amount={0.25}>
-        <Connector from={wrapFrom} to={wrapTo} tone="muted" drawFrom={T.extra - sec(0.5)} drawTo={T.extra} />
-        {EXTRA.map((label, i) => (
-          <Node
-            key={label}
-            x={EXTRA_COLS[i]}
-            y={ROW_EXTRA}
-            w={EXTRA_STEP.w}
-            h={EXTRA_STEP.h}
-            label={label}
-            tone="muted"
-            appearAt={extraAt(i)}
-          />
-        ))}
-        {[0, 1].map((i) => (
-          <Connector
-            key={`e-${i}`}
-            from={right(EXTRA_COLS[i], ROW_EXTRA, EXTRA_STEP.w)}
-            to={left(EXTRA_COLS[i + 1], ROW_EXTRA, EXTRA_STEP.w)}
-            tone="muted"
-            drawFrom={extraAt(i + 1) - sec(0.4)}
-            drawTo={extraAt(i + 1)}
-          />
-        ))}
-      </Dim>
-
-      {/* The step where it could already conclude. */}
-      <Highlight from={T.mark}>
-        <Node x={COLS[2]} y={ROW_TOP} w={STEP.w} h={STEP.h} label={USEFUL[2]} tone="navy" appearAt={T.mark} />
-      </Highlight>
-
-      <Connector from={stopFrom} to={answerIn} tone="accent" width={3} drawFrom={T.link} drawTo={T.link + sec(0.7)} />
-      <FlowDot from={stopFrom} to={answerIn} start={T.link + sec(0.7)} end={T.link + sec(1.3)} />
-      <Node
-        x={ANSWER.x}
-        y={ANSWER.y}
-        w={ANSWER.w}
-        h={ANSWER.h}
-        label="Respuesta: 2/7"
-        sub="concluir aquí"
-        tone="navy"
-        appearAt={T.answer}
-      />
+      <EndingLength />
     </>
   );
 }
@@ -114,10 +88,10 @@ export default defineClip({
   title: "La idea general",
   durationInFrames: sec(16),
   captions: [
-    { from: 0, to: sec(3.5), text: "Pregunta: «¿qué fracción de 1/2 es 1/7?». El modelo razona." },
-    { from: sec(3.5), to: sec(7.5), text: "Plantea, calcula 2/7 y lo comprueba: ya tiene la respuesta." },
-    { from: sec(7.5), to: sec(11), text: "Pero sigue: mira de nuevo, reformula y lo comprueba otra vez." },
-    { from: sec(11), to: sec(16), text: "LoCo le enseña a reconocer ese punto y concluir ahí." },
+    { from: 0, to: sec(4), text: "El modelo escribe su razonamiento, párrafo por párrafo." },
+    { from: sec(4), to: sec(8), text: "Tras el párrafo 11 sigue: 1.247 tokens más hasta terminar." },
+    { from: sec(8), to: sec(11), text: "En el párrafo 11 su confianza cae: ahí podía concluir." },
+    { from: sec(11), to: sec(16), text: "LoCo le enseña un final corto desde ese punto: 296 tokens." },
   ],
   Scene,
 });
