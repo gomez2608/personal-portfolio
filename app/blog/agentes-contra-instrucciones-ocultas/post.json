@@ -15,5 +15,5 @@
     ],
     "published": "2026-11-04"
   },
-  "opinion": null
+  "opinion": "Me gusta que SPILLWAY no intenta que un modelo sea más listo que el atacante, sino que saca al modelo de la decisión. Una regla aburrida que pregunta \"¿de dónde salió este destino?\" es más difícil de engañar que otro modelo leyendo el mismo texto que escribió el atacante.\n\nDicho esto, no lo vería como el problema resuelto: solo protege a dónde va una acción, las reglas se escribieron a mano y se ajustaron con casos que ya fallaban. Antes de darle a un agente acceso a mis pagos querría ver esto probado en muchos más escenarios, pero la dirección me parece la correcta: menos confianza en el texto y más en la procedencia de los datos."
 }
