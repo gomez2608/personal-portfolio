@@ -52,7 +52,7 @@ Aplica cada pedido siguiendo ESTILO. Reglas:
 
 ## 4. Checks, commit y push
 
-Repite los checks de `borradores.md` paso 5: `npm ci`, `npm run blog:registry`, `npm test`, `npm run lint`, `npm run blog:check` (solo puede fallar con "falta tu opinión" de los posts que aún no la tienen), `npm run build`, el dry-run `npm run newsletter:send -- --issue N --dry-run`, y `npm run dev` + `npm run blog:snap -- <slug>` por cada post cuyo `clips/` cambió, mirando cada PNG hasta que esté limpio. Si corriges algo tras los snaps, apaga el servidor (`pkill -f "next dev"`) antes de repetir `npm run build`.
+Repite los checks de `borradores.md` paso 5: `npm ci`, `npm run blog:registry`, `npm test`, `npm run lint`, `npm run blog:check` (solo puede fallar con "falta tu opinión" de los posts que aún no la tienen), `npm run build`, el dry-run `npm run newsletter:send -- --issue N --dry-run`, y `npm run dev` + `npm run blog:snap -- <slug>` por cada post cuyo `clips/` cambió, mirando cada PNG hasta que esté limpio. Si un pedido es rehacer clips, sigue ESTILO §4 (parte del paper, no repitas) y actualiza la línea `// Construido a partir de:`. Si corriges algo tras los snaps, apaga el servidor (`pkill -f "next dev"`) antes de repetir `npm run build`.
 
 ```bash
 git add <solo las rutas que cambiaste, más src/lib/blog/clip-registry.generated.ts si cambió>

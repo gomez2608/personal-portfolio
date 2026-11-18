@@ -30,6 +30,12 @@ function entry(overrides: Partial<PostEntry> = {}): PostEntry {
 }
 
 describe("validatePosts", () => {
+  test("clip sources are checked", () => {
+    const e = validatePosts([entry({ clipFiles: ["clip-1"], clipSources: { "clip-1": "<Box style={{}} />" } })], T);
+    expect(e).toContainEqual(expect.stringContaining("app/blog/a/clips/clip-1.tsx"));
+  });
+  test("entries without clipSources skip the clip source check", () =>
+    expect(validatePosts([entry({ clipFiles: ["clip-1"] })], T)).toEqual([]));
   test("valid entry passes", () => expect(validatePosts([entry()], T)).toEqual([]));
   test("folder name must equal slug", () =>
     expect(validatePosts([entry({ dir: "b" })], T)).toContainEqual(expect.stringContaining("b")));

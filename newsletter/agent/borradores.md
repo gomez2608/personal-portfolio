@@ -34,7 +34,7 @@ git fetch origin && git checkout -b edicion-NNNN origin/master
 Para cada candidato marcado, en el orden del issue:
 1. Lee el paper completo y verifica la fuente (ESTILO §5). Si la URL no responde o los datos no coinciden, no escribas ese post y explícalo en el PR. Si no queda ninguno, comenta por qué, quita `aprobado`, ve al paso 7 y termina.
 2. Elige el slug (ESTILO §3). Debe ser único: `test ! -e app/blog/<slug>` y distinto de los demás de esta edición. Nunca reutilices una carpeta existente.
-3. Escribe `app/blog/<slug>/post.json` (`"status": "published"`, `"opinion": null`, `"issue"` = N, `"date"` = el valor de `$TODAY`), `page.mdx` y `clips/clip-1.tsx`, `clips/clip-2.tsx` (y `clip-3.tsx` si hace falta), siguiendo ESTILO §3–4 y el post de referencia.
+3. Escribe `app/blog/<slug>/post.json` (`"status": "published"`, `"opinion": null`, `"issue"` = N, `"date"` = el valor de `$TODAY`), `page.mdx` y `clips/clip-1.tsx`, `clips/clip-2.tsx` (y `clip-3.tsx` si hace falta), siguiendo ESTILO §3–4 (los clips parten del paper y no repiten clips anteriores) y los clips de referencia.
 4. Anota, mientras escribes, cada afirmación factual con su fuente: van en la descripción del PR.
 
 ## 4. Archivo de la edición
@@ -68,7 +68,7 @@ for i in $(seq 1 90); do curl -sf -o /dev/null http://localhost:3000/blog && bre
 npm run blog:snap -- <slug>   # por cada post; si el primer intento expira mientras compila, repítelo una vez
 ```
 
-Abre **cada** PNG de `.blog-snaps/<slug>/` con la herramienta de lectura de imágenes y busca, uno por uno: elementos que se solapan, se cortan o quedan a menos de ~40 px del borde; texto ilegible o que se sale de su caja; tangerine como texto o colores fuera de la marca; frames vacíos o que no muestran lo que dice el subtítulo; un último frame que no resume la idea por sí solo.
+Abre **cada** PNG de `.blog-snaps/<slug>/` con la herramienta de lectura de imágenes y busca, uno por uno: elementos que se solapan, se cortan o quedan a menos de ~40 px del borde; texto ilegible o que se sale de su caja; tangerine como texto o colores fuera de la marca; frames vacíos o que no muestran lo que dice el subtítulo; un último frame que no resume la idea por sí solo; un clip que se parece a uno anterior (ESTILO §4, "No repitas").
 
 Corrige y vuelve a correr `npm run blog:snap -- <slug>` (el servidor recarga solo) hasta que todos los frames estén limpios. Después apaga el servidor (`pkill -f "next dev"`) y repite `npm run blog:registry`, `npm test`, `npm run lint`, `npm run blog:check` y `npm run build`.
 
@@ -98,7 +98,7 @@ La vista previa de Vercel aparece en este PR cuando termina el deploy (protegida
 ## <título del post> (`<slug>`)
 - Paper: <URL>. Título, autores y fecha verificados.
 - De qué trata: <2–3 frases>
-- Clips: `clip-1` <qué muestra>; `clip-2` <qué muestra>
+- Clips: `clip-1` construido a partir de <objeto o figura del paper>: <qué muestra>; `clip-2` construido a partir de <…>: <qué muestra>
 - Afirmaciones y fuentes:
   - "<afirmación>" → paper, sección <x> / tabla <y>
 
