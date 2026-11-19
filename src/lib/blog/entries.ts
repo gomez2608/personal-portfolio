@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { RESERVED_SLUGS } from "./schema";
@@ -59,4 +60,18 @@ export function readPostEntries(root = "app/blog", coversRoot = "public/blog"): 
     });
   }
   return entries.sort((a, b) => a.dir.localeCompare(b.dir));
+}
+
+/**
+ * The share card's path, with `?v=` set from the cover's bytes. Mail and social image
+ * proxies (Gmail, LinkedIn) cache by URL, so a new cover needs a new URL to show up.
+ */
+export function ogImagePath(slug: string, coversRoot = "public/blog"): string {
+  const base = `/blog/og/${slug}`;
+  try {
+    const png = fs.readFileSync(path.join(coversRoot, slug, "cover.png"));
+    return `${base}?v=${crypto.createHash("sha256").update(png).digest("hex").slice(0, 8)}`;
+  } catch {
+    return base;
+  }
 }

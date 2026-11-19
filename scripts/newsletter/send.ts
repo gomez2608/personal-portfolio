@@ -12,7 +12,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { site } from "../../app/data/site";
-import { readPostEntries } from "../../src/lib/blog/entries";
+import { ogImagePath, readPostEntries } from "../../src/lib/blog/entries";
 import { PostMetaSchema, type PostMeta } from "../../src/lib/blog/schema";
 import { renderIssueEmail, type IssuePost } from "../../src/lib/newsletter/emails";
 import { issueFileName, validateIssue, type Issue } from "../../src/lib/newsletter/issue";
@@ -91,7 +91,7 @@ function toIssuePosts(issue: Issue, posts: Map<string, PostMeta>): IssuePost[] {
     title: posts.get(slug)!.title,
     blurb,
     url: `${base}/blog/${slug}`,
-    imageUrl: `${base}/blog/og/${slug}`,
+    imageUrl: `${base}${ogImagePath(slug)}`,
   }));
 }
 
