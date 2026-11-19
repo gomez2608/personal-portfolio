@@ -2,7 +2,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, expect, test } from "vitest";
-import { readPostEntries } from "./entries";
+import { ogImagePath, readPostEntries } from "./entries";
 
 let root: string;
 afterEach(() => fs.rmSync(root, { recursive: true, force: true }));
@@ -40,4 +40,16 @@ test("hasCover reflects public/blog/<dir>/cover.png", () => {
   fs.writeFileSync(path.join(covers, "with", "cover.png"), "");
   const byDir = Object.fromEntries(readPostEntries(app, covers).map((e) => [e.dir, e.hasCover]));
   expect(byDir).toEqual({ with: true, without: false });
+});
+
+test("ogImagePath carries a version that changes with the cover", () => {
+  root = fs.mkdtempSync(path.join(os.tmpdir(), "blog-covers-"));
+  expect(ogImagePath("post", root)).toBe("/blog/og/post");
+  fs.mkdirSync(path.join(root, "post"));
+  fs.writeFileSync(path.join(root, "post", "cover.png"), "a");
+  const first = ogImagePath("post", root);
+  expect(first).toMatch(/^\/blog\/og\/post\?v=[0-9a-f]{8}$/);
+  expect(ogImagePath("post", root)).toBe(first);
+  fs.writeFileSync(path.join(root, "post", "cover.png"), "b");
+  expect(ogImagePath("post", root)).not.toBe(first);
 });

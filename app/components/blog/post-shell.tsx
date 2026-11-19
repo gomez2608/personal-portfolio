@@ -5,6 +5,7 @@ import { PostMetaSchema, type PostMeta } from "@/lib/blog/schema";
 import { formatDateEs } from "@/lib/blog/format";
 import { deploymentEnv, isPostVisible } from "@/lib/blog/visibility";
 import { blogSocialMetadata } from "@/lib/blog/metadata";
+import { ogImagePath } from "@/lib/blog/entries";
 import { isNewsletterConfigured } from "@/lib/newsletter/config";
 import { NewsletterSignup } from "./newsletter-signup";
 
@@ -22,7 +23,7 @@ export function postMetadata(post: unknown): Metadata {
       title: meta.title,
       description: meta.hook,
       path: `/blog/${meta.slug}`,
-      image: `/blog/og/${meta.slug}`,
+      image: ogImagePath(meta.slug),
       imageAlt: meta.title,
       publishedTime: meta.date,
     }),
